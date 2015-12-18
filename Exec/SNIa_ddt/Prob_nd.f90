@@ -17,7 +17,7 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
 
   namelist /fortin/ model_name, dens_fluff, temp_fluff, &
                     xc12_fluff, xne22_fluff, rep_ne_frac, &
-                    ignite, x_match, y_match, z_match, r_match, &
+                    sim_ignite, sim_ignX, sim_ignY, sim_ignZ, sim_ignR, &
                     sim_ignMpole, sim_ignMpoleA, sim_ignMpoleMinL, &
                     sim_ignMpoleMaxL, sim_ignMPoleSym, sim_ignMPoleSeed, &
                     sim_ignSin, sim_ignSinN, sim_ignSinA, &
@@ -31,15 +31,13 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
   !     
   integer, parameter :: maxlen = 127
   character probin*(maxlen)
-  character model*(maxlen)
 
   integer          :: i, j, jstart, jend, k
-  double precision :: lastradius, radius
 
   integer          :: try, l, m, sgn
   logical          :: accept
-  double precision :: u, v, r, ir
-  double precision :: deltaplus, deltaminus, costheta, sintheta, phi
+  double precision :: u, v, r
+  double precision :: deltaplus, deltaminus, costheta, sintheta
   double precision :: P_lm1_m, P_l_m, hold
   double precision :: factlmm, factlpm, fact  
   
@@ -302,27 +300,8 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
 
 end subroutine PROBINIT
 
-! ::: -----------------------------------------------------------
-! ::: This routine is called at problem setup time and is used
-! ::: to initialize data on each grid.  
-! ::: 
-! ::: NOTE:  all arrays have one cell of ghost zones surrounding
-! :::        the grid interior.  Values in these cells need not
-! :::        be set here.
-! ::: 
-! ::: INPUTS/OUTPUTS:
-! ::: 
-! ::: level     => amr level of grid
-! ::: time      => time at which to init data             
-! ::: lo,hi     => index limits of grid interior (cell centered)
-! ::: nstate    => number of state components.  You should know
-! :::		   this already!
-! ::: state     <=  Scalar array
-! ::: delta     => cell size
-! ::: xlo,xhi   => physical locations of lower left and upper
-! :::              right hand corner of grid.  (does not include
-! :::		   ghost region).
-! ::: -----------------------------------------------------------
+
+
 subroutine ca_initdata(level,time,lo,hi,nscal, &
                        state,s_lo,s_hi, &
                        dx,xlo,xhi)
@@ -331,14 +310,11 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   use probdata_module
   use interpolate_module
   use eos_module
-  use meth_params_module, only: NVAR, URHO, UMX, UMZ, UTEMP,&
-       UEDEN, UEINT, UFS
+  use meth_params_module
   use network, only : nspec
   use model_parser_module
-  use prob_params_module, only: center
+  use prob_params_module, only: center, dim
   use castro_util_module, only: position
-  use eos_type_module
-  use eos_module
 
   implicit none
 
@@ -348,48 +324,217 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   double precision :: xlo(3), xhi(3), time, dx(3)
   double precision :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
 
-  double precision :: loc(3), vel(3), r
+  double precision :: loc(3), vel(3), radius
   double precision :: rho, T, xn(nspec)
-  integer :: i, j, k, n
+  integer :: i, j, k, l, m, n, p, nmax
 
-  type (eos_t) :: eos_state
+  type (eos_t) :: zone_state, unburned_state, nse_state
 
+  double precision :: costheta, sintheta, theta, phi
+  double precision :: yi, yi_f, ye, ye_f, flam, qbar_nse, dqbar_qn, dyi_qn, enuc, fact
+  double precision :: P_l_m, P_lm1_m, ign_dist, flame_radius, fsurf_distance, hold
+  
   do k = lo(3), hi(3)
      do j = lo(2), hi(2)
         do i = lo(1), hi(1)   
 
            loc = position(i, j, k) - center
 
-           r = sqrt(sum(loc**2))
+           radius = sqrt(sum(loc**2))
 
            ! Interpolate from 1D model
 
-           rho = interpolate(r,npts_model,model_r,model_state(:,idens_model))
-           T   = interpolate(r,npts_model,model_r,model_state(:,itemp_model))
+           rho = interpolate(radius,npts_model,model_r,model_state(:,idens_model))
+           T   = interpolate(radius,npts_model,model_r,model_state(:,itemp_model))
            do n = 1, nspec
-              xn(n) = interpolate(r,npts_model,model_r,model_state(:,ispec_model-1+n))
+              xn(n) = interpolate(radius,npts_model,model_r,model_state(:,ispec_model-1+n))
            enddo
 
-           ! Thermodynamics
+           !-----------------------------------------------
+           !  determine state of material at this radius if unburned
+           !  from external 1-d hyrdostatic model
+           !-----------------------------------------------
 
-           eos_state % rho = rho
-           eos_state % T   = T
-           eos_state % xn  = xn
+!           call bn_paraFuelAshProperties(xn(1), xn(3), ye_f, ye_a, yi_f, yi_a, qbar_f, qbar_a)
 
-           call eos(eos_input_rt, eos_state)
+           unburned_state % abar = ONE / yi_f
+           unburned_state % zbar = ye_f / yi_f
 
+           if (.not. sim_ignite) then
+              
+              ! no burned material, only unburned
+              
+              zone_state = unburned_state
+              call eos(eos_input_rt, zone_state)
+              
+              flam     = 0.0              
+              ye       = zone_state % zbar / zone_state % abar
+              dyi_qn   = 0.0
+              dqbar_qn = 0.0
+              enuc     = 0.0
+              
+           else
+              
+              !-----------------------------------------------
+              ! initialize, including a burned region
+              !-----------------------------------------------
+
+              ! find distance from flame surface (positive is in front of flame)
+
+              ! default to a spherical region centered at specified coordinates
+              ! distance from center of ignition region
+              
+              ign_dist = sqrt( (loc(1) - sim_ignX)**2 + (loc(2) - sim_ignY)**2 + (loc(3) - sim_ignZ)**2 )
+
+              flame_radius = sim_ignR
+
+              if (sim_ignMpole .and. sim_ignSin)  &
+                 call bl_error("Simulation_initBlock: multipole and sinusoidal ignition are exclusive")
+
+              if (sim_ignMpole) then
+                 if (dim == 2) then
+                    ! assume 2d is cylindrical
+                    costheta = (loc(2)-sim_ignY)/ign_dist
+                    phi = 0.0
+                 else if (dim == 3) then
+                    ! assume 3d is cartesian
+                    costheta = (loc(3)-sim_ignZ)/ign_dist
+                    phi = atan2( loc(2)-sim_ignY, loc(1)-sim_ignX )
+                 endif
+                 if (sim_ignMPoleSym) then
+                    nmax = 0
+                 else
+                    nmax = 2*sim_ignMPoleMaxL
+                 endif
+                 sintheta = sqrt(1.0-costheta*costheta)
+                 ! Legendre polynomial
+                 do n = 0, nmax, 2
+                    m = n / 2
+                    do l = m, sim_ignMPoleMaxL
+                       if ( l == m ) then
+                          P_l_m = 1.0
+                          if ( m > 0 ) then
+                             fact = 1.0
+                             do p = 1, m
+                                P_l_m = -P_l_m*fact*sintheta
+                                fact = fact + 2.0
+                             enddo
+                          endif
+                          P_lm1_m = 0.0
+                       else
+                          hold = P_l_m
+                          P_l_m = (costheta*(2*l-1)*P_l_m - (l+m-1)*P_lm1_m) / &
+                                  dble(l-m)
+                          P_lm1_m = hold
+                       endif
+                          
+                       if ( l >= sim_ignMPoleMinL ) then
+                          flame_radius = flame_radius +  &
+                                mp_A(l,n)*P_l_m*cos(m*phi+mp_delta(l,n))
+                          ! coefficients for -m are stored in n-1 index.
+                          if (m /= 0) flame_radius = flame_radius +  &
+                                mp_A(l,n-1)*P_l_m*cos(-m*phi+mp_delta(l,n-1))
+                       endif
+                    enddo
+                 enddo
+              endif
+
+              if (sim_ignSin) then
+                 ! sinusoidal (in theta) border between burned and unburned region
+                 ! sim_ignitionSinN = number of periods between theta = 0 and pi
+                 if (dim == 2) then
+                    theta = acos( (loc(2)-sim_ignY)/ign_dist)
+                    flame_radius = flame_radius - sim_ignSinA*cos(2*theta*sim_ignSinN)
+                 else if (dim == 3) then
+                    theta = acos( (loc(3)-sim_ignZ)/ign_dist)
+                    flame_radius = flame_radius - sim_ignSinA*cos(2*theta*sim_ignSinN)
+                 endif
+              endif
+
+
+              fsurf_distance = ign_dist - flame_radius
+
+              ! determine local state in this zone
+              ! assume deltas are equal
+              if ( (fsurf_distance-0.5*dx(1)) > 1.5*sim_laminarWidth ) then
+                 
+                 ! whole cell unburned material
+                 zone_state = unburned_state
+                 call eos(eos_input_rt, zone_state)
+                 flam = 0.0
+                 ye = zone_state % zbar / zone_state % abar
+                 dyi_qn = 0.0
+                 dqbar_qn = 0.0
+                 enuc = 0.0
+                 
+              else if ( (fsurf_distance+0.5*dx(1)) < -1.5*sim_laminarWidth ) then
+                 
+                 ! fully burned to NSE
+!                 call Flame_rhJumpReactive(unburned_state, qbar_f, zone_state, dqbar_qn, MODE_DENS_TEMP)
+                 flam   = ONE
+                 dyi_qn = ONE / zone_state % abar
+                 ye     = dyi_qn * zone_state % zbar
+                 enuc   = 0.0
+                 
+              else
+                 
+                 ! partially burned
+                 ! at least one cell will fall here (necessary to get initial refinement right)
+!                 call Flame_getProfile(fsurf_distance, flam)
+                 
+                 ! calculate properties of NSE final state
+!                 call Flame_rhJumpReactive(unburned_state, qbar_f, nse_state, qbar_nse, MODE_DENS_TEMP)
+
+                 ! calculate properties for partially burned material
+                 ! note, in fact ye_f and ye_a should be equal
+                 
+                 yi = yi_f * (ONE-flam) + (ONE / nse_state % abar) * flam
+                 
+                 ye = ye_f * (ONE-flam) + (nse_state % zbar / nse_state % abar) * flam
+                 
+                 zone_state = unburned_state
+                 zone_state % abar = ONE / yi
+                 zone_state % zbar = ye / yi
+
+                 ! put this in pressure equilibrium with unburned material
+!                 call Flame_rhJump(unburned_state, zone_state, flam*(qbar_nse-qbar_f)*cgsMeVperAmu, ZERO, eos_input_rt)
+
+                 dyi_qn   = flam * ONE / nse_state % abar
+                 dqbar_qn = flam * qbar_nse
+
+                 ! to trigger refinement
+                 enuc = 1.1*sim_refNogenEnucThresh
+                 
+              endif
+
+           endif ! sim_ignite
+           
+
+           
            ! Model is initially stationary
 
            vel = ZERO
 
+
+           
            ! Save data to the state array
 
-           state(i,j,k,URHO)    = rho
-           state(i,j,k,UTEMP)   = T
-           state(i,j,k,UMX:UMZ) = rho * vel        
-           state(i,j,k,UEINT)   = rho * eos_state % e        
-           state(i,j,k,UEDEN)   = state(i,j,k,UEINT) + HALF * rho * sum(vel**2)
-           state(i,j,k,UFS:UFS+nspec-1) = rho * xn
+           state(i,j,k,URHO)    = zone_state % rho
+           state(i,j,k,UTEMP)   = zone_state % T
+           state(i,j,k,UMX:UMZ) = zone_state % rho * vel        
+           state(i,j,k,UEINT)   = zone_state % rho * zone_state % e
+           state(i,j,k,UEDEN)   = state(i,j,k,UEINT) + HALF * zone_state % rho * sum(vel**2)
+           state(i,j,k,UFS:UFS+nspec-1) = zone_state % rho * zone_state % xn
+
+           state(i,j,k,UFLAM)   = flam
+           state(i,j,k,UCI  )   = xn(1)
+           state(i,j,k,UNEI )   = xn(3)
+           state(i,j,k,UPHFA)   = flam
+           state(i,j,k,UPHAQ)   = flam
+           state(i,j,k,UPHQN)   = flam
+           state(i,j,k,UYE  )   = ye
+           state(i,j,k,UDYQN)   = dyi_qn
+           state(i,j,k,UDQQN)   = dqbar_qn
 
         enddo
      enddo

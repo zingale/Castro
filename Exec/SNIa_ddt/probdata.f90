@@ -13,17 +13,13 @@ module probdata_module
 
   ! Ignition data
 
-  logical,          save :: ignite = .false.
-  double precision, save :: x_match = 0.0d0
-  double precision, save :: y_match = 0.0d0
-  double precision, save :: z_match = 0.0d0
-  double precision, save :: r_match = 0.0d0
+  logical,          save :: sim_ignite = .false.
+  double precision, save :: sim_ignX = 0.0d0
+  double precision, save :: sim_ignY = 0.0d0
+  double precision, save :: sim_ignZ = 0.0d0
+  double precision, save :: sim_ignR = 0.0d0
 
-  logical,          save :: sim_ignite  
-  double precision, save :: sim_ignX, sim_ignY, sim_ignZ, sim_ignR  
-  
   logical, save :: sim_ignitionFile = .false.    
-  logical, save :: ignition_file = .false.
   character (len=80), save :: ignition_file_name = "ignition_points.dat"
 
   ! Multipole ignition data  

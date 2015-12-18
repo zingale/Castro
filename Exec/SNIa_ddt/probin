@@ -11,8 +11,8 @@
 
   sim_ignMPoleSeed = 1866936915
 
-  ignite = .true.
-  r_match = 150.e5
+  sim_ignite = .true.
+  sim_ignR   = 150.e5
 
   sim_ignMPole = T
   sim_ignMPoleA = 30.0e5
