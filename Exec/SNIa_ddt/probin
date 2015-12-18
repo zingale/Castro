@@ -1,0 +1,16 @@
+&fortin
+
+  model_name  = "wd_hse.dat"
+  
+  dens_fluff  = 1.e-3
+  temp_fluff  = 3.e7
+  xc12_fluff  = 0.5e0
+  xne22_fluff = 0.02e0
+
+  rep_ne_frac = 0.03
+  
+/
+
+&extern
+
+/
