@@ -16,6 +16,10 @@ module meth_params_module
   integer         , save :: NTHERM, NVAR
   integer         , save :: URHO, UMX, UMY, UMZ, UEDEN, UEINT, UTEMP, UFA, UFS, UFX
 
+#ifdef FLAME
+  integer         , save :: UFLAM, UCI, UNEI, UPHFA, UPHAQ, UPHQN, UYE, UDYQN, UDQQN
+#endif
+  
   ! QTHERM: number of primitive variables
   integer         , save :: QTHERM, QVAR
   integer         , save :: QRHO, QU, QV, QW, QPRES, QREINT, QTEMP
