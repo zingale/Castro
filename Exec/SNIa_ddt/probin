@@ -8,7 +8,26 @@
   xne22_fluff = 0.02e0
 
   rep_ne_frac = 0.03
-  
+
+  sim_ignMPoleSeed = 1866936915
+
+  ignite = .true.
+  r_match = 150.e5
+
+  sim_ignMPole = T
+  sim_ignMPoleA = 30.0e5
+  sim_ignMPoleMinL = 12
+  sim_ignMPoleMaxL = 16
+
+  sim_refFluffDensThresh = 1.e3
+  sim_refFluffMargin = 0.2
+  sim_refFluffLevel  = 1
+
+  sim_refNogenEnucThresh = 1e18
+  sim_refNogenFldtThresh = 0.02
+  sim_refNogenMargin     = 0.5
+  sim_refNogenLevel      = 9
+
 /
 
 &extern
