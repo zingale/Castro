@@ -170,8 +170,12 @@ Castro::variableSetUp ()
 #endif
     Temp = cnt++;
 
+#ifdef FLAME
+    NumAdv = 9;
+#else
     NumAdv = 0;
-
+#endif
+    
     if (NumAdv > 0)
     {
         FirstAdv = cnt;
@@ -385,13 +389,24 @@ Castro::variableSetUp ()
 #endif
     cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "Temp";
 
+#ifdef FLAME
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "flam";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "ci";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "nei";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "phfa";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "phaq";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "phqn";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "ye";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "dyqn";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "dqqn";
+#else
     for (int i=0; i<NumAdv; ++i)
     {
         char buf[64];
         sprintf(buf, "adv_%d", i);
         cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = string(buf);
     }
-
+#endif
     // Get the species names from the network model.
     std::vector<std::string> spec_names;
     for (int i = 0; i < NumSpec; i++) {
