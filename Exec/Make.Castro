@@ -116,6 +116,7 @@ ifdef MICROPHYSICS_DIR
       EOS_PATH := $(MICROPHYSICS_DIR)/eos/$(strip $(EOS_dir))
       NETWORK_PATH := $(MICROPHYSICS_DIR)/networks/$(strip $(Network_dir))
       SCREEN_PATH := $(MICROPHYSICS_DIR)/screening
+      NSE_PATH := $(MICROPHYSICS_DIR)/material_properties/NSE
 endif
 
 ifneq "$(wildcard $(EOS_HOME)/$(strip $(EOS_dir)) )" ""
@@ -166,6 +167,13 @@ EXTERN_CORE += $(NETWORK_PATH)
 ifdef MICROPHYSICS_DIR
   include $(SCREEN_PATH)/Make.package
   EXTERN_CORE += $(SCREEN_PATH)
+endif
+
+ifeq ($(USE_FLAME), TRUE)
+  include $(NSE_PATH)/Make.package
+  EXTERN_CORE += $(NSE_PATH)
+  INCLUDE_LOCATIONS += $(NSE_PATH)
+  VPATH_LOCATIONS += $(NSE_PATH)
 endif
 
 ifeq ($(USE_DIFFUSION), TRUE)
