@@ -1,0 +1,5 @@
+fl_epsilon_0    real     1.0e-3
+fl_episode_1    real     1.0e-3
+fl_kpp_fact     real     1.309
+fl_b            real     3.2
+fl_initProfileAdjustWidth    real   1.0e0

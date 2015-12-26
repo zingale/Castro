@@ -1,0 +1,34 @@
+! Dean Townsley 2008
+!
+! save the time derivative representing the actual change in the
+! flam scalar for use by the burn source term
+! TODO should change FLDT to a scratch variable once things have stabilized
+
+
+#include "Flash.h"
+#include "constants.h"
+subroutine fl_effects( solnData, flamdot, dt, blockID)
+
+  use Grid_interface, only : Grid_getBlkIndexLimits
+
+  implicit none
+
+  real, dimension(:,:,:,:),pointer,intent(in)  :: solnData
+  real,dimension(:,:,:), intent(in)     :: flamdot
+  real,intent(in)                       :: dt
+  integer, intent(in)                   :: blockID
+
+  integer, dimension(LOW:HIGH,MDIM)     :: blkLimits, blkLimitsGC
+
+  call Grid_getBlkIndexLimits(blockID, blkLimits, blkLimitsGC)
+
+  ! only need interior cells
+  solnData(FLDT_VAR,blkLimits(LOW,IAXIS):blkLimits(HIGH,IAXIS),   &
+                    blkLimits(LOW,JAXIS):blkLimits(HIGH,JAXIS),   &
+                    blkLimits(LOW,KAXIS):blkLimits(HIGH,KAXIS)) = &
+                         flamdot(blkLimits(LOW,IAXIS):blkLimits(HIGH,IAXIS),   &
+                                 blkLimits(LOW,JAXIS):blkLimits(HIGH,JAXIS),   &
+                                 blkLimits(LOW,KAXIS):blkLimits(HIGH,KAXIS))
+
+  return
+end subroutine

@@ -1,0 +1,8 @@
+F90EXE_sources += Flame_rhJump.F90
+F90EXE_sources += Flame_rhJumpReactive.F90
+F90EXE_sources += Flame_data.F90
+#F90EXE_sources += Flame_step.F90
+#F90EXE_sources += fl_effects.F90
+#F90EXE_sources += fl_interface.F90
+#F90EXE_sources += fl_laplacian.F90
+#F90EXE_sources += fl_flameSpeed.F90
