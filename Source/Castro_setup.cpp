@@ -171,7 +171,7 @@ Castro::variableSetUp ()
     Temp = cnt++;
 
 #ifdef FLAME
-    NumAdv = 9;
+    NumAdv = 10;
 #else
     NumAdv = 0;
 #endif

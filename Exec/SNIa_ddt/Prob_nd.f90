@@ -512,6 +512,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
            state(i,j,k,UFS:UFS+nspec-1) = zone_state % rho * zone_state % xn
 
            state(i,j,k,UFLAM)   = flam
+           state(i,j,k,UFLDT)   = ZERO
            state(i,j,k,UCI  )   = zone_state % xn(iC12)
            state(i,j,k,UNEI )   = zone_state % xn(iNe22)
            state(i,j,k,UPHFA)   = flam

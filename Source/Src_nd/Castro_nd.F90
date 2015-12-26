@@ -360,14 +360,15 @@
 
 #ifdef FLAME
         UFLAM = UFA
-        UCI   = UFA + 1
-        UNEI  = UFA + 2
-        UPHFA = UFA + 3
-        UPHAQ = UFA + 4
-        UPHQN = UFA + 5
-        UYE   = UFA + 6
-        UDYQN = UFA + 7
-        UDQQN = UFA + 8
+        UFLDT = UFA + 1
+        UCI   = UFA + 2
+        UNEI  = UFA + 3
+        UPHFA = UFA + 4
+        UPHAQ = UFA + 5
+        UPHQN = UFA + 6
+        UYE   = UFA + 7
+        UDYQN = UFA + 8
+        UDQQN = UFA + 9
 #endif 
         
         UFS   = FirstSpec + 1
