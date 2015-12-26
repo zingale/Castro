@@ -1,0 +1,7 @@
+Add sin and file-based ignition
+
+implement gradient refinment marker
+  using the default routines doesn't work because
+    1 they don't mark parents
+    2 they don't check thresholds for parents correctly
+    3 they don't have a proper minimum scaling factor
