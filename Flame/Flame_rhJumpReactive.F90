@@ -66,9 +66,10 @@ subroutine Flame_rhJumpReactive(eosData_u, qbar_u, eosData_b, qbar_b, eos_mode)
      emq = hmq_u - pres_u/dens_n
      call NSE_finalAtDens(qbar, sumyi, tempguess, edot, yedot, ye, dens_n, emq)
      ! and pressure
-     eosData % rho = dens_n
-     eosData % T = tempguess
-     eosData % e = emq + 9.6485e17*qbar
+     eosData % rho  = dens_n
+     eosData % T    = tempguess
+     eosData % xn   = eosData_u % xn
+     eosData % e    = emq + 9.6485e17*qbar
      eosData % abar = 1.e0/sumyi
      eosData % zbar = ye * eosData % abar
      call eos(eos_input_re, eosData)
@@ -82,9 +83,10 @@ subroutine Flame_rhJumpReactive(eosData_u, qbar_u, eosData_b, qbar_b, eos_mode)
      call NSE_finalAtDens(qbar, sumyi, tempguess, edot, yedot, ye, dens_n+dd, emq)
 
      ! and pressure
-     eosData % rho = dens_n + dd
-     eosData % T = tempguess
-     eosData % e = emq + 9.6485e17*qbar
+     eosData % rho  = dens_n + dd
+     eosData % T    = tempguess
+     eosData % xn   = eosData_u % xn
+     eosData % e    = emq + 9.6485e17*qbar
      eosData % abar = 1.e0/sumyi
      eosData % zbar = ye * eosData % abar
      call eos(eos_input_re, eosData)
@@ -119,9 +121,10 @@ subroutine Flame_rhJumpReactive(eosData_u, qbar_u, eosData_b, qbar_b, eos_mode)
   call NSE_finalAtDens(qbar_b, sumyi, tempguess, edot, yedot, ye, dens_n, emq)
 
   ! and pressure
-  eosData_b % rho = dens_n
-  eosData_b % T = tempguess
-  eosData_b % e = emq + 9.6485e17*qbar_b
+  eosData_b % rho  = dens_n
+  eosData_b % T    = tempguess
+  eosData_b % xn   = eosData_u % xn
+  eosData_b % e    = emq + 9.6485e17*qbar_b
   eosData_b % abar = 1.e0/sumyi
   eosData_b % zbar = ye * eosData_b % abar
   call eos(eos_input_re, eosData_b)
