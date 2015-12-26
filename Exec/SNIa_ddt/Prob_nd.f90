@@ -4,6 +4,7 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
   use probdata_module
   use model_parser_module
   use bl_error_module
+  use flame_module
   use prob_params_module, only: dim, center, coord_type
   use random_iterate_module, only: sim_LCGRandomIterate
   
@@ -23,8 +24,7 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
                     sim_ignSin, sim_ignSinN, sim_ignSinA, &
                     sim_refFluffDensThresh, sim_refFluffMargin, sim_refFluffLevel, &
                     sim_refNogenEnucThresh, sim_refNogenFldtThresh, &
-                    sim_refNogenMargin, sim_refNogenLevel, &
-                    useBurn, bn_thermalReact
+                    sim_refNogenMargin, sim_refNogenLevel
 
   !
   !     Build "probin" filename -- the name of file containing fortin namelist.
@@ -55,7 +55,8 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
   read(untin,fortin)
   close(unit=untin)
 
-
+  ! only need to get width of artificial flame once
+  call Flame_getWidth(sim_laminarWidth)
 
   ! Set up multipole ignition
   
@@ -197,17 +198,6 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
                  mp_A(i,j-1) = mp_A(i,j-1) / sqrt(dble(2*i+1))
               endif
 
-           ! another initialization which turned out to be non-stardard
-           ! this was used for some early testing and is just kept for reference
-           !call sim_LCGRandomIterate(sim_ignMPoleSeed)
-           ! random phase angle, between 0 and pi since we will not use imaginary part
-           !alpha = dble(sim_ignMPoleSeed)/2147483646.0 * M_PI
-           ! coefficients have amplitudes of equal complex amplitude, with random
-           ! phase.  We then use real part.  Normalization is for spherical
-           ! harmonics in Jackson
-           !mp_A(i) = sqrt((2*i+1)/4.0/M_PI)*cos(alpha)*sim_ignMpoleA*2/(sim_ignMpoleMaxL-sim_ignMpoleMinL+1)
-
-           !print *, i,alpha/M_PI, mp_A(i)
            enddo
         enddo
 
@@ -311,8 +301,9 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   use interpolate_module
   use eos_module
   use meth_params_module
-  use network, only : nspec
+  use network
   use model_parser_module
+  use flame_module
   use prob_params_module, only: center, dim
   use castro_util_module, only: position
 
@@ -325,15 +316,18 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   double precision :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
 
   double precision :: loc(3), vel(3), radius
-  double precision :: rho, T, xn(nspec)
   integer :: i, j, k, l, m, n, p, nmax
 
   type (eos_t) :: zone_state, unburned_state, nse_state
 
   double precision :: costheta, sintheta, theta, phi
-  double precision :: yi, yi_f, ye, ye_f, flam, qbar_nse, dqbar_qn, dyi_qn, enuc, fact
+  double precision :: yi, yi_f, yi_a, ye, ye_f, ye_a
+  double precision :: flam, qbar_nse, dqbar_qn, dyi_qn, enuc, fact
   double precision :: P_l_m, P_lm1_m, ign_dist, flame_radius, fsurf_distance, hold
-  
+  double precision :: qbar_f, qbar_a
+
+  double precision :: cgsMeVperAmu = 9.6485e17  
+
   do k = lo(3), hi(3)
      do j = lo(2), hi(2)
         do i = lo(1), hi(1)   
@@ -344,18 +338,13 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
 
            ! Interpolate from 1D model
 
-           rho = interpolate(radius,npts_model,model_r,model_state(:,idens_model))
-           T   = interpolate(radius,npts_model,model_r,model_state(:,itemp_model))
+           unburned_state % rho = interpolate(radius,npts_model,model_r,model_state(:,idens_model))
+           unburned_state % T   = interpolate(radius,npts_model,model_r,model_state(:,itemp_model))
            do n = 1, nspec
-              xn(n) = interpolate(radius,npts_model,model_r,model_state(:,ispec_model-1+n))
+              unburned_state % xn(n) = interpolate(radius,npts_model,model_r,model_state(:,ispec_model-1+n))
            enddo
 
-           !-----------------------------------------------
-           !  determine state of material at this radius if unburned
-           !  from external 1-d hyrdostatic model
-           !-----------------------------------------------
-
-!           call bn_paraFuelAshProperties(xn(1), xn(3), ye_f, ye_a, yi_f, yi_a, qbar_f, qbar_a)
+           call paraFuelAshProperties(unburned_state % xn(iC12), unburned_state % xn(iNe22), ye_f, ye_a, yi_f, yi_a, qbar_f, qbar_a)
 
            unburned_state % abar = ONE / yi_f
            unburned_state % zbar = ye_f / yi_f
@@ -389,7 +378,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
               flame_radius = sim_ignR
 
               if (sim_ignMpole .and. sim_ignSin)  &
-                 call bl_error("Simulation_initBlock: multipole and sinusoidal ignition are exclusive")
+                 call bl_error("ca_initdata: multipole and sinusoidal ignition are exclusive")
 
               if (sim_ignMpole) then
                  if (dim == 2) then
@@ -470,7 +459,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
               else if ( (fsurf_distance+0.5*dx(1)) < -1.5*sim_laminarWidth ) then
                  
                  ! fully burned to NSE
-!                 call Flame_rhJumpReactive(unburned_state, qbar_f, zone_state, dqbar_qn, MODE_DENS_TEMP)
+                 call Flame_rhJumpReactive(unburned_state, qbar_f, zone_state, dqbar_qn, eos_input_rt)
                  flam   = ONE
                  dyi_qn = ONE / zone_state % abar
                  ye     = dyi_qn * zone_state % zbar
@@ -480,10 +469,10 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
                  
                  ! partially burned
                  ! at least one cell will fall here (necessary to get initial refinement right)
-!                 call Flame_getProfile(fsurf_distance, flam)
+                 call Flame_getProfile(fsurf_distance, flam)
                  
                  ! calculate properties of NSE final state
-!                 call Flame_rhJumpReactive(unburned_state, qbar_f, nse_state, qbar_nse, MODE_DENS_TEMP)
+                 call Flame_rhJumpReactive(unburned_state, qbar_f, nse_state, qbar_nse, eos_input_rt)
 
                  ! calculate properties for partially burned material
                  ! note, in fact ye_f and ye_a should be equal
@@ -497,7 +486,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
                  zone_state % zbar = ye / yi
 
                  ! put this in pressure equilibrium with unburned material
-!                 call Flame_rhJump(unburned_state, zone_state, flam*(qbar_nse-qbar_f)*cgsMeVperAmu, ZERO, eos_input_rt)
+                 call Flame_rhJump(unburned_state, zone_state, flam*(qbar_nse-qbar_f)*cgsMeVperAmu, ZERO, eos_input_rt)
 
                  dyi_qn   = flam * ONE / nse_state % abar
                  dqbar_qn = flam * qbar_nse
@@ -509,13 +498,9 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
 
            endif ! sim_ignite
            
-
-           
            ! Model is initially stationary
 
            vel = ZERO
-
-
            
            ! Save data to the state array
 
@@ -527,8 +512,8 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
            state(i,j,k,UFS:UFS+nspec-1) = zone_state % rho * zone_state % xn
 
            state(i,j,k,UFLAM)   = flam
-           state(i,j,k,UCI  )   = xn(1)
-           state(i,j,k,UNEI )   = xn(3)
+           state(i,j,k,UCI  )   = zone_state % xn(iC12)
+           state(i,j,k,UNEI )   = zone_state % xn(iNe22)
            state(i,j,k,UPHFA)   = flam
            state(i,j,k,UPHAQ)   = flam
            state(i,j,k,UPHQN)   = flam
