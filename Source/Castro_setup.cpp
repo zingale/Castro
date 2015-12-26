@@ -171,7 +171,7 @@ Castro::variableSetUp ()
     Temp = cnt++;
 
 #ifdef FLAME
-    NumAdv = 10;
+    NumAdv = 11;
 #else
     NumAdv = 0;
 #endif
@@ -391,6 +391,8 @@ Castro::variableSetUp ()
 
 #ifdef FLAME
     cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "flam";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "flamdot";
+    cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "flamespeed";
     cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "ci";
     cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "nei";
     cnt++; set_scalar_bc(bc,phys_bc); bcs[cnt] = bc; name[cnt] = "phfa";
