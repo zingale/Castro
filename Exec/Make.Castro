@@ -167,6 +167,15 @@ endif
 table:
 	@if [ ! -f helm_table.dat ]; then echo Linking helm_table.dat; ln -s $(EOS_PATH)/helm_table.dat .;  fi
 
+# the NSE data has a include files too
+ifeq ($(USE_FLAME), TRUE)
+  all: NSE_table
+endif
+
+NSE_table:
+	@if [ ! -f nse_dens_emq_table.txt ]; then echo Linking nse_dens_emq_table.txt; ln -s $(NSE_PATH)/nse_dens_emq_table.txt .; fi
+	@if [ ! -f nse_pres_hmq_table.txt ]; then echo Linking nse_pres_hmq_table.txt; ln -s $(NSE_PATH)/nse_pres_hmq_table.txt .; fi
+
 include $(NETWORK_HOME)/Make.package
 include $(NETWORK_PATH)/Make.package
 EXTERN_CORE += $(NETWORK_HOME)
@@ -374,6 +383,8 @@ clean::
 clean::
 	$(RM) network.f90
 	@if [ -L helm_table.dat ]; then rm -f helm_table.dat; fi
+	@if [ -L nse_dens_emq_table.txt ]; then rm -f nse_dens_emq_table.txt; fi
+	@if [ -L nse_pres_hmq_table.txt ]; then rm -f nse_pres_hmq_table.txt; fi
 
 
 #-----------------------------------------------------------------------------
