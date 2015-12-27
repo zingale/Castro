@@ -480,7 +480,11 @@ Castro::advance_hydro (Real time,
       // Note that we do the react_half_dt on Sborder because of our Strang
       // splitting approach -- the "old" data sent to the hydro,
       // which Sborder represents, has already had a half-timestep of burning.      
-      
+
+#ifdef FLAME
+        flame_half_dt(Sborder,time,dt,NUM_GROW);
+#endif
+
 #ifdef REACTIONS
 #ifdef TAU
 	react_half_dt(Sborder,reactions_old,tau_diff,time,dt,NUM_GROW);
@@ -1436,7 +1440,11 @@ Castro::advance_hydro (Real time,
       dSdt_new.mult(1.0/dt);
 
     } 
-    
+
+#ifdef FLAME
+    flame_half_dt(S_new,cur_time,dt);
+#endif
+
 #ifdef REACTIONS
 #ifdef TAU
     react_half_dt(S_new,reactions_new,tau_diff,cur_time,dt);
@@ -1566,6 +1574,10 @@ Castro::advance_no_hydro (Real time,
     //   species so we make sure here that all species are non-negative after this point
     enforce_nonnegative_species(S_old);
 
+#ifdef FLAME
+    flame_half_dt(S_old,time,dt);
+#endif
+
 #ifdef REACTIONS
 #ifdef TAU
     react_half_dt(S_old,reactions_old,tau_diff,time,dt);
@@ -1648,6 +1660,10 @@ Castro::advance_no_hydro (Real time,
         full_temp_diffusion_update(S_new,prev_time,cur_time,dt);
 #endif
         full_spec_diffusion_update(S_new,prev_time,cur_time,dt);
+#endif
+
+#ifdef FLAME
+	flame_half_dt(S_new,cur_time,dt);
 #endif
         
 #ifdef REACTIONS

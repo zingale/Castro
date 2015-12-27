@@ -116,7 +116,7 @@ contains
     call bl_deallocate(flam)
     call bl_deallocate(flamdot)
 
-  end subroutine flame_step
+  end subroutine ca_flame_step
 
 
 
