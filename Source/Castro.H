@@ -361,7 +361,7 @@ public:
 #endif
 
 #ifdef FLAME
-    void flame_half_dt(MultiFab& state, Real time, Real dt, int ngrow = 0);
+    void flame_half_dt(MultiFab& state, MultiFab& grav, Real time, Real dt, int ngrow = 0);
 #endif
 
 #ifdef ROTATION

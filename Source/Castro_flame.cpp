@@ -4,7 +4,7 @@
 #include "Castro_F.H"
 
 #ifdef FLAME
-void Castro::flame_half_dt(MultiFab& s, Real time, Real dt, int ngrow)
+void Castro::flame_half_dt(MultiFab& s, MultiFab& g, Real time, Real dt, int ngrow)
 {
     BL_PROFILE("Castro::flame_half_dt()");
 
@@ -13,6 +13,12 @@ void Castro::flame_half_dt(MultiFab& s, Real time, Real dt, int ngrow)
     if (verbose && ParallelDescriptor::IOProcessor())
       std::cout << "\n" << "... Entering flame model and doing half-timestep of burning." << "\n";
 
+    if (g.nGrow() < ngrow && ParallelDescriptor::IOProcessor())
+      BoxLib::Abort("Gravity MultiFab doesn't have enough ghost cells in flame_half_dt.");
+
+    if (s.nGrow() < ngrow && ParallelDescriptor::IOProcessor())
+      BoxLib::Abort("State MultiFab doesn't have enough ghost cells in flame_half_dt.");
+   
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
@@ -24,6 +30,7 @@ void Castro::flame_half_dt(MultiFab& s, Real time, Real dt, int ngrow)
 	// Note that box is *not* necessarily just the valid region!
 	ca_flame_step(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()), 
 		      BL_TO_FORTRAN_3D(s[mfi]),
+		      BL_TO_FORTRAN_3D(g[mfi]),
 		      time, 0.5 * dt);
 
       }

@@ -49,7 +49,7 @@ contains
 
 
 
-  subroutine ca_flame_step(lo, hi, state, s_lo, s_hi, time, dt) bind(C)
+  subroutine ca_flame_step(lo, hi, state, s_lo, s_hi, grav, g_lo, g_hi, time, dt) bind(C)
 
     use bl_constants_module
     use mempool_module
@@ -60,8 +60,10 @@ contains
 
     integer :: lo(3), hi(3)
     integer :: s_lo(3), s_hi(3)
+    integer :: g_lo(3), g_hi(3)
 
     double precision :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
+    double precision ::  grav(g_lo(1):g_hi(1),g_lo(2):g_hi(2),g_lo(3):g_hi(3),3)
     double precision :: time, dt
 
     integer :: istat
