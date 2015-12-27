@@ -482,7 +482,8 @@ Castro::advance_hydro (Real time,
       // which Sborder represents, has already had a half-timestep of burning.      
 
 #ifdef FLAME
-        flame_half_dt(Sborder,time,dt,NUM_GROW);
+        if (do_flame == 1)
+	  flame_half_dt(Sborder,time,dt,NUM_GROW);
 #endif
 
 #ifdef REACTIONS
@@ -1442,7 +1443,15 @@ Castro::advance_hydro (Real time,
     } 
 
 #ifdef FLAME
-    flame_half_dt(S_new,cur_time,dt);
+    if (do_flame == 1) {
+
+      // We need ghost zones for the flame model, so do a fillpatch.
+
+      AmrLevel::FillPatch(*this,Sborder,NUM_GROW,cur_time,State_Type,0,NUM_STATE);
+
+      flame_half_dt(Sborder,cur_time,dt);
+
+    }
 #endif
 
 #ifdef REACTIONS
