@@ -373,6 +373,11 @@ Castro::read_params ()
 #endif
 #endif
 
+    if (max_dt < fixed_dt)
+      {
+	std::cerr << "cannot have max_dt < fixed_dt\n";
+	BoxLib::Error();
+      }
 
 #ifdef PARTICLES
     read_particle_params();
@@ -1056,12 +1061,15 @@ Castro::estTimeStep (Real dt_old)
 
     BL_FORT_PROC_CALL(SET_AMR_INFO,set_amr_info)(level, -1, -1, -1.0, -1.0);    
     
-    // This is just a dummy value to start with 
-    Real estdt  = 1.0e+200;
+    Real estdt = max_dt;
 
     const MultiFab& stateMF = get_new_data(State_Type);
 
     const Real* dx = geom.CellSize();    
+
+    std::string limiter = "castro.max_dt";
+
+    Real estdt_hydro = max_dt;
     
 #ifdef DIFFUSION
     if (do_hydro or diffuse_temp) 
@@ -1079,7 +1087,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp parallel
 #endif
 	  {
-	      Real dt = 1.e200;
+	      Real dt = max_dt;
 
 	      const MultiFab& radMF = get_new_data(Rad_Type);
 	      FArrayBox gPr;
@@ -1101,7 +1109,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp critical (castro_estdt_rad)	      
 #endif
 	      {
-	          estdt = std::min(estdt,dt);
+	          estdt_hydro = std::min(estdt_hydro,dt);
               }
           }
       }
@@ -1117,7 +1125,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp parallel
 #endif
 	    {
-	      Real dt = 1.e200;
+	      Real dt = max_dt;
 	      
 	      for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
 		{
@@ -1132,7 +1140,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp critical (castro_estdt)	      
 #endif
 	      {
-		estdt = std::min(estdt,dt);
+		estdt_hydro = std::min(estdt_hydro,dt);
 	      }
 	    }
 	  }
@@ -1145,7 +1153,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp parallel
 #endif
 	    {
-	      Real dt = 1.e200;
+	      Real dt = max_dt;
 	      
 	      for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
 		{
@@ -1160,7 +1168,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp critical (castro_estdt)	      
 #endif
 	      {
-		estdt = std::min(estdt,dt);
+		estdt_hydro = std::min(estdt_hydro,dt);
 	      }
 	    }
 	  }
@@ -1170,15 +1178,25 @@ Castro::estTimeStep (Real dt_old)
       }
 #endif
 
-       ParallelDescriptor::ReduceRealMin(estdt);
-       estdt *= cfl;
+       ParallelDescriptor::ReduceRealMin(estdt_hydro);
+       estdt_hydro *= cfl;
        if (verbose && ParallelDescriptor::IOProcessor()) 
-           std::cout << "...estimated hydro-limited timestep at level " << level << ": " << estdt << std::endl;
+           std::cout << "...estimated hydro-limited timestep at level " << level << ": " << estdt_hydro << std::endl;
+
+       // Determine if this is more restrictive than the maximum timestep limiting
+
+       if (estdt_hydro < estdt) {	 
+	 limiter = "hydro";
+	 estdt = estdt_hydro;
+       }
     }
 
 #ifdef REACTIONS
     MultiFab& S_new = get_new_data(State_Type);
     MultiFab& reactions_new = get_new_data(Reactions_Type);
+
+    // Dummy value to start with
+    Real estdt_burn = max_dt;
 
     if (do_react) {
     
@@ -1188,7 +1206,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp parallel
 #endif
         {
-            Real dt = 1.e200;
+            Real dt = max_dt;
     
 	    for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
 	    {
@@ -1203,15 +1221,22 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp critical (castro_estdt_burning)
 #endif
 	    {
-	        estdt = std::min(estdt,dt);
+	        estdt_burn = std::min(estdt_burn,dt);
 	    }
 	      
         }
     
-	ParallelDescriptor::ReduceRealMin(estdt);
+	ParallelDescriptor::ReduceRealMin(estdt_burn);
 
-	if (verbose && ParallelDescriptor::IOProcessor()) 
-	  std::cout << "...estimated burning-limited and hydro-limited timestep at level " << level << ": " << estdt << std::endl;
+	if (verbose && ParallelDescriptor::IOProcessor() && estdt_burn < max_dt) 
+	  std::cout << "...estimated burning-limited timestep at level " << level << ": " << estdt_burn << std::endl;
+
+	// Determine if this is more restrictive than the hydro limiting
+
+	if (estdt_burn < estdt) {
+	  limiter = "burning";
+	  estdt = estdt_burn;
+	}
     }
 #endif
 
@@ -1226,7 +1251,7 @@ Castro::estTimeStep (Real dt_old)
 #endif
 
     if (verbose && ParallelDescriptor::IOProcessor())
-        cout << "Castro::estTimeStep at level " << level << ":  estdt = " << estdt << '\n';
+      cout << "Castro::estTimeStep (" << limiter << "-limited) at level " << level << ":  estdt = " << estdt << '\n';
 
     return estdt;
 }
@@ -1449,6 +1474,8 @@ Castro::post_timestep (int iteration)
 	    int ncycle = parent->nCycle(level);
 	    gravity->gravity_sync(level,finest_level,iteration,ncycle,drho_and_drhoU,dphi,grad_delta_phi_cc);
 
+	    Real dt = parent->dtLevel(level);
+	    
             for (int lev = level; lev <= finest_level; lev++)  
             {
               Real dt_lev = parent->dtLevel(lev);
@@ -1487,7 +1514,16 @@ Castro::post_timestep (int iteration)
 			   BL_TO_FORTRAN_3D(sync_src),
 			   dt_lev);
 
-		      sync_src.mult(0.5*dt_lev);
+		      // Now multiply the sync source by dt / 2, where dt
+		      // is the timestep on the base level, not the refined
+		      // levels. Using this level's dt ensures that we correct for
+		      // the errors in the previous fine grid timesteps, which
+		      // were all slightly incorrect because they didn't have the
+		      // contribution from refluxing. Since we do linear interpolation
+		      // of gravity in time, the total error sums up so that we
+		      // want to use dt / 2 on the base level.
+		      
+		      sync_src.mult(0.5*dt);
 		      S_new_lev[mfi].plus(sync_src,bx,0,Xmom,3);
 		      S_new_lev[mfi].plus(sync_src,bx,0,Eden,1);
 		  }
@@ -2169,8 +2205,16 @@ Castro::time_center_source_terms(MultiFab& S_new, MultiFab& ext_src_old, MultiFa
 
     ext_src_old.mult(-0.5*dt);
     ext_src_new.mult( 0.5*dt);
+    
     MultiFab::Add(S_new,ext_src_old,0,0,S_new.nComp(),0);
     MultiFab::Add(S_new,ext_src_new,0,0,S_new.nComp(),0);
+
+    // Return the source terms to their original form.
+
+    if (dt > 0.0) {
+      ext_src_old.mult(1.0/(-0.5*dt));
+      ext_src_new.mult(1.0/( 0.5*dt));
+    }
 }
 
 #ifdef SGS
@@ -2779,6 +2823,9 @@ Castro::enforce_nonnegative_species (MultiFab& S_new)
 void
 Castro::enforce_consistent_e (MultiFab& S)
 {
+
+    const Real* dx = geom.CellSize();
+      
 #ifdef _OPENMP
 #pragma omp parallel
 #endif    
@@ -2788,7 +2835,7 @@ Castro::enforce_consistent_e (MultiFab& S)
         const int* lo      = box.loVect();
         const int* hi      = box.hiVect();
         BL_FORT_PROC_CALL(CA_ENFORCE_CONSISTENT_E,ca_enforce_consistent_e)
-          (ARLIM_3D(lo), ARLIM_3D(hi), BL_TO_FORTRAN_3D(S[mfi]));
+          (ARLIM_3D(lo), ARLIM_3D(hi), BL_TO_FORTRAN_3D(S[mfi]), ZFILL(dx));
     }
 }
 
@@ -3099,7 +3146,7 @@ Castro::reset_internal_energy(MultiFab& S_new)
 
         BL_FORT_PROC_CALL(RESET_INTERNAL_E,reset_internal_e)
 	    (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()), 
-	     BL_TO_FORTRAN_3D(S_new[mfi]),
+	     BL_TO_FORTRAN_3D(S_new[mfi]), 
 	     print_fortran_warnings);
     }
 

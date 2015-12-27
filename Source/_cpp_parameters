@@ -27,6 +27,11 @@ do_hydro                     int          -1
 # if true, define an additional source term   
 add_ext_src                  int           0
 
+# whether to use the hybrid advection scheme that updates
+# z-angular momentum, cylindrical momentum, and azimuthal
+# momentum (3D only)
+hybrid_hydro                 int           0                  y
+
 # reconstruction type: 
 # 0: piecewise linear; 
 # 1: classic Colella \& Woodward ppm;
@@ -140,6 +145,9 @@ initial_dt                   Real         -1.0
 
 # the smallest valid timestep---if we go below this, we abort
 dt_cutoff                    Real          0.0
+
+# the largest valid timestep---limit all timesteps to be no larger than this
+max_dt                       Real          1.e200
 
 # the effective Courant number to use---we will not allow the hydrodynamic
 # waves to cross more than this fraction of a zone over a single timestep

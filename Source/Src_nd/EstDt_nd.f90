@@ -29,6 +29,7 @@
      do k = lo(3), hi(3)
         do j = lo(2), hi(2)
            do i = lo(1), hi(1)
+              
               rhoInv = ONE / u(i,j,k,URHO)
               
               eos_state % rho = u(i,j,k,URHO )
@@ -40,7 +41,7 @@
               call eos(eos_input_re, eos_state)
 
               ! Compute velocity and then calculate CFL timestep.     
-     
+
               ux = u(i,j,k,UMX) * rhoInv
               uy = u(i,j,k,UMY) * rhoInv
               uz = u(i,j,k,UMZ) * rhoInv

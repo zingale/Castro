@@ -12,11 +12,11 @@
       integer          :: lo(3), hi(3), verbose
       integer          :: u_lo(3), u_hi(3)
       double precision :: u(u_lo(1):u_hi(1),u_lo(2):u_hi(2),u_lo(3):u_hi(3),NVAR)
-
+      
       ! Local variables
       integer          :: i,j,k
       double precision :: Up, Vp, Wp, ke, rho_eint, eint_new, rhoInv
-
+      
       type (eos_t) :: eos_state
 
       ! Reset internal energy
@@ -27,6 +27,7 @@
                do i = lo(1), hi(1)
 
                   rhoInv = ONE/u(i,j,k,URHO)
+
                   Up = u(i,j,k,UMX) * rhoInv
                   Vp = u(i,j,k,UMY) * rhoInv
                   Wp = u(i,j,k,UMZ) * rhoInv
