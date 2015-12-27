@@ -358,20 +358,6 @@
           UFA = 1
         end if
 
-#ifdef FLAME
-        UFLAM = UFA
-        UFLDT = UFA + 1
-        UFLSP = UFA + 2
-        UCI   = UFA + 3
-        UNEI  = UFA + 4
-        UPHFA = UFA + 5
-        UPHAQ = UFA + 6
-        UPHQN = UFA + 7
-        UYE   = UFA + 8
-        UDYQN = UFA + 9
-        UDQQN = UFA + 10
-#endif 
-        
         UFS   = FirstSpec + 1
 
         if (naux .ge. 1) then

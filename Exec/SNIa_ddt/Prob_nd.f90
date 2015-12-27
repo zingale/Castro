@@ -511,16 +511,17 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
            state(i,j,k,UEDEN)   = state(i,j,k,UEINT) + HALF * zone_state % rho * sum(vel**2)
            state(i,j,k,UFS:UFS+nspec-1) = zone_state % rho * zone_state % xn
 
-           state(i,j,k,UFLAM)   = flam
-           state(i,j,k,UFLDT)   = ZERO
-           state(i,j,k,UCI  )   = zone_state % xn(iC12)
-           state(i,j,k,UNEI )   = zone_state % xn(iNe22)
-           state(i,j,k,UPHFA)   = flam
-           state(i,j,k,UPHAQ)   = flam
-           state(i,j,k,UPHQN)   = flam
-           state(i,j,k,UYE  )   = ye
-           state(i,j,k,UDYQN)   = dyi_qn
-           state(i,j,k,UDQQN)   = dqbar_qn
+           state(i,j,k,UFX+UFLAM-1) = flam
+           state(i,j,k,UFX+UFLDT-1) = ZERO
+           state(i,j,k,UFX+UFLSP-1) = ZERO
+           state(i,j,k,UFX+UCI  -1) = zone_state % xn(iC12)
+           state(i,j,k,UFX+UNEI -1) = zone_state % xn(iNe22)
+           state(i,j,k,UFX+UPHFA-1) = flam
+           state(i,j,k,UFX+UPHAQ-1) = flam
+           state(i,j,k,UFX+UPHQN-1) = flam
+           state(i,j,k,UFX+UYE  -1) = ye
+           state(i,j,k,UFX+UDYQN-1) = dyi_qn
+           state(i,j,k,UFX+UDQQN-1) = dqbar_qn
 
         enddo
      enddo

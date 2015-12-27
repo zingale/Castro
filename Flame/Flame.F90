@@ -57,7 +57,8 @@ contains
 
     use bl_constants_module
     use mempool_module
-    use meth_params_module, only: NVAR, UFLAM, UFLDT
+    use meth_params_module, only: NVAR, UFX
+    use network
     use prob_params_module, only: dg
 
     implicit none
@@ -90,7 +91,7 @@ contains
 
     ! Copy the flame scalar into a separate array
 
-    flam = state(:,:,:,UFLAM)
+    flam = state(:,:,:,UFX+UFLAM-1)
 
     call fl_flameSpeed(lo, hi, state, flamespeed, s_lo, s_hi, grav, g_lo, g_hi, 2)
 
@@ -110,9 +111,9 @@ contains
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
              flam(i,j,k) = max(ZERO, min(ONE, flam(i,j,k) + dt*fl_kappa_over_s*flamespeed(i,j,k)*lapl(i,j,k) ) )
-             flamdot(i,j,k) = (flam(i,j,k) - state(i,j,k,UFLAM))*inv_dt
-             state(i,j,k,UFLAM) = flam(i,j,k)
-             state(i,j,k,UFLDT) = flamdot(i,j,k)
+             flamdot(i,j,k) = (flam(i,j,k) - state(i,j,k,UFX+UFLAM-1))*inv_dt
+             state(i,j,k,UFX+UFLAM-1) = flam(i,j,k)
+             state(i,j,k,UFX+UFLDT-1) = flamdot(i,j,k)
           enddo
        enddo
     enddo
@@ -529,7 +530,8 @@ contains
 
   subroutine fl_flameSpeed(lo, hi, state, flamespeed, s_lo, s_hi, grav, g_lo, g_hi, nlayers)
 
-    use meth_params_module, ONLY : NVAR, UFLSP
+    use meth_params_module, ONLY : NVAR, UFX
+    use network
 
     implicit none
 
@@ -548,7 +550,7 @@ contains
     integer :: comp_lo(3), comp_hi(3)
 
     flamespeed(:,:,:) = fl_fsConstFlameSpeed
-    state(:,:,:,UFLSP) = fl_fsConstFlameSpeed
+    state(:,:,:,UFX+UFLSP-1) = fl_fsConstFlameSpeed
 
   end subroutine fl_flameSpeed
 
