@@ -43,6 +43,7 @@ static Real init_shrink;
 static Real change_max;
 static Real burning_timestep_factor;
 static int do_react;
+static int do_flame;
 static Real react_T_min;
 static Real react_T_max;
 static int do_grav;
