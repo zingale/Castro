@@ -13,6 +13,10 @@ module flame_module
 
   double precision, save :: fl_effsmlrho
 
+  ! Laminar flame speed data
+  logical,          save :: fl_fsUseConstFlameSpeed, fl_fsUseTFI
+  double precision, save :: fl_fsConstFlameSpeed, fl_fsConstFlameWidth
+
 contains
 
   subroutine Flame_getProfile(x, f)
@@ -88,7 +92,7 @@ contains
 
     flam = state(:,:,:,UFLAM)
 
-    !  call fl_flameSpeed(state, flamespeed, 2)
+    call fl_flameSpeed(lo, hi, state, flamespeed, s_lo, s_hi, grav, g_lo, g_hi, 2)
 
     do k = lo(3) - 2 * dg(3), hi(3) + 2 * dg(3)
        do j = lo(2) - 2 * dg(2), hi(2) + 2 * dg(2)
@@ -136,7 +140,7 @@ contains
     integer :: s_lo(3), s_hi(3)
     
     double precision :: lapl(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3))
-    double precision :: flam(s_lo(1):s_hi(2),s_lo(2):s_hi(2),s_lo(3):s_hi(3))
+    double precision :: flam(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3))
 
     integer :: h
 
@@ -520,5 +524,32 @@ contains
     !------------------------------------------------------------------
 
   end subroutine Flame_rhjump
+
+
+
+  subroutine fl_flameSpeed(lo, hi, state, flamespeed, s_lo, s_hi, grav, g_lo, g_hi, nlayers)
+
+    use meth_params_module, ONLY : NVAR, UFLSP
+
+    implicit none
+
+    integer :: lo(3), hi(3)
+    integer :: s_lo(3), s_hi(3)
+    integer :: g_lo(3), g_hi(3)
+
+    double precision :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3),NVAR)
+    double precision :: flamespeed(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3))
+    double precision :: grav(g_lo(1):g_hi(1),g_lo(2):g_hi(2),g_lo(3):g_hi(3),3)
+    integer          :: nlayers
+
+    double precision, pointer, dimension(:,:,:) :: dens, flamewidth
+    integer :: sizeX, sizeY, sizeZ
+
+    integer :: comp_lo(3), comp_hi(3)
+
+    flamespeed(:,:,:) = fl_fsConstFlameSpeed
+    state(:,:,:,UFLSP) = fl_fsConstFlameSpeed
+
+  end subroutine fl_flameSpeed
 
 end module flame_module
