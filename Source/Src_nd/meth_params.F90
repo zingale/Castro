@@ -48,6 +48,8 @@ module meth_params_module
 
   double precision, save :: const_grav
 
+  double precision, save :: rot_vec(3)
+  
   logical, save :: get_g_from_phi
   
   character(len=:), allocatable :: gravity_type
@@ -58,6 +60,7 @@ module meth_params_module
   double precision, save :: small_temp
   double precision, save :: small_pres
   double precision, save :: small_ener
+  integer         , save :: hybrid_hydro
   integer         , save :: ppm_type
   integer         , save :: ppm_reference
   integer         , save :: ppm_trace_sources
