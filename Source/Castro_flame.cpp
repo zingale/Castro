@@ -18,11 +18,13 @@ void Castro::flame_half_dt(MultiFab& s, MultiFab& g, Real time, Real dt, int ngr
 
     if (s.nGrow() < ngrow && ParallelDescriptor::IOProcessor())
       BoxLib::Abort("State MultiFab doesn't have enough ghost cells in flame_half_dt.");
+
+    // Note that we are intentionally not tiling this due to the way the flame model is written.
    
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-    for (MFIter mfi(s, true); mfi.isValid(); ++mfi)
+    for (MFIter mfi(s, false); mfi.isValid(); ++mfi)
       {
 
 	const Box& bx = mfi.growntilebox(ngrow);
