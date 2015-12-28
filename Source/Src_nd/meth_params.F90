@@ -16,10 +16,6 @@ module meth_params_module
   integer         , save :: NTHERM, NVAR
   integer         , save :: URHO, UMX, UMY, UMZ, UEDEN, UEINT, UTEMP, UFA, UFS, UFX
 
-#ifdef FLAME
-  integer         , save :: UFLAM, UCI, UNEI, UPHFA, UPHAQ, UPHQN, UYE, UDYQN, UDQQN
-#endif
-  
   ! QTHERM: number of primitive variables
   integer         , save :: QTHERM, QVAR
   integer         , save :: QRHO, QU, QV, QW, QPRES, QREINT, QTEMP
@@ -48,8 +44,6 @@ module meth_params_module
 
   double precision, save :: const_grav
 
-  double precision, save :: rot_vec(3)
-  
   logical, save :: get_g_from_phi
   
   character(len=:), allocatable :: gravity_type
@@ -100,5 +94,7 @@ module meth_params_module
   integer         , save :: rot_axis
   double precision, save :: point_mass
   integer         , save :: do_acc
+
+  double precision, save :: rot_vec(3)
 
 end module meth_params_module

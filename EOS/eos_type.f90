@@ -83,16 +83,16 @@ module eos_type_module
     double precision :: pele
     double precision :: ppos
     double precision :: mu
-    double precision :: mu_e
-    double precision :: y_e
+    double precision :: mu_e        = init_num
+    double precision :: y_e         = init_num
     double precision :: dedX(nspec)
     double precision :: dpdX(nspec)
     double precision :: dhdX(nspec)
     double precision :: gam1
     double precision :: cs
 
-    double precision :: abar
-    double precision :: zbar
+    double precision :: abar        = init_num
+    double precision :: zbar        = init_num
     double precision :: dpdA
 
     double precision :: dpdZ
@@ -123,11 +123,21 @@ contains
     ! mu_e, the mean number of nucleons per electron, and
     ! y_e, the electron fraction.
 
-    state % mu_e = ONE / (sum(state % xn(:) * zion(:) / aion(:)))       
-    state % y_e = ONE / state % mu_e
+    if (state % mu_e < init_test) then
+       state % mu_e = ONE / (sum(state % xn(:) * zion(:) / aion(:)))
+    endif
+
+    if (state % y_e < init_test) then
+       state % y_e = ONE / state % mu_e
+    endif
     
-    state % abar = ONE / (sum(state % xn(:) / aion(:)))
-    state % zbar = state % abar / state % mu_e
+    if (state % abar < init_test) then
+       state % abar = ONE / (sum(state % xn(:) / aion(:)))
+    endif
+
+    if (state % zbar < init_test) then
+       state % zbar = state % abar / state % mu_e
+    endif
 
   end subroutine composition
 

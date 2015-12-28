@@ -116,7 +116,7 @@ ifdef MICROPHYSICS_DIR
       EOS_PATH := $(MICROPHYSICS_DIR)/eos/$(strip $(EOS_dir))
       NETWORK_PATH := $(MICROPHYSICS_DIR)/networks/$(strip $(Network_dir))
       SCREEN_PATH := $(MICROPHYSICS_DIR)/screening
-      NSE_PATH := $(MICROPHYSICS_DIR)/material_properties/NSE
+      NSE_PATH := $(MICROPHYSICS_DIR)/NSE
 endif
 
 ifneq "$(wildcard $(EOS_HOME)/$(strip $(EOS_dir)) )" ""
@@ -124,6 +124,14 @@ ifneq "$(wildcard $(EOS_HOME)/$(strip $(EOS_dir)) )" ""
 endif
 ifneq "$(wildcard $(NETWORK_HOME)/$(strip $(Network_dir)) )" ""
       NETWORK_PATH := $(NETWORK_HOME)/$(strip $(Network_dir))
+endif
+
+ifeq ($(USE_FLAME), TRUE)
+  FLAME_PATH := $(TOP)/Flame
+  include $(FLAME_PATH)/Make.package
+  INCLUDE_LOCATIONS += $(FLAME_PATH)
+  VPATH_LOCATIONS += $(FLAME_PATH)
+  EXTERN_CORE += $(FLAME_PATH)
 endif
 
 ifeq ($(USE_DIFFUSION), TRUE)
@@ -159,6 +167,15 @@ endif
 table:
 	@if [ ! -f helm_table.dat ]; then echo Linking helm_table.dat; ln -s $(EOS_PATH)/helm_table.dat .;  fi
 
+# the NSE data has a include files too
+ifeq ($(USE_FLAME), TRUE)
+  all: NSE_table
+endif
+
+NSE_table:
+	@if [ ! -f nse_dens_emq_table.txt ]; then echo Linking nse_dens_emq_table.txt; ln -s $(NSE_PATH)/nse_dens_emq_table.txt .; fi
+	@if [ ! -f nse_pres_hmq_table.txt ]; then echo Linking nse_pres_hmq_table.txt; ln -s $(NSE_PATH)/nse_pres_hmq_table.txt .; fi
+
 include $(NETWORK_HOME)/Make.package
 include $(NETWORK_PATH)/Make.package
 EXTERN_CORE += $(NETWORK_HOME)
@@ -167,9 +184,6 @@ EXTERN_CORE += $(NETWORK_PATH)
 ifdef MICROPHYSICS_DIR
   include $(SCREEN_PATH)/Make.package
   EXTERN_CORE += $(SCREEN_PATH)
-endif
-
-ifeq ($(USE_FLAME), TRUE)
   include $(NSE_PATH)/Make.package
   EXTERN_CORE += $(NSE_PATH)
   INCLUDE_LOCATIONS += $(NSE_PATH)
@@ -369,6 +383,8 @@ clean::
 clean::
 	$(RM) network.f90
 	@if [ -L helm_table.dat ]; then rm -f helm_table.dat; fi
+	@if [ -L nse_dens_emq_table.txt ]; then rm -f nse_dens_emq_table.txt; fi
+	@if [ -L nse_pres_hmq_table.txt ]; then rm -f nse_pres_hmq_table.txt; fi
 
 
 #-----------------------------------------------------------------------------

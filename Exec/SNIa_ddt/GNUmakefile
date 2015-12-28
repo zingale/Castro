@@ -25,8 +25,7 @@ ifdef MICROPHYSICS_DIR
 EOS_dir     := helmholtz
 
 # This sets the network directory in $(MICROPHYSICS_DIR)/networks
-Network_dir := general_null
-GENERAL_NET_INPUTS = $(MICROPHYSICS_DIR)/networks/$(Network_dir)/CONe.net
+Network_dir := CONe2NSE
 
 else
 
