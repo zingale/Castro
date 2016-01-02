@@ -608,15 +608,6 @@ BL_FORT_PROC_DECL(CA_EXT_SRC,ca_ext_src)
 #endif
 #endif
 
-#ifdef FLAME
-extern "C" {
-  void ca_flame_step(const int* lo, const int* hi,
-		     const BL_FORT_FAB_ARG_3D(state),
-		     const BL_FORT_FAB_ARG_3D(grav),
-		     const Real& time, const Real& dt_flame);
-}
-#endif
-
 #ifdef REACTIONS
 BL_FORT_PROC_DECL(CA_REACT_STATE,ca_react_state)
     (const int* lo, const int* hi,

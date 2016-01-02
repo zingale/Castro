@@ -475,16 +475,15 @@ Castro::advance_hydro (Real time,
 
     }
 
+#ifdef problem_source_term
+    problem_source_half_dt(Sborder,time,dt,0);
+#endif
+
     {
 
       // Note that we do the react_half_dt on Sborder because of our Strang
       // splitting approach -- the "old" data sent to the hydro,
       // which Sborder represents, has already had a half-timestep of burning.      
-
-#ifdef FLAME
-        if (do_flame == 1)
-	  flame_half_dt(Sborder,grav_old,time,dt,NUM_GROW);
-#endif
 
 #ifdef REACTIONS
 #ifdef TAU
@@ -1442,16 +1441,11 @@ Castro::advance_hydro (Real time,
 
     } 
 
-#ifdef FLAME
-    if (do_flame == 1) {
+#ifdef problem_source_term
+    // We may need ghost zones for the user-defined source term, so do a fillpatch.
+    AmrLevel::FillPatch(*this,Sborder,NUM_GROW,cur_time,State_Type,0,NUM_STATE);
 
-      // We need ghost zones for the flame model, so do a fillpatch.
-
-      AmrLevel::FillPatch(*this,Sborder,NUM_GROW,cur_time,State_Type,0,NUM_STATE);
-
-      flame_half_dt(Sborder,grav_new,cur_time,dt);
-
-    }
+    problem_source_half_dt(Sborder,time,dt,1);
 #endif
 
 #ifdef REACTIONS
@@ -1583,8 +1577,8 @@ Castro::advance_no_hydro (Real time,
     //   species so we make sure here that all species are non-negative after this point
     enforce_nonnegative_species(S_old);
 
-#ifdef FLAME
-    flame_half_dt(S_old,grav_old,time,dt);
+#ifdef problem_source_term
+    problem_source_half_dt(S_old,time,dt,0);
 #endif
 
 #ifdef REACTIONS
@@ -1671,8 +1665,8 @@ Castro::advance_no_hydro (Real time,
         full_spec_diffusion_update(S_new,prev_time,cur_time,dt);
 #endif
 
-#ifdef FLAME
-	flame_half_dt(S_new,grav_new,cur_time,dt);
+#ifdef problem_source_term
+	problem_source_half_dt(S_new,cur_time,dt,1);
 #endif
         
 #ifdef REACTIONS

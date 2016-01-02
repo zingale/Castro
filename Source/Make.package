@@ -32,10 +32,6 @@ ifeq ($(USE_REACT), TRUE)
 CEXE_sources += Castro_react.cpp
 endif
 
-ifeq ($(USE_FLAME), TRUE)
-CEXE_sources += Castro_flame.cpp
-endif
-
 ifeq ($(USE_GRAV), TRUE)
 CEXE_sources += Gravity.cpp
 CEXE_headers += Gravity.H

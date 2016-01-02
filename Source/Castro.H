@@ -360,10 +360,6 @@ public:
                       Real       dt);
 #endif
 
-#ifdef FLAME
-    void flame_half_dt(MultiFab& state, MultiFab& grav, Real time, Real dt, int ngrow = 0);
-#endif
-
 #ifdef ROTATION
     void fill_rotation_field(MultiFab& phi, MultiFab& rot, MultiFab& state, Real time);
 #endif
