@@ -1,8 +1,10 @@
 fl_epsilon_0    real     1.0e-3
-fl_episode_1    real     1.0e-3
+fl_epsilon_1    real     1.0e-3
 fl_kpp_fact     real     1.309
 fl_b            real     3.2
 fl_initProfileAdjustWidth    real   1.0e0
+
+fl_effsmlrho    real     0.0e0
 
 fl_fsUseConstFlameSpeed   logical      .false.
 fl_fsConstFlameSpeed      real         1.e0

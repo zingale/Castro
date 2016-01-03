@@ -2,22 +2,66 @@ module flame_module
 
   implicit none
 
+  logical,          save :: initialized = .false.
+
   ! runtime parameters
 
-  logical,          save :: fl_useFlame
-  double precision, save :: fl_epsilon_0, fl_epsilon_1, fl_kpp_fact, fl_b
-  double precision, save :: fl_initProfileAdjustWidth
+  double precision, save :: epsilon_0, epsilon_1, kpp_fact, b
+  double precision, save :: initProfileAdjustWidth
 
   ! some constants for diffusion-reaction equation
-  double precision, save :: fl_R_over_s, fl_kappa_over_s, fl_width
+  double precision, save :: R_over_s, kappa_over_s, width
 
-  double precision, save :: fl_effsmlrho
+  double precision, save :: effsmlrho
 
   ! Laminar flame speed data
-  logical,          save :: fl_fsUseConstFlameSpeed, fl_fsUseTFI
-  double precision, save :: fl_fsConstFlameSpeed, fl_fsConstFlameWidth
+  logical,          save :: fsUseConstFlameSpeed, fsUseTFI
+  double precision, save :: fsConstFlameSpeed, fsConstFlameWidth
 
 contains
+
+  subroutine flame_init() bind(C)
+
+    use amrinfo_module, only: amr_level
+    use prob_params_module, only: dx_level
+
+    use extern_probin_module, only: fl_epsilon_0, fl_epsilon_1, &
+                                    fl_kpp_fact, fl_b, fl_initProfileAdjustWidth, &
+                                    fl_fsUseConstFlameSpeed, fl_fsUseTFI, &
+                                    fl_fsConstFlameSpeed, fl_fsConstFlameWidth, &
+                                    fl_effsmlrho
+
+    implicit none
+
+    double precision :: dx
+
+    if (initialized) return
+
+    epsilon_0 = fl_epsilon_0
+    epsilon_1 = fl_epsilon_1
+    kpp_fact = fl_kpp_fact
+    b = fl_b
+    initProfileAdjustWidth = fl_initProfileAdjustWidth
+
+    effsmlrho = fl_effsmlrho
+
+    fsUseConstFlameSpeed = fl_fsUseConstFlameSpeed
+    fsUseTFI             = fl_fsUseTFI
+    fsConstFlameSpeed    = fl_fsConstFlameSpeed
+    fsConstFlameWidth    = fl_fsConstFlameWidth
+
+    dx = minval(dx_level(:,amr_level))
+
+    R_over_s = kpp_fact * 4.0 / fl_b / dx
+    kappa_over_s = fl_b * dx / 16.0
+
+    width = b * dx
+
+    initialized = .true.
+
+  end subroutine flame_init
+  
+
 
   subroutine Flame_getProfile(x, f)
 
@@ -35,7 +79,7 @@ contains
 
     ! tanh is slow, but no need to be super efficient here since this
     ! should only be called at init
-    f = 0.5 * (1.0 - tanh(x/fl_width/0.5/fl_initProfileAdjustWidth))
+    f = 0.5 * (1.0 - tanh(x/width/0.5/initProfileAdjustWidth))
 
   end subroutine Flame_getProfile
 
@@ -47,7 +91,7 @@ contains
 
     double precision, intent(out) :: laminarWidth
 
-    laminarWidth=fl_width
+    laminarWidth=width
 
   end subroutine Flame_getWidth
 
@@ -99,7 +143,7 @@ contains
        do j = lo(2) - 2 * dg(2), hi(2) + 2 * dg(2)
           do i = lo(1) - 2 * dg(1), hi(1) + 2 * dg(1)
              f = flam(i,j,k)
-             flam(i,j,k) = f + dt*fl_R_over_s*flamespeed(i,j,k)*(f-fl_epsilon_0)*(ONE+fl_epsilon_1-f)
+             flam(i,j,k) = f + dt*R_over_s*flamespeed(i,j,k)*(f-epsilon_0)*(ONE+epsilon_1-f)
           enddo
        enddo
     enddo
@@ -110,7 +154,7 @@ contains
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
-             flam(i,j,k) = max(ZERO, min(ONE, flam(i,j,k) + dt*fl_kappa_over_s*flamespeed(i,j,k)*lapl(i,j,k) ) )
+             flam(i,j,k) = max(ZERO, min(ONE, flam(i,j,k) + dt*kappa_over_s*flamespeed(i,j,k)*lapl(i,j,k) ) )
              flamdot(i,j,k) = (flam(i,j,k) - state(i,j,k,UFX+UFLAM-1))*inv_dt
              state(i,j,k,UFX+UFLAM-1) = flam(i,j,k)
              state(i,j,k,UFX+UFLDT-1) = flamdot(i,j,k)
@@ -372,7 +416,7 @@ contains
        dens_n_old = dens_n
        dens_n = dens_n - f/dfdd
 
-       if (dens_n .lt. fl_effsmlrho) then
+       if (dens_n .lt. effsmlrho) then
           write (6,*) 'small density in nseJump'
           dens_n = 0.5*dens_n_old
        endif
@@ -425,7 +469,7 @@ contains
     double precision ::  error
     integer          :: niters
 
-1   format(5(2X, E10.4))
+!1   format(5(2X, E10.4))
 
     ! first calculate the rest of the thermodynamic state of the
     ! unburned material according to the "mode"
@@ -488,7 +532,7 @@ contains
        dens_b = dens_b - (f*dgt - g*dft) * determinant_inv
        temp_b = temp_b + (f*dgd - g*dfd) * determinant_inv
 
-       if (dens_b .lt. fl_effsmlrho) then
+       if (dens_b .lt. effsmlrho) then
 
           dens_b = 0.5*dens_b_old
           temp_b = temp_b_old
@@ -555,8 +599,8 @@ contains
 
     integer :: comp_lo(3), comp_hi(3)
 
-    flamespeed(:,:,:) = fl_fsConstFlameSpeed
-    state(:,:,:,UFX+UFLSP-1) = fl_fsConstFlameSpeed
+    flamespeed(:,:,:) = fsConstFlameSpeed
+    state(:,:,:,UFX+UFLSP-1) = fsConstFlameSpeed
 
   end subroutine fl_flameSpeed
 

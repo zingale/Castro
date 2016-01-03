@@ -22,6 +22,10 @@ void Castro::problem_source_half_dt(MultiFab& s, Real time, Real dt, int is_new)
 
     if (do_flame == 0) return;
 
+    // Initialize the flame data, if we haven't yet.
+
+    flame_init();
+
     if (verbose && ParallelDescriptor::IOProcessor())
       std::cout << "\n" << "... Entering flame model and doing half-timestep of flame evolution." << "\n";
 

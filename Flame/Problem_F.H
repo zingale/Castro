@@ -11,6 +11,8 @@ extern "C" {
 
   void detonation_init();
 
+  void flame_init();
+
   void ca_check_ignition(const int* lo, const int* hi,
 			 const BL_FORT_FAB_ARG_3D(state),
 			 Real ignition_coords[]);
