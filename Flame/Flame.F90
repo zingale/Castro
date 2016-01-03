@@ -283,7 +283,7 @@ contains
     use eos_module
     !  use Eos_helmData, ONLY : eos_tol
     use NSE_data, ONLY: NSE_finalAtDens 
-    use bl_constants_module, only: ONE
+    use bl_constants_module, only: ONE, TWO
 
     implicit none
 
@@ -301,13 +301,15 @@ contains
     double precision ::  dens_n, emq, pres_n, qbar, sumyi, tempguess, edot, yedot
     double precision ::  error, dd, dpdd, f, dfdd, dens_n_old
 
+    double precision, parameter :: cgsMeVperAmu = 9.6485e17  
+
     integer :: niters
 
     ! calculate thermodynamic info about initial state according to mode argument
     call eos(eos_mode, eosData_u)
     pres_u = eosData_u % p
     ye = eosData_u % zbar / eosData_u % abar
-    hmq_u = eosData_u % e + eosData_u % p / eosData_u % rho - 9.6485e17 * qbar_u
+    hmq_u = eosData_u % e + eosData_u % p / eosData_u % rho - cgsMeVperAmu * qbar_u
 
     ! A bit unusual here
     !  we will use the (dens,emq) table to construct the endpoint of
@@ -325,7 +327,7 @@ contains
     ! our initial guess
     dens_n = eosData_u % rho
 
-    error = 2.0* eos_tol
+    error = TWO * eos_tol
     niters = 0
 
     do while ( (error > eos_tol) .and. (niters < max_newton) )
@@ -337,7 +339,7 @@ contains
        eosData % rho  = dens_n
        eosData % T    = tempguess
        eosData % xn   = eosData_u % xn
-       eosData % e    = emq + 9.6485e17*qbar
+       eosData % e    = emq + cgsMeVperAmu * qbar
        eosData % abar = ONE / sumyi
        eosData % zbar = ye * eosData % abar
        eosData % y_e  = ye
@@ -355,7 +357,7 @@ contains
        eosData % rho  = dens_n + dd
        eosData % T    = tempguess
        eosData % xn   = eosData_u % xn
-       eosData % e    = emq + 9.6485e17*qbar
+       eosData % e    = emq + cgsMeVperAmu * qbar
        eosData % abar = ONE / sumyi
        eosData % zbar = ye * eosData % abar
        eosData % y_e  = ye
@@ -394,8 +396,8 @@ contains
     eosData_b % rho  = dens_n
     eosData_b % T    = tempguess
     eosData_b % xn   = eosData_u % xn
-    eosData_b % e    = emq + 9.6485e17*qbar_b
-    eosData_b % abar = 1.e0/sumyi
+    eosData_b % e    = emq + cgsMeVperAmu * qbar_b
+    eosData_b % abar = ONE / sumyi
     eosData_b % zbar = ye * eosData_b % abar
     eosData_b % y_e  = ye
     call eos(eos_input_re, eosData_b)
