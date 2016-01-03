@@ -349,6 +349,8 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
            unburned_state % abar = ONE / yi_f
            unburned_state % zbar = ye_f / yi_f
 
+           unburned_state % y_e = unburned_state % zbar / unburned_state % abar
+
            if (.not. sim_ignite) then
               
               ! no burned material, only unburned
@@ -357,7 +359,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
               call eos(eos_input_rt, zone_state)
               
               flam     = 0.0              
-              ye       = zone_state % zbar / zone_state % abar
+              ye       = unburned_state % y_e
               dyi_qn   = 0.0
               dqbar_qn = 0.0
               enuc     = 0.0
@@ -484,6 +486,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
                  zone_state = unburned_state
                  zone_state % abar = ONE / yi
                  zone_state % zbar = ye / yi
+                 zone_state % y_e  = ye
 
                  ! put this in pressure equilibrium with unburned material
                  call Flame_rhJump(unburned_state, zone_state, flam*(qbar_nse-qbar_f)*cgsMeVperAmu, ZERO, eos_input_rt)
@@ -522,6 +525,8 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
            state(i,j,k,UFX+UYE  -1) = ye
            state(i,j,k,UFX+UDYQN-1) = dyi_qn
            state(i,j,k,UFX+UDQQN-1) = dqbar_qn
+
+           state(i,j,k,UFX:UFX+NAUX-1) = state(i,j,k,UFX:UFX+NAUX-1) * state(i,j,k,URHO)
 
         enddo
      enddo

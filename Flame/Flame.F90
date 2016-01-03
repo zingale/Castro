@@ -283,6 +283,7 @@ contains
     use eos_module
     !  use Eos_helmData, ONLY : eos_tol
     use NSE_data, ONLY: NSE_finalAtDens 
+    use bl_constants_module, only: ONE
 
     implicit none
 
@@ -306,7 +307,7 @@ contains
     call eos(eos_mode, eosData_u)
     pres_u = eosData_u % p
     ye = eosData_u % zbar / eosData_u % abar
-    hmq_u = eosData_u % e + eosData_u % p / eosData_u % rho - 9.6485e17*qbar_u
+    hmq_u = eosData_u % e + eosData_u % p / eosData_u % rho - 9.6485e17 * qbar_u
 
     ! A bit unusual here
     !  we will use the (dens,emq) table to construct the endpoint of
@@ -337,16 +338,17 @@ contains
        eosData % T    = tempguess
        eosData % xn   = eosData_u % xn
        eosData % e    = emq + 9.6485e17*qbar
-       eosData % abar = 1.e0/sumyi
+       eosData % abar = ONE / sumyi
        eosData % zbar = ye * eosData % abar
+       eosData % y_e  = ye
        call eos(eos_input_re, eosData)
 
        pres_n = eosData % p
 
        ! derivative
-       dd = 1.0e-7*dens_n
+       dd = 1.0d-7 * dens_n
        ! get the nse state information
-       emq = hmq_u - pres_u/(dens_n+dd)
+       emq = hmq_u - pres_u / (dens_n+dd)
        call NSE_finalAtDens(qbar, sumyi, tempguess, edot, yedot, ye, dens_n+dd, emq)
 
        ! and pressure
@@ -354,11 +356,12 @@ contains
        eosData % T    = tempguess
        eosData % xn   = eosData_u % xn
        eosData % e    = emq + 9.6485e17*qbar
-       eosData % abar = 1.e0/sumyi
+       eosData % abar = ONE / sumyi
        eosData % zbar = ye * eosData % abar
+       eosData % y_e  = ye
        call eos(eos_input_re, eosData)
 
-       dpdd = (eosData % p - pres_n)/dd
+       dpdd = (eosData % p - pres_n) / dd
 
        ! function we are zeroing and deriv
        f = pres_n - pres_u
@@ -372,7 +375,7 @@ contains
           dens_n = 0.5*dens_n_old
        endif
 
-       error = abs( (dens_n-dens_n_old)/dens_n )
+       error = abs( (dens_n-dens_n_old) / dens_n )
 
        niters = niters + 1
 
@@ -384,7 +387,7 @@ contains
     endif
 
     ! now fill output information
-    emq = hmq_u - pres_u/dens_n
+    emq = hmq_u - pres_u / dens_n
     call NSE_finalAtDens(qbar_b, sumyi, tempguess, edot, yedot, ye, dens_n, emq)
 
     ! and pressure
@@ -394,6 +397,7 @@ contains
     eosData_b % e    = emq + 9.6485e17*qbar_b
     eosData_b % abar = 1.e0/sumyi
     eosData_b % zbar = ye * eosData_b % abar
+    eosData_b % y_e  = ye
     call eos(eos_input_re, eosData_b)
 
   end subroutine Flame_rhJumpReactive
