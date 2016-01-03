@@ -8,5 +8,28 @@ extern "C" {
 		     const BL_FORT_FAB_ARG_3D(state),
 		     const BL_FORT_FAB_ARG_3D(grav),
 		     const Real& time, const Real& dt_flame);
-}
 
+  void detonation_init();
+
+  void ca_check_ignition(const int* lo, const int* hi,
+			 const BL_FORT_FAB_ARG_3D(state),
+			 Real ignition_coords[]);
+
+  void ca_check_valid_ignition(const int* lo, const int* hi,
+			       const BL_FORT_FAB_ARG_3D(state),
+			       const int& det_num,
+			       int ignition_conditions[],
+			       Real det_xCoord[],
+			       Real det_yCoord[],
+			       Real det_zCoord[]);
+
+  void ca_set_ignition_points(const Real& time,
+			      const int& det_num, int ignition_conditions[],
+			      Real det_xCoord[],
+			      Real det_yCoord[],
+			      Real det_zCoord[]);
+
+  void ca_get_ign_num_max(int* ignnum);
+
+  void ca_get_ignsep(Real* ignsep);
+}

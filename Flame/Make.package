@@ -1,3 +1,2 @@
 F90EXE_sources += Flame.F90
-
-
+F90EXE_sources += detonation.F90
