@@ -10,6 +10,7 @@
                                      UFS, UFX, dual_energy_eta3, allow_negative_energy
       use burner_module
       use bl_constants_module
+      use castro_util_module, only: position
 
       implicit none
 
@@ -23,6 +24,8 @@
       integer          :: i, j, k
       double precision :: rhoInv, rho_e_K, delta_x(nspec), delta_e, delta_rho_e
 
+      double precision :: loc(3)
+
       type (eos_t)  :: state_in
       type (eos_t)  :: state_out
 
@@ -32,6 +35,8 @@
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
+
+               loc = position(i,j,k)
 
                rhoInv = ONE / state(i,j,k,URHO)
 
@@ -50,6 +55,8 @@
 
                state_in % xn  = state(i,j,k,UFS:UFS+nspec-1) * rhoInv
                state_in % aux = state(i,j,k,UFX:UFX+naux-1) * rhoInv
+
+               state_in % idx = (/ i, j, k /)
                
                call burner(state_in, state_out, dt_react, time)
 

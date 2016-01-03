@@ -100,6 +100,8 @@ module eos_type_module
     double precision :: dedZ
 
     logical :: reset
+
+    integer          :: idx(3)
     
   end type eos_t
 
