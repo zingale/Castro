@@ -11,6 +11,12 @@
       use burner_module
       use bl_constants_module
       use castro_util_module, only: position
+#ifdef FLAME
+      use detonation_module, only: thermalReactInFlameThreshold
+      use flame_module, only: Flame_getWidth
+      use amrinfo_module, only: amr_level
+      use prob_params_module, only: dx_level, dg
+#endif
 
       implicit none
 
@@ -28,6 +34,12 @@
 
       type (eos_t)  :: state_in
       type (eos_t)  :: state_out
+
+#ifdef FLAME
+      double precision :: flamewidth
+      integer :: ii, jj, kk
+      integer :: maxdi
+#endif
 
       if (allow_negative_energy .eq. 0) state_in % reset = .true.
       if (allow_negative_energy .eq. 0) state_out % reset = .true.
@@ -57,6 +69,31 @@
                state_in % aux = state(i,j,k,UFX:UFX+naux-1) * rhoInv
 
                state_in % idx = (/ i, j, k /)
+
+#ifdef FLAME
+               state_in % react_proximity = 2.0  ! > 1 supresses reaction in flame
+
+               !  Check for proximity of a reacting region for each cell
+               !  this is used to help control thermal burning inside flame
+
+               !  proximity is in units of flame width (rounded up to nearest cell)
+               ! no need to sqrt react_proximity because we are comparing to 1.0
+
+               call Flame_getWidth(flamewidth)
+
+               maxdi = int(ceiling(flamewidth / minval(dx_level(:,amr_level))))
+
+               do kk = -maxdi * dg(3), maxdi * dg(3)
+                  do jj = -maxdi * dg(2), maxdi * dg(2)
+                     do ii = -maxdi * dg(1), maxdi * dg(1)
+                        if ( (state(i+ii,j+jj,k+kk,UPHFA) - state(i+ii,j+jj,k+kk,UFLAM)) / state(i+ii,j+jj,k+kk,URHO) &
+                             > thermalReactInFlameThreshold ) then
+                           state_in % react_proximity = min(state_in % react_proximity,dble(ii**2+jj**2+kk**2)/maxdi**2)
+                        endif
+                     enddo
+                  enddo
+               enddo
+#endif
                
                call burner(state_in, state_out, dt_react, time)
 

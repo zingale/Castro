@@ -101,7 +101,11 @@ module eos_type_module
 
     logical :: reset
 
-    integer          :: idx(3)
+    integer :: idx(3)
+
+#ifdef FLAME
+   double precision :: react_proximity
+#endif
     
   end type eos_t
 
