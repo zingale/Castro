@@ -149,8 +149,8 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
 
         ! phi unit vector: \hat{\phi} = -sin(phi) \hat{x} + cos(phi) \hat{y}
         ! with cos(phi) = x/r; sin(phi) = y/r
-        state(i,j,UMX) = -rho0*q_r*u_phi*((yc-center(1))/r)  ! -sin(phi) = y/r
-        state(i,j,UMY) = rho0*q_r*u_phi*((xc-center(2))/r)   ! cos(phi) = x/r
+        state(i,j,UMX) = -rho0*q_r*u_phi*((yc-center(2))/r)  ! -sin(phi) = y/r
+        state(i,j,UMY) = rho0*q_r*u_phi*((xc-center(1))/r)   ! cos(phi) = x/r
 
         state(i,j,UEDEN) = reint +  &
              0.5d0*(state(i,j,UMX)**2/state(i,j,URHO) + &
