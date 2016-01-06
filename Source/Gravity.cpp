@@ -1287,17 +1287,16 @@ Gravity::average_fine_ec_onto_crse_ec(int level, int is_new)
         crse_gphi_fine.set(n,new MultiFab(eba,1,0));
     }
 
-    if (is_new == 1)
+    Array< PArray<MultiFab> >& grad_phi = (is_new) ? grad_phi_curr : grad_phi_prev;
+
+    BoxLib::average_down_faces(grad_phi[level+1],crse_gphi_fine,fine_ratio);
+
+    const Geometry& cgeom = parent->Geom(level);
+
+    for (int n = 0; n < BL_SPACEDIM; ++n) 
     {
-        BoxLib::average_down_faces(grad_phi_curr[level+1],crse_gphi_fine,fine_ratio);
-	for (int n=0; n<BL_SPACEDIM; ++n)
-	    grad_phi_curr[level][n].copy(crse_gphi_fine[n]);
-    }
-    else if (is_new == 0)
-    {
-        BoxLib::average_down_faces(grad_phi_prev[level+1],crse_gphi_fine,fine_ratio);
-	for (int n=0; n<BL_SPACEDIM; ++n)
-	    grad_phi_prev[level][n].copy(crse_gphi_fine[n]);
+	grad_phi[level][n].copy(crse_gphi_fine[n]);
+	cgeom.PeriodicCopy(grad_phi[level][n], crse_gphi_fine[n]);
     }
 }
 
