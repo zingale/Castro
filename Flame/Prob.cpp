@@ -181,7 +181,7 @@ void Castro::problem_source_half_dt(MultiFab& s, Real time, Real dt, int is_new)
 			      ( det_yCoord[l] - det_yCoord[ll] ) * ( det_yCoord[l] - det_yCoord[ll] ) + 
 			      ( det_zCoord[l] - det_zCoord[ll] ) * ( det_zCoord[l] - det_zCoord[ll] ) );
 
-           if ( dist <= IgnSep )
+	    if ( dist <= IgnSep ) {
 
               if (radius[l] >= radius[ll])
 		// get rid of 2nd radius point
@@ -189,6 +189,8 @@ void Castro::problem_source_half_dt(MultiFab& s, Real time, Real dt, int is_new)
 	      else  
 		// get rid of 1st radius point
 		detMask[l] = true;
+
+	    }
 
 	  }
 
