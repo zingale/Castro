@@ -2,7 +2,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine ca_network_init()
+      subroutine ca_network_init() bind(C)
 
         use network
 
@@ -15,7 +15,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine ca_extern_init(name,namlen)
+      subroutine ca_extern_init(name,namlen) bind(C)
 
         ! initialize the external runtime parameters in
         ! extern_probin_module
@@ -31,7 +31,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_num_spec(nspec_out)
+      subroutine get_num_spec(nspec_out) bind(C)
 
         use network, only : nspec
 
@@ -47,7 +47,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_num_aux(naux_out)
+      subroutine get_num_aux(naux_out) bind(C)
 
         use network, only : naux
 
@@ -63,7 +63,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_spec_names(spec_names,ispec,len)
+      subroutine get_spec_names(spec_names,ispec,len) bind(C)
 
         use network, only : nspec, short_spec_names
 
@@ -88,7 +88,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_spec_az(ispec,A,Z)
+      subroutine get_spec_az(ispec,A,Z) bind(C)
 
         use network, only : nspec, aion, zion
 
@@ -107,7 +107,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_aux_names(aux_names,iaux,len)
+      subroutine get_aux_names(aux_names,iaux,len) bind(C)
 
         use network, only : naux, short_aux_names
 
@@ -132,7 +132,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine set_amr_info(level_in, iteration_in, ncycle_in, time_in, dt_in)
+      subroutine set_amr_info(level_in, iteration_in, ncycle_in, time_in, dt_in) bind(C)
 
         use amrinfo_module, only: amr_level, amr_iteration, amr_ncycle, amr_time, amr_dt
 
@@ -167,7 +167,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_method_params(nGrowHyp)
+      subroutine get_method_params(nGrowHyp) bind(C)
 
         ! Passing data from f90 back to C++
 
@@ -185,7 +185,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine allocate_outflow_data(np,nc)
+      subroutine allocate_outflow_data(np,nc) bind(C)
 
         use meth_params_module, only: outflow_data_old, outflow_data_new, outflow_data_allocated
 
@@ -205,7 +205,7 @@
 ! :::
 ! ::: ----------------------------------------------------------------
 ! :::
-      subroutine set_old_outflow_data(radial,time,np,nc)
+      subroutine set_old_outflow_data(radial,time,np,nc) bind(C)
 
         ! Passing data from C++ to f90
 
@@ -230,7 +230,7 @@
 ! :::
 ! ::: ----------------------------------------------------------------
 ! :::
-      subroutine set_new_outflow_data(radial,time,np,nc)
+      subroutine set_new_outflow_data(radial,time,np,nc) bind(C)
 
         ! Passing data from C++ to f90
 
@@ -255,7 +255,7 @@
 ! :::
 ! ::: ----------------------------------------------------------------
 ! :::
-      subroutine swap_outflow_data()
+      subroutine swap_outflow_data() bind(C)
 
         use meth_params_module, only: outflow_data_new, outflow_data_new_time, &
                                       outflow_data_old, outflow_data_old_time
@@ -296,7 +296,7 @@
                                    get_g_from_phi_in, &
                                    use_sgs, &
                                    diffuse_cutoff_density_in, &
-                                   const_grav_in)
+                                   const_grav_in) bind(C)
 
         ! Passing data from C++ into f90
 
@@ -498,7 +498,7 @@
                                     Interior_in, Inflow_in, Outflow_in, &
                                     Symmetry_in, SlipWall_in, NoSlipWall_in, &
                                     coord_type_in, &
-                                    problo_in, probhi_in, center_in)
+                                    problo_in, probhi_in, center_in) bind(C)
 
         ! Passing data from C++ into f90
 
@@ -551,7 +551,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine set_grid_info(max_level_in, dx_level_in, domlo_in, domhi_in)
+      subroutine set_grid_info(max_level_in, dx_level_in, domlo_in, domhi_in) bind(C)
 
         use prob_params_module
 
@@ -583,7 +583,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine ca_set_special_tagging_flag(dummy,flag)
+      subroutine ca_set_special_tagging_flag(dummy,flag) bind(C)
       double precision :: dummy
       integer          :: flag
       end subroutine ca_set_special_tagging_flag
@@ -592,7 +592,7 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_tagging_params(name, namlen)
+      subroutine get_tagging_params(name, namlen) bind(C)
 
         use tagging_params_module
 
@@ -680,9 +680,9 @@
 ! ::: ----------------------------------------------------------------
 ! :::
 
-      subroutine get_sponge_params(name, namlen)
+      subroutine get_sponge_params(name, namlen) bind(C)
 
-        use sponge_params_module
+        use sponge_module
 
         ! Initialize the sponge parameters
 

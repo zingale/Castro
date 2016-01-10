@@ -701,8 +701,7 @@ Castro::setGridInfo ()
 	  }
       }
 
-      BL_FORT_PROC_CALL(SET_GRID_INFO,set_grid_info)
-	(max_level, dx_level, domlo_level, domhi_level);
+      set_grid_info(max_level, dx_level, domlo_level, domhi_level);
 
     }
     
@@ -738,7 +737,7 @@ Castro::initData ()
       }
 #endif
 
-    BL_FORT_PROC_CALL(SET_AMR_INFO,set_amr_info)(level, -1, -1, -1.0, -1.0);
+    set_amr_info(level, -1, -1, -1.0, -1.0);
 
     if (verbose && ParallelDescriptor::IOProcessor())
        std::cout << "Initializing the data at level " << level << std::endl;
@@ -778,8 +777,7 @@ Castro::initData ()
 #endif
 
           // Verify that the sum of (rho X)_i = rho at every cell
-          BL_FORT_PROC_CALL(CA_CHECK_INITIAL_SPECIES, ca_check_initial_species)
-              (lo, hi, BL_TO_FORTRAN(S_new[mfi]));
+          ca_check_initial_species(lo, hi, BL_TO_FORTRAN(S_new[mfi]));
        }
        enforce_consistent_e(S_new);
     }
@@ -830,7 +828,7 @@ Castro::initData ()
     if ( (level == 0) && (spherical_star == 1) ) {
        int nc = S_new.nComp();
        int n1d = get_numpts();
-       BL_FORT_PROC_CALL(ALLOCATE_OUTFLOW_DATA,allocate_outflow_data)(&n1d,&nc);
+       allocate_outflow_data(&n1d,&nc);
        int is_new = 1;
        make_radial_data(is_new);
     }
@@ -1059,7 +1057,7 @@ Castro::estTimeStep (Real dt_old)
     if (fixed_dt > 0.0)
         return fixed_dt;
 
-    BL_FORT_PROC_CALL(SET_AMR_INFO,set_amr_info)(level, -1, -1, -1.0, -1.0);    
+    set_amr_info(level, -1, -1, -1.0, -1.0);    
     
     Real estdt = max_dt;
 
@@ -1100,10 +1098,9 @@ Castro::estTimeStep (Real dt_old)
 		  gPr.resize(tbox);
 		  radiation->estimate_gamrPr(stateMF[mfi], radMF[mfi], gPr, dx, vbox);
 	  
-		  BL_FORT_PROC_CALL(CA_ESTDT_RAD, ca_estdt_rad)
-		      (BL_TO_FORTRAN(stateMF[mfi]),
-	               BL_TO_FORTRAN(gPr),
-	               tbox.loVect(),tbox.hiVect(),dx,&dt);
+		  ca_estdt_rad(BL_TO_FORTRAN(stateMF[mfi]),
+			       BL_TO_FORTRAN(gPr),
+			       tbox.loVect(),tbox.hiVect(),dx,&dt);
               }
 #ifdef _OPENMP
 #pragma omp critical (castro_estdt_rad)	      
@@ -1131,10 +1128,9 @@ Castro::estTimeStep (Real dt_old)
 		{
 		  const Box& box = mfi.tilebox();
 		  
-		  BL_FORT_PROC_CALL(CA_ESTDT,ca_estdt)
-		      (ARLIM_3D(box.loVect()), ARLIM_3D(box.hiVect()),
-		       BL_TO_FORTRAN_3D(stateMF[mfi]),
-		       ZFILL(dx),&dt);
+		  ca_estdt(ARLIM_3D(box.loVect()), ARLIM_3D(box.hiVect()),
+			   BL_TO_FORTRAN_3D(stateMF[mfi]),
+			   ZFILL(dx),&dt);
 		}
 #ifdef _OPENMP
 #pragma omp critical (castro_estdt)	      
@@ -1159,10 +1155,9 @@ Castro::estTimeStep (Real dt_old)
 		{
 		  const Box& box = mfi.tilebox();
 
-		  BL_FORT_PROC_CALL(CA_ESTDT_DIFFUSION,ca_estdt_diffusion)
-		      (ARLIM_3D(box.loVect()), ARLIM_3D(box.hiVect()),
-		       BL_TO_FORTRAN_3D(stateMF[mfi]),
-		       ZFILL(dx),&dt);
+		  ca_estdt_diffusion(ARLIM_3D(box.loVect()), ARLIM_3D(box.hiVect()),
+				     BL_TO_FORTRAN_3D(stateMF[mfi]),
+				     ZFILL(dx),&dt);
 		}
 #ifdef _OPENMP
 #pragma omp critical (castro_estdt)	      
@@ -1211,10 +1206,10 @@ Castro::estTimeStep (Real dt_old)
 	    for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
 	    {
 	        const Box& box = mfi.validbox();
-		BL_FORT_PROC_CALL(CA_ESTDT_BURNING,ca_estdt_burning)
-                    (BL_TO_FORTRAN_3D(S_new[mfi]),
-		     BL_TO_FORTRAN_3D(reactions_new[mfi]),
-		     ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),ZFILL(dx),&dt);
+		ca_estdt_burning(BL_TO_FORTRAN_3D(S_new[mfi]),
+				 BL_TO_FORTRAN_3D(reactions_new[mfi]),
+				 ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
+				 ZFILL(dx),&dt);
 
 	    }
 #ifdef _OPENMP
@@ -1505,14 +1500,13 @@ Castro::post_timestep (int iteration)
 		      
 		      // Compute sync source
 		      sync_src.resize(bx,3+1);
-		      BL_FORT_PROC_CALL(CA_SYNCGSRC,ca_syncgsrc)
-			  (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-			   BL_TO_FORTRAN_3D(grad_phi_cc[mfi]),
-			   BL_TO_FORTRAN_3D(grad_delta_phi_cc[lev-level][mfi]),
-			   BL_TO_FORTRAN_3D(S_new_lev[mfi]),
-			   BL_TO_FORTRAN_3D(dstate),
-			   BL_TO_FORTRAN_3D(sync_src),
-			   dt_lev);
+		      ca_syncgsrc(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+				  BL_TO_FORTRAN_3D(grad_phi_cc[mfi]),
+				  BL_TO_FORTRAN_3D(grad_delta_phi_cc[lev-level][mfi]),
+				  BL_TO_FORTRAN_3D(S_new_lev[mfi]),
+				  BL_TO_FORTRAN_3D(dstate),
+				  BL_TO_FORTRAN_3D(sync_src),
+				  dt_lev);
 
 		      // Now multiply the sync source by dt / 2, where dt
 		      // is the timestep on the base level, not the refined
@@ -1917,11 +1911,10 @@ Castro::advance_aux(Real time, Real dt)
         const Box& box = mfi.tilebox();
         FArrayBox& old_fab = S_old[mfi];
         FArrayBox& new_fab = S_new[mfi];
-	BL_FORT_PROC_CALL(CA_AUXUPDATE,ca_auxupdate)
-	     (BL_TO_FORTRAN(old_fab),
-	      BL_TO_FORTRAN(new_fab),
-              box.loVect(), box.hiVect(),
-              &dt);
+	void ca_auxupdate(BL_TO_FORTRAN(old_fab),
+			  BL_TO_FORTRAN(new_fab),
+			  box.loVect(), box.hiVect(),
+			  &dt);
     }
 }
 #endif
@@ -2250,16 +2243,16 @@ Castro::getSource (Real time, Real dt, MultiFab& state, MultiFab& ext_src, Multi
         fluxz.resize(bxz,NUM_STATE);
 
         BL_FORT_PROC_CALL(CA_EXT_SRC,ca_ext_src)
-            (bx.loVect(), bx.hiVect(),
-             BL_TO_FORTRAN(state[mfi]),
-             BL_TO_FORTRAN(fluxx),
-             BL_TO_FORTRAN(fluxy),
-             BL_TO_FORTRAN(fluxz),
-             BL_TO_FORTRAN(ext_src[mfi]),
-             BL_TO_FORTRAN_N(sgs_mf[mfi],0),
-             BL_TO_FORTRAN_N(sgs_mf[mfi],1),
-             BL_TO_FORTRAN_N(sgs_mf[mfi],2),
-             dx,&time,&dt);
+	  (bx.loVect(), bx.hiVect(),
+	   BL_TO_FORTRAN(state[mfi]),
+	   BL_TO_FORTRAN(fluxx),
+	   BL_TO_FORTRAN(fluxy),
+	   BL_TO_FORTRAN(fluxz),
+	   BL_TO_FORTRAN(ext_src[mfi]),
+	   BL_TO_FORTRAN_N(sgs_mf[mfi],0),
+	   BL_TO_FORTRAN_N(sgs_mf[mfi],1),
+	   BL_TO_FORTRAN_N(sgs_mf[mfi],2),
+	   dx,&time,&dt);
   
         sgs_fluxes[0][mfi].copy(fluxx,0,0,NUM_STATE);
         sgs_fluxes[1][mfi].copy(fluxy,0,0,NUM_STATE);
@@ -2320,12 +2313,11 @@ Castro::define_tau (MultiFab& tau_diff, MultiFab& grav_vector, Real time)
    {
         Box bx(fpi.validbox());
         int i = fpi.index();
-        BL_FORT_PROC_CALL(CA_DEFINE_TAU,ca_define_tau)
-                 (bx.loVect(), bx.hiVect(),
-                  BL_TO_FORTRAN(tau_diff[fpi]),
-                  BL_TO_FORTRAN(fpi()),
-                  BL_TO_FORTRAN(grav_vector[fpi]),
-                  dx_fine);
+        ca_define_tau(bx.loVect(), bx.hiVect(),
+		      BL_TO_FORTRAN(tau_diff[fpi]),
+		      BL_TO_FORTRAN(fpi()),
+		      BL_TO_FORTRAN(grav_vector[fpi]),
+		      dx_fine);
    }
 }
 #endif
@@ -2375,16 +2367,15 @@ Castro::getTempDiffusionTerm (Real time, MultiFab& TempDiffTerm, MultiFab* tau)
        {
 	   const Box& bx = grids[mfi.index()];
 
-	   BL_FORT_PROC_CALL(CA_FILL_TEMP_COND,ca_fill_temp_cond)
-  	       (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(state_old[mfi]),
+	   ca_fill_temp_cond(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+			     BL_TO_FORTRAN_3D(state_old[mfi]),
 #ifdef TAU
-		BL_TO_FORTRAN_3D((*tau)[mfi]),
+			     BL_TO_FORTRAN_3D((*tau)[mfi]),
 #endif
-		BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
-  	        ZFILL(dx_fine));
+			     BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
+			     BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
+			     BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
+			     ZFILL(dx_fine));
        }
    }
 
@@ -2413,9 +2404,8 @@ Castro::getTempDiffusionTerm (Real time, MultiFab& TempDiffTerm, MultiFab* tau)
        for (MFIter mfi(TempDiffTerm); mfi.isValid(); ++mfi)
        {
 	   const Box& bx = mfi.validbox();
-	   BL_FORT_PROC_CALL(CA_TEMPDIFFEXTRAP,ca_tempdiffextrap)
-               (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(TempDiffTerm[mfi]));
+	   ca_tempdiffextrap(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+			     BL_TO_FORTRAN_3D(TempDiffTerm[mfi]));
        }
    }
 }
@@ -2451,13 +2441,12 @@ Castro::getSpecDiffusionTerm (Real time, MultiFab& SpecDiffTerm)
    {
        const Box& bx = grids[mfi.index()];
 
-       BL_FORT_PROC_CALL(CA_FILL_SPEC_COEFF,ca_fill_spec_coeff)
-  	       (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(state_old[mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
-  	        ZFILL(dx_fine));
+       ca_fill_spec_coeff(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+			  BL_TO_FORTRAN_3D(state_old[mfi]),
+			  BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
+			  BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
+			  BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
+			  ZFILL(dx_fine));
    }
 
    // Now copy the temporary array results back to the
@@ -2499,9 +2488,8 @@ Castro::getSpecDiffusionTerm (Real time, MultiFab& SpecDiffTerm)
            for (MFIter mfi(SDT); mfi.isValid(); ++mfi)
            {
     	       const Box& bx = mfi.validbox();
-    	       BL_FORT_PROC_CALL(CA_TEMPDIFFEXTRAP,ca_tempdiffextrap)
-                   (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		    BL_TO_FORTRAN_3D(SDT[mfi]));
+    	       ca_tempdiffextrap(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+				 BL_TO_FORTRAN_3D(SDT[mfi]));
            }
        }
        // Copy back into SpecDiffTerm from the temporary SDT
@@ -2565,13 +2553,12 @@ Castro::getFirstViscousTerm (Real time, MultiFab& ViscousTerm)
    {
        const Box& bx = grids[mfi.index()];
 
-       BL_FORT_PROC_CALL(CA_FILL_FIRST_VISC_COEFF,ca_fill_first_visc_coeff)
-  	       (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(state_old[mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
-  	        ZFILL(dx_fine));
+       ca_fill_first_visc_coeff(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+				BL_TO_FORTRAN_3D(state_old[mfi]),
+				BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
+				BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
+				BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
+				ZFILL(dx_fine));
    }
 
    // Now copy the temporary array results back to the
@@ -2599,9 +2586,8 @@ Castro::getFirstViscousTerm (Real time, MultiFab& ViscousTerm)
        for (MFIter mfi(ViscousTerm); mfi.isValid(); ++mfi)
        {
 	   const Box& bx = mfi.validbox();
-	   BL_FORT_PROC_CALL(CA_TEMPDIFFEXTRAP,ca_tempdiffextrap)
-               (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(ViscousTerm[mfi]));
+	   ca_tempdiffextrap(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+			     BL_TO_FORTRAN_3D(ViscousTerm[mfi]));
        }
    }
 }
@@ -2640,13 +2626,12 @@ Castro::getSecndViscousTerm (Real time, MultiFab& ViscousTerm)
    {
        const Box& bx = grids[mfi.index()];
 
-       BL_FORT_PROC_CALL(CA_FILL_SECND_VISC_COEFF,ca_fill_secnd_visc_coeff)
-  	       (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(state_old[mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
-		BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
-  	        ZFILL(dx_fine));
+       ca_fill_secnd_visc_coeff(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+				BL_TO_FORTRAN_3D(state_old[mfi]),
+				BL_TO_FORTRAN_3D(coeffs_temporary[0][mfi]),
+				BL_TO_FORTRAN_3D(coeffs_temporary[1][mfi]),
+				BL_TO_FORTRAN_3D(coeffs_temporary[2][mfi]),
+				ZFILL(dx_fine));
    }
 
    // Now copy the temporary array results back to the
@@ -2674,9 +2659,8 @@ Castro::getSecndViscousTerm (Real time, MultiFab& ViscousTerm)
        for (MFIter mfi(ViscousTerm); mfi.isValid(); ++mfi)
        {
 	   const Box& bx = mfi.validbox();
-	   BL_FORT_PROC_CALL(CA_TEMPDIFFEXTRAP,ca_tempdiffextrap)
-               (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(ViscousTerm[mfi]));
+	   ca_tempdiffextrap(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+			     BL_TO_FORTRAN_3D(ViscousTerm[mfi]));
        }
    }
 }
@@ -2710,11 +2694,10 @@ Castro::getViscousTermForEnergy (Real time, MultiFab& ViscousTerm)
    {
        const Box& bx = grids[mfi.index()];
 
-       BL_FORT_PROC_CALL(CA_COMPUTE_DIV_TAU_U,ca_compute_div_tau_u)
-  	       (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(ViscousTerm[mfi]),
-		BL_TO_FORTRAN_3D(state_old[mfi]),
-  	        ZFILL(dx_fine),&coord_type);
+       ca_compute_div_tau_u(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+			    BL_TO_FORTRAN_3D(ViscousTerm[mfi]),
+			    BL_TO_FORTRAN_3D(state_old[mfi]),
+			    ZFILL(dx_fine),&coord_type);
    }
 
    // Extrapolate to ghost cells
@@ -2722,9 +2705,8 @@ Castro::getViscousTermForEnergy (Real time, MultiFab& ViscousTerm)
        for (MFIter mfi(ViscousTerm); mfi.isValid(); ++mfi)
        {
 	   const Box& bx = mfi.validbox();
-	   BL_FORT_PROC_CALL(CA_TEMPDIFFEXTRAP,ca_tempdiffextrap)
-               (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		BL_TO_FORTRAN_3D(ViscousTerm[mfi]));
+	   ca_tempdiffextrap(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+			     BL_TO_FORTRAN_3D(ViscousTerm[mfi]));
        }
    }
 }
@@ -2815,8 +2797,7 @@ Castro::enforce_nonnegative_species (MultiFab& S_new)
     for (MFIter mfi(S_new,true); mfi.isValid(); ++mfi)
     {
        const Box& bx = mfi.tilebox();
-       BL_FORT_PROC_CALL(CA_ENFORCE_NONNEGATIVE_SPECIES,ca_enforce_nonnegative_species)
-           (BL_TO_FORTRAN(S_new[mfi]),bx.loVect(),bx.hiVect());
+       ca_enforce_nonnegative_species(BL_TO_FORTRAN(S_new[mfi]),bx.loVect(),bx.hiVect());
     }
 }
 
@@ -2824,8 +2805,6 @@ void
 Castro::enforce_consistent_e (MultiFab& S)
 {
 
-    const Real* dx = geom.CellSize();
-      
 #ifdef _OPENMP
 #pragma omp parallel
 #endif    
@@ -2834,8 +2813,8 @@ Castro::enforce_consistent_e (MultiFab& S)
         const Box& box     = mfi.tilebox();
         const int* lo      = box.loVect();
         const int* hi      = box.hiVect();
-        BL_FORT_PROC_CALL(CA_ENFORCE_CONSISTENT_E,ca_enforce_consistent_e)
-          (ARLIM_3D(lo), ARLIM_3D(hi), BL_TO_FORTRAN_3D(S[mfi]), ZFILL(dx));
+
+        ca_enforce_consistent_e(ARLIM_3D(lo), ARLIM_3D(hi), BL_TO_FORTRAN_3D(S[mfi]));
     }
 }
 
@@ -2882,7 +2861,7 @@ Castro::errorEst (TagBoxArray& tags,
 {
     BL_PROFILE("Castro::errorEst()");
 
-    BL_FORT_PROC_CALL(SET_AMR_INFO,set_amr_info)(level, -1, -1, -1.0, -1.0);    
+    set_amr_info(level, -1, -1, -1.0, -1.0);    
     
     const int*  domain_lo = geom.Domain().loVect();
     const int*  domain_hi = geom.Domain().hiVect();
@@ -2977,19 +2956,17 @@ Castro::errorEst (TagBoxArray& tags,
 	    const int*  thi     = tilebx.hiVect();
 
 #ifdef DIMENSION_AGNOSTIC
-	    BL_FORT_PROC_CALL(SET_PROBLEM_TAGS, set_problem_tags)
-	                     (tptr,  ARLIM_3D(tlo), ARLIM_3D(thi),
-			      BL_TO_FORTRAN_3D(S_new[mfi]),
-			      &tagval, &clearval, 
-			      ARLIM_3D(tilebx.loVect()), ARLIM_3D(tilebx.hiVect()), 
-			      ZFILL(dx), ZFILL(prob_lo), &time, &level);
+	    set_problem_tags(tptr,  ARLIM_3D(tlo), ARLIM_3D(thi),
+			     BL_TO_FORTRAN_3D(S_new[mfi]),
+			     &tagval, &clearval, 
+			     ARLIM_3D(tilebx.loVect()), ARLIM_3D(tilebx.hiVect()), 
+			     ZFILL(dx), ZFILL(prob_lo), &time, &level);
 #else	    
-	    BL_FORT_PROC_CALL(SET_PROBLEM_TAGS, set_problem_tags)
-	                     (tptr,  ARLIM(tlo), ARLIM(thi),
-			      BL_TO_FORTRAN(S_new[mfi]),
-			      &tagval, &clearval, 
-			      tilebx.loVect(), tilebx.hiVect(), 
-			      dx, prob_lo, &time, &level);
+	    set_problem_tags(tptr,  ARLIM(tlo), ARLIM(thi),
+			     BL_TO_FORTRAN(S_new[mfi]),
+			     &tagval, &clearval, 
+			     tilebx.loVect(), tilebx.hiVect(), 
+			     dx, prob_lo, &time, &level);
 #endif
 	    
 	    //
@@ -3017,8 +2994,7 @@ Castro::derive (const std::string& name,
       ig += Radiation::nNeutrinoGroups[n];
     }
 
-    BL_FORT_PROC_CALL(CA_SETGROUP,ca_setgroup)
-      (ig);
+    ca_setgroup(ig);
   }
 #endif
 
@@ -3047,8 +3023,7 @@ Castro::derive (const std::string& name,
       ig += Radiation::nNeutrinoGroups[n];
     }
 
-    BL_FORT_PROC_CALL(CA_SETGROUP,ca_setgroup)
-      (ig);
+    ca_setgroup(ig);
   }
 #endif
 
@@ -3058,7 +3033,7 @@ Castro::derive (const std::string& name,
 void
 Castro::network_init ()
 {
-   BL_FORT_PROC_CALL(CA_NETWORK_INIT,ca_network_init) ();
+   ca_network_init();
 }
 
 void
@@ -3077,9 +3052,7 @@ Castro::extern_init ()
   for (int i = 0; i < probin_file_length; i++)
     probin_file_name[i] = probin_file[i];
 
-  BL_FORT_PROC_CALL(CA_EXTERN_INIT,ca_extern_init) 
-    (probin_file_name.dataPtr(),
-     &probin_file_length);
+  ca_extern_init(probin_file_name.dataPtr(),&probin_file_length);
 }
 
 #ifdef SGS
@@ -3095,11 +3068,10 @@ Castro::reset_old_sgs(Real dt)
    {
        const Box& bx = mfi.validbox();
 
-       BL_FORT_PROC_CALL(CA_RESET_SGS,ca_reset_sgs)
-           (BL_TO_FORTRAN(S_old[mfi]),
-            BL_TO_FORTRAN_N(sgs_old[mfi],0),
-            BL_TO_FORTRAN_N(sgs_old[mfi],0),
-            bx.loVect(),bx.hiVect(),verbose,is_old,dt);
+       ca_reset_sgs(BL_TO_FORTRAN(S_old[mfi]),
+		    BL_TO_FORTRAN_N(sgs_old[mfi],0),
+		    BL_TO_FORTRAN_N(sgs_old[mfi],0),
+		    bx.loVect(),bx.hiVect(),verbose,is_old,dt);
    }
 }
 void
@@ -3115,11 +3087,10 @@ Castro::reset_new_sgs(Real dt)
    {
        const Box& bx = mfi.validbox();
 
-       BL_FORT_PROC_CALL(CA_RESET_SGS,ca_reset_sgs)
-           (BL_TO_FORTRAN(S_new[mfi]),
-            BL_TO_FORTRAN_N(sgs_old[mfi],0),
-            BL_TO_FORTRAN_N(sgs_new[mfi],0),
-            bx.loVect(),bx.hiVect(),verbose,is_old,dt);
+       ca_reset_sgs(BL_TO_FORTRAN(S_new[mfi]),
+		    BL_TO_FORTRAN_N(sgs_old[mfi],0),
+		    BL_TO_FORTRAN_N(sgs_new[mfi],0),
+		    bx.loVect(),bx.hiVect(),verbose,is_old,dt);
    }
 }
 #endif
@@ -3144,10 +3115,9 @@ Castro::reset_internal_energy(MultiFab& S_new)
     {
         const Box& bx = mfi.tilebox();
 
-        BL_FORT_PROC_CALL(RESET_INTERNAL_E,reset_internal_e)
-	    (ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()), 
-	     BL_TO_FORTRAN_3D(S_new[mfi]), 
-	     print_fortran_warnings);
+        reset_internal_e(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()), 
+                         BL_TO_FORTRAN_3D(S_new[mfi]), 
+			 print_fortran_warnings);
     }
 
     if (parent->finestLevel() == 0 && print_energy_diagnostics)
@@ -3184,8 +3154,7 @@ Castro::computeTemp(MultiFab& State)
     for (MFIter mfi(State,true); mfi.isValid(); ++mfi)
     { 
       const Box& bx = mfi.tilebox();
-      BL_FORT_PROC_CALL(COMPUTE_TEMP,compute_temp)
-	(ARLIM_3D(bx.loVect()),ARLIM_3D(bx.hiVect()),BL_TO_FORTRAN_3D(State[mfi]));
+      compute_temp(ARLIM_3D(bx.loVect()),ARLIM_3D(bx.hiVect()),BL_TO_FORTRAN_3D(State[mfi]));
     }
 
 #endif
@@ -3200,8 +3169,7 @@ Castro::set_special_tagging_flag(Real time)
    Real max_den = S_new.norm0(Density);
 
    int flag_was_changed = 0;
-   BL_FORT_PROC_CALL(CA_SET_SPECIAL_TAGGING_FLAG,
-                     ca_set_special_tagging_flag)(max_den,&flag_was_changed);
+   ca_set_special_tagging_flag(max_den,&flag_was_changed);
    if (ParallelDescriptor::IOProcessor()) {
       if (flag_was_changed == 1) {
         std::ofstream os("Bounce_time",std::ios::out);
@@ -3286,11 +3254,10 @@ Castro::make_radial_data(int is_new)
       for (MFIter mfi(S); mfi.isValid(); ++mfi)
       {
          Box bx(mfi.validbox());
-         BL_FORT_PROC_CALL(CA_COMPUTE_AVGSTATE,ca_compute_avgstate)
-             (bx.loVect(), bx.hiVect(),dx,&dr,&nc,
-              BL_TO_FORTRAN(     S[mfi]),radial_state.dataPtr(),
-              BL_TO_FORTRAN(volume[mfi]),radial_vol.dataPtr(),
-              geom.ProbLo(),&numpts_1d);
+         ca_compute_avgstate(bx.loVect(), bx.hiVect(),dx,&dr,&nc,
+			     BL_TO_FORTRAN(     S[mfi]),radial_state.dataPtr(),
+			     BL_TO_FORTRAN(volume[mfi]),radial_vol.dataPtr(),
+			     geom.ProbLo(),&numpts_1d);
       }
 
       ParallelDescriptor::ReduceRealSum(radial_vol.dataPtr(),numpts_1d);
@@ -3319,8 +3286,7 @@ Castro::make_radial_data(int is_new)
       }
 
       Real new_time = state[State_Type].curTime();
-      BL_FORT_PROC_CALL(SET_NEW_OUTFLOW_DATA, set_new_outflow_data)
-        (radial_state_short.dataPtr(),&new_time,&np_max,&nc);
+      set_new_outflow_data(radial_state_short.dataPtr(),&new_time,&np_max,&nc);
    }
    else
    {
@@ -3330,11 +3296,10 @@ Castro::make_radial_data(int is_new)
       for (MFIter mfi(S); mfi.isValid(); ++mfi)
       {
          Box bx(mfi.validbox());
-         BL_FORT_PROC_CALL(CA_COMPUTE_AVGSTATE,ca_compute_avgstate)
-             (bx.loVect(), bx.hiVect(),dx,&dr,&nc,
-              BL_TO_FORTRAN(     S[mfi]),radial_state.dataPtr(),
-              BL_TO_FORTRAN(volume[mfi]),radial_vol.dataPtr(),
-              geom.ProbLo(),&numpts_1d);
+         ca_compute_avgstate(bx.loVect(), bx.hiVect(),dx,&dr,&nc,
+			     BL_TO_FORTRAN(     S[mfi]),radial_state.dataPtr(),
+			     BL_TO_FORTRAN(volume[mfi]),radial_vol.dataPtr(),
+			     geom.ProbLo(),&numpts_1d);
       }
 
       ParallelDescriptor::ReduceRealSum(radial_vol.dataPtr(),numpts_1d);
@@ -3363,8 +3328,7 @@ Castro::make_radial_data(int is_new)
       }
 
       Real old_time = state[State_Type].prevTime();
-      BL_FORT_PROC_CALL(SET_OLD_OUTFLOW_DATA, set_old_outflow_data)
-        (radial_state_short.dataPtr(),&old_time,&np_max,&nc);
+      set_old_outflow_data(radial_state_short.dataPtr(),&old_time,&np_max,&nc);
    }
 
 #endif
@@ -3393,7 +3357,7 @@ Castro::define_new_center(MultiFab& S, Real time)
     // Find the position of the "center" by interpolating from data at cell centers
     for (MFIter mfi(mf); mfi.isValid(); ++mfi) 
     {
-        BL_FORT_PROC_CALL(FIND_CENTER,find_center)(mf[mfi].dataPtr(),&center[0],mi,dx,geom.ProbLo());
+        find_center(mf[mfi].dataPtr(),&center[0],mi,dx,geom.ProbLo());
     }
     // Now broadcast to everyone else.
     ParallelDescriptor::Bcast(&center[0], BL_SPACEDIM, owner);
@@ -3401,7 +3365,7 @@ Castro::define_new_center(MultiFab& S, Real time)
     // Make sure if R-Z that center stays exactly on axis
     if ( Geometry::IsRZ() ) center[0] = 0;  
 
-    BL_FORT_PROC_CALL(SET_CENTER,set_center)(&center[0]);
+    set_center(&center[0]);
 }
 
 void
@@ -3417,7 +3381,7 @@ Castro::write_center ()
        Real time = state[State_Type].curTime();
 
        Real center[BL_SPACEDIM];
-       BL_FORT_PROC_CALL(GET_CENTER,get_center)(center);
+       get_center(center);
  
        if (time == 0.0) {
            data_logc << std::setw( 8) <<  "   nstep";

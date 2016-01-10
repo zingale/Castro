@@ -1,5 +1,14 @@
+module rotation_sources_module
+
+  implicit none
+
+  public
+
+contains
+
   subroutine ca_rsrc(lo,hi,domlo,domhi,phi,phi_lo,phi_hi,rot,rot_lo,rot_hi, &
-                     uold,uold_lo,uold_hi,unew,unew_lo,unew_hi,dx,dt,time,E_added,mom_added)
+                     uold,uold_lo,uold_hi,unew,unew_lo,unew_hi,dx,dt,time, &
+                     E_added,mom_added) bind(C)
 
     use meth_params_module, only: NVAR, URHO, UMX, UMZ, UEDEN, rot_period, rot_source_type
     use prob_params_module, only: coord_type, problo, center
@@ -90,8 +99,7 @@
 
 
 
-  subroutine ca_corrrsrc(lo,hi, &
-                         domlo,domhi, &
+  subroutine ca_corrrsrc(lo,hi,domlo,domhi, &
                          pold,po_lo,po_hi, &
                          pnew,pn_lo,pn_hi, &
                          rold,ro_lo,ro_hi, &
@@ -103,7 +111,7 @@
                          flux3,f3_lo,f3_hi, &
                          dx,dt,time, &
                          vol,vol_lo,vol_hi, &
-                         E_added,mom_added)
+                         E_added,mom_added) bind(C)
 
     ! Corrector step for the rotation source terms. This is applied
     ! after the hydrodynamics update to fix the time-level n
@@ -183,10 +191,10 @@
     ! 2: Modification of type 1 that updates the momentum before constructing the energy corrector
     ! 3: Puts all work into KE, not (rho e)
     ! 4: Conservative rotation approach (discussed in first white dwarf merger paper)
-    
+
     ! Note that the time passed to this function
     ! is the new time at time-level n+1.
-    
+
     omega_old = get_omega(time-dt)
     omega_new = get_omega(time   )
 
@@ -208,7 +216,7 @@
        enddo
 
        dt_omega = dt * omega_new
-       
+
        dt_omega_matrix(1,1) = ONE + dt_omega(1)**2
        dt_omega_matrix(1,2) = dt_omega(1) * dt_omega(2) + dt_omega(3)
        dt_omega_matrix(1,3) = dt_omega(1) * dt_omega(3) - dt_omega(2)
@@ -222,7 +230,7 @@
        dt_omega_matrix(3,3) = ONE + dt_omega(3)**2
 
        dt_omega_matrix = dt_omega_matrix / (ONE + dt_omega(1)**2 + dt_omega(2)**2 + dt_omega(3)**2)
-       
+
     endif
 
     do k = lo(3), hi(3)
@@ -270,7 +278,7 @@
 
              if (rot_source_type == 1) then
 
-               ! If rot_source_type == 1, then calculate SrEcorr before updating the velocities.
+                ! If rot_source_type == 1, then calculate SrEcorr before updating the velocities.
 
                 SrEcorr = HALF * (SrE_new - SrE_old)
 
@@ -360,7 +368,7 @@
                 unew(i,j,k,UMX:UMZ) = unew(i,j,k,UMX:UMZ) + HALF * (Sr_new - Sr_old) * dt
 
                 vnew = unew(i,j,k,UMX:UMZ) / rhon
-                                
+
                 SrEcorr = SrEcorr + HALF * (dot_product(vold, Sr_old) + dot_product(vnew, Sr_new)) * dt
 
              else 
@@ -385,7 +393,6 @@
        call bl_deallocate(phi)
     endif
 
-    end subroutine ca_corrrsrc
+  end subroutine ca_corrrsrc
 
-
-
+end module rotation_sources_module

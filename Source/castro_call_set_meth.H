@@ -13,7 +13,7 @@ static int rot_axis = 3;
 #ifndef POINTMASS
 static Real point_mass = 0.0;
 #endif
-BL_FORT_PROC_CALL(SET_CASTRO_METHOD_PARAMS, set_castro_method_params)
+set_castro_method_params
    (difmag, small_dens, 
     small_temp, small_pres, 
     small_ener, hybrid_hydro, 

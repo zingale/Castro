@@ -143,7 +143,7 @@ class Param(object):
         return tstr
 
     def get_f90_decl_string(self):
-        # this is the line that goes into meth_params.F90
+        # this is the line that goes into meth_params.f90
 
         if not self.in_fortran:
             return None
@@ -183,7 +183,7 @@ def get_prototype(plist):
 
     indent = 4
 
-    prototype = "BL_FORT_PROC_DECL(SET_CASTRO_METHOD_PARAMS, set_castro_method_params)\n"
+    prototype = "void set_castro_method_params\n"
     prototype += (indent-1)*" " + "("
 
     for n, d in enumerate(decls):
@@ -219,7 +219,7 @@ def get_cpp_call(plist):
         call += "#endif\n"
         
 
-    call += "BL_FORT_PROC_CALL(SET_CASTRO_METHOD_PARAMS, set_castro_method_params)\n"
+    call += "set_castro_method_params\n"
 
     call += (indent-1)*" " + "("
 
@@ -249,9 +249,9 @@ def write_meth_module(plist, meth_template):
     except:
         sys.exit("invalid template file")
 
-    try: mo = open("Src_nd/meth_params.F90", "w")
+    try: mo = open("Src_nd/meth_params.f90", "w")
     except:
-        sys.exit("unable to open meth_params.F90 for writing")
+        sys.exit("unable to open meth_params.f90 for writing")
 
     param_decls = [p.get_f90_decl_string() for p in plist if p.in_fortran == 1]
 
@@ -292,7 +292,7 @@ def write_set_meth_sub(plist, set_template):
                 so.write("{}_in".format(p.f90_name))
 
                 if n == len(params)-1:
-                    so.write(")\n")
+                    so.write(") bind(C)\n")
                 else:
                     so.write(", ")
 
