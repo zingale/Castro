@@ -753,6 +753,10 @@ Castro::initData ()
     React_new.setVal(0.);
 #endif
 
+#ifdef FLAME
+    flame_init();
+#endif
+    
 #ifdef MAESTRO_INIT
     MAESTRO_init();
 #else
