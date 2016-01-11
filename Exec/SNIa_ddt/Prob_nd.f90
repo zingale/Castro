@@ -55,9 +55,6 @@ subroutine PROBINIT (init,name,namlen,problo,probhi)
   read(untin,fortin)
   close(unit=untin)
 
-  ! only need to get width of artificial flame once
-  call Flame_getWidth(sim_laminarWidth)
-
   ! Set up multipole ignition
   
   if (sim_ignMPole) then
@@ -326,7 +323,12 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   double precision :: P_l_m, P_lm1_m, ign_dist, flame_radius, fsurf_distance, hold
   double precision :: qbar_f, qbar_a
 
+  double precision :: laminar_width
+
   double precision :: cgsMeVperAmu = 9.6485e17  
+
+  ! Get the flame width
+  call Flame_getWidth(laminar_width)
 
   do k = lo(3), hi(3)
      do j = lo(2), hi(2)
@@ -447,7 +449,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
 
               ! determine local state in this zone
               ! assume deltas are equal
-              if ( (fsurf_distance-0.5*dx(1)) > 1.5*sim_laminarWidth ) then
+              if ( (fsurf_distance-0.5*dx(1)) > 1.5*laminar_width ) then
                  
                  ! whole cell unburned material
                  zone_state = unburned_state
@@ -458,8 +460,8 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
                  dqbar_qn = 0.0
                  enuc = 0.0
                  
-              else if ( (fsurf_distance+0.5*dx(1)) < -1.5*sim_laminarWidth ) then
-                 
+              else if ( (fsurf_distance+0.5*dx(1)) < -1.5*laminar_width ) then
+
                  ! fully burned to NSE
                  call Flame_rhJumpReactive(unburned_state, qbar_f, zone_state, dqbar_qn, eos_input_rt)
                  flam   = ONE
@@ -468,7 +470,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
                  enuc   = 0.0
                  
               else
-                 
+
                  ! partially burned
                  ! at least one cell will fall here (necessary to get initial refinement right)
                  call Flame_getProfile(fsurf_distance, flam)
