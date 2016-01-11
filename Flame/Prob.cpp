@@ -38,8 +38,7 @@ void Castro::problem_source_half_dt(MultiFab& s, Real time, Real dt, int is_new)
     for (MFIter mfi(s, false); mfi.isValid(); ++mfi)
     {
 
-	// Note that box is *not* necessarily just the valid region!
-	const Box& bx = mfi.growntilebox(ngrow);
+	const Box& bx = mfi.validbox();
 
 	if (is_new) {
 	  MultiFab& g = get_new_data(Gravity_Type);
