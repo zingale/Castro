@@ -142,6 +142,13 @@ Castro::variableSetUp ()
 
     BL_ASSERT(desc_lst.size() == 0);
 
+    // Get options, set phys_bc
+    read_params();
+
+    // Initialize the runtime parameters for any of the external
+    // microphysics
+    extern_init();
+    
     // Initialize the network
     network_init();
 
@@ -149,13 +156,6 @@ Castro::variableSetUp ()
     // Initialize the burner
     burner_init();
 #endif
-
-    // Get options, set phys_bc
-    read_params();
-
-    // Initialize the runtime parameters for any of the external
-    // microphysics
-    extern_init();
 
     //
     // Set number of state variables and pointers to components
