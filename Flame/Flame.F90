@@ -341,9 +341,9 @@ contains
     double precision, parameter :: eos_tol = 1.0d-8
 
     type (eos_t)     :: eosData
-    double precision ::  ye, pres_u, hmq_u
-    double precision ::  dens_n, emq, pres_n, qbar, sumyi, tempguess, edot, yedot
-    double precision ::  error, dd, dpdd, f, dfdd, dens_n_old
+    double precision :: ye, pres_u, hmq_u
+    double precision :: dens_n, emq, pres_n, qbar, sumyi, tempguess, edot, yedot
+    double precision :: error, dd, dpdd, f, dfdd, dens_n_old
 
     double precision, parameter :: cgsMeVperAmu = 9.6485e17  
 
