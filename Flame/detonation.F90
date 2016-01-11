@@ -28,7 +28,6 @@ contains
 
     use extern_probin_module, only: bn_detIgnFile, bn_detIgnFileName, bn_autoDDT, &
                                     bn_thermalReact, bn_thermalReactInFlameThreshold, bn_neutLoss, &
-                                    bn_detIgnFile, bn_detIgnFileName, bn_autoDDT, &
                                     pbIgnDist, pbIgnNumMax, pbIgnPhfa, pbIgnRad, pbIgnRho, &
                                     pbIgnRhoCalib, pbIgnRhoFact, pbIgnSep
 
