@@ -23,7 +23,7 @@ contains
   subroutine flame_init() bind(C)
 
     use amrinfo_module, only: amr_level
-    use prob_params_module, only: dx_level
+    use prob_params_module, only: dx_level, dim
 
     use extern_probin_module, only: fl_epsilon_0, fl_epsilon_1, &
                                     fl_kpp_fact, fl_b, fl_initProfileAdjustWidth, &
@@ -50,7 +50,7 @@ contains
     fsConstFlameSpeed    = fl_fsConstFlameSpeed
     fsConstFlameWidth    = fl_fsConstFlameWidth
 
-    dx = minval(dx_level(:,amr_level))
+    dx = minval(dx_level(1:dim,amr_level))
 
     R_over_s = kpp_fact * 4.0 / fl_b / dx
     kappa_over_s = fl_b * dx / 16.0
@@ -91,7 +91,7 @@ contains
 
     double precision, intent(out) :: laminarWidth
 
-    laminarWidth=width
+    laminarWidth = width
 
   end subroutine Flame_getWidth
 
