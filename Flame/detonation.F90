@@ -56,7 +56,6 @@ contains
 
     thermalReact = bn_thermalReact
     thermalReactInFlameThreshold = bn_thermalReactInFlameThreshold
-    autoDDT = bn_autoDDT
 
     !  determine whether we are detonating manually or automatically
     detIgnFile     = bn_detIgnFile
