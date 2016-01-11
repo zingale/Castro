@@ -56,10 +56,6 @@ void Castro::problem_source_half_dt(MultiFab& s, Real time, Real dt, int is_new)
 
     }
 
-    // Initialize the detonation data, if we have not already done so.
-
-    detonation_init();
-
     // Determine the maximum number of ignition points to allow from the Fortran module.
 
     int ignNumMax;
