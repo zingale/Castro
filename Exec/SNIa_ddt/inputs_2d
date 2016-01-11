@@ -11,6 +11,7 @@ geometry.coord_sys = 1         # R-Z coordinates
 
 geometry.prob_lo =  0.0e0      -65536.0e5
 geometry.prob_hi =  65536.0e5   65536.0e5
+castro.center    =  0.0e0       0.0e0
 
 amr.n_cell         = 128 256
 
