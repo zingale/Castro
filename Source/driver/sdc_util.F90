@@ -484,7 +484,12 @@ contains
              ! if we updated total energy, then correct internal, or vice versa
              U_new(UEINT) = U_new(UEDEN) - HALF*(sum(U_new(UMX:UMZ)**2)/U_new(URHO))
 
+             ! we solved our system to some tolerance, but let's be sure we are conservative by
+             ! reevaluating the reactions and then doing the full step update
+             call single_zone_react_source(U_new, R_full, i, j, k, burn_state)
+
              ! redo the update of the momenta to reduce accumulation of roundoff
+             U_new(:) = U_old(:) + dt_m * R_full(:) + dt_m * Cprime(:)
 
              ! copy back to k_n
              k_n(i,j,k,:) = U_new(:)
