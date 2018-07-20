@@ -318,6 +318,7 @@ contains
     use react_util_module
     use minpack_module, only : hybrd1, hybrj1
     use rpar_sdc_module
+    use extern_probin_module, only: SMALL_X_SAFE
 
     implicit none
 
@@ -349,7 +350,7 @@ contains
     type(eos_t) :: eos_state
 
     real(rt) :: err
-    real(rt), parameter :: tol = 1.e-8_rt
+    real(rt), parameter :: tol = 1.e-6_rt
     integer, parameter :: MAX_ITER = 100
     integer :: iter
 
@@ -452,8 +453,10 @@ contains
 
                       U_react(:) = U_react(:) + dU_react(:)
 
-                      ! construct the norm of the correction
-                      err = sum(dU_react**2)/sum(U_react**2)
+                      ! construct the norm of the correction -- only
+                      ! worry about species here, and use some
+                      ! protection against divide by 0
+                      err = sqrt(sum(dU_react(1:nspec_evolve)**2))/sqrt(sum((U_react(1:nspec_evolve) + SMALL_X_SAFE)**2))
 
                       iter = iter + 1
                    enddo
