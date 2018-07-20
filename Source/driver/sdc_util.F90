@@ -404,7 +404,7 @@ contains
                 dt_sub = dt_m/n_sub
                 U_new(:) = U_old(:)
 
-                do n = 1, n_sub
+               do n = 1, n_sub
 
                    ! update the momenta for this zone -- they don't react
                    U_new(UMX:UMZ) = U_old(UMX:UMZ) + n*dt_sub * Cprime(UMX:UMZ)
@@ -458,7 +458,7 @@ contains
                       iter = iter + 1
                    enddo
 
-                   if (iter > MAX_ITER .or. failed .or. U_react(0) < ZERO) then
+                   if (iter >= MAX_ITER .or. failed .or. U_react(0) < ZERO) then
                       ! increase the number of substeps and start over
                       failed = .true.
                       exit
