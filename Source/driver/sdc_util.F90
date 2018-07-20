@@ -353,7 +353,7 @@ contains
     integer, parameter :: MAX_ITER = 100
     integer :: iter
 
-    real(rt) :: U_new(NVAR), C(NVAR), R_full(NVAR)
+    real(rt) :: U_new(NVAR), U_old(NVAR), C(NVAR), Cprime(NVAR), R_full(NVAR)
 
     ! we will do the implicit update of only the terms that have reactive sources
     !
@@ -374,6 +374,10 @@ contains
 
     integer, parameter :: lwa = (nspec_evolve+2)*(nspec_evolve+2+13)/2
     real(rt) :: wa(lwa)
+    real(rt) :: dt_sub
+    logical :: failed
+    integer :: n_sub
+    integer, parameter :: NSUB_MAX = 128
 
     ! now consider the reacting system
     do k = lo(3), hi(3)
@@ -394,11 +398,13 @@ contains
 
              ! allow for substeps
              n_sub = 1
-             do while (n_sub < NSUB_MAX)
+             do while (n_sub <= NSUB_MAX)
 
                 ! do the update in substeps
                 dt_sub = dt_m/n_sub
-                do n = 1, nsub
+                U_new(:) = U_old(:)
+
+                do n = 1, n_sub
 
                    ! update the momenta for this zone -- they don't react
                    U_new(UMX:UMZ) = U_old(UMX:UMZ) + n*dt_sub * Cprime(UMX:UMZ)
@@ -407,13 +413,13 @@ contains
                    U_new(UFS-1+nspec_evolve:UFS-1+nspec) = U_old(UMX:UMZ) + n*dt_sub * Cprime(UFS-1+nspec_evolve:UFS-1+nspec)
 
                    ! now only save the subset that participates in the nonlinear solve
-                   C_react(0) = U_old(URHO) + n*dt_sub * Cprime(URHO)
-                   C_react(1:nspec_evolve) = U_old(1:nspec_evolve) + n*dt_sub * Cprime(UFS:UFS-1+nspec_evolve)
-                   C_react(nspec_evolve+1) = U_old(UEDEN) + n*dt_sub * Cprime(UEDEN)  ! need to consider which energy
+                   C_react(0) = U_new(URHO) + dt_sub * Cprime(URHO)
+                   C_react(1:nspec_evolve) = U_new(1:nspec_evolve) + dt_sub * Cprime(UFS:UFS-1+nspec_evolve)
+                   C_react(nspec_evolve+1) = U_new(UEDEN) + dt_sub * Cprime(UEDEN)  ! need to consider which energy
 
                    ! load rpar
                    rpar(irp_C_react:irp_C_react-1+nspec_evolve+2) = C_react(:)
-                   rpar(irp_dt) = dt_m
+                   rpar(irp_dt) = dt_sub
                    rpar(irp_mom:irp_mom-1+3) = U_new(UMX:UMZ)
                    rpar(irp_eint) = U_new(UEINT)  ! we should be able to do an update for this somehow?
                    rpar(irp_spec:irp_spec-1+(nspec-nspec_evolve)) = U_new(UFS+nspec_evolve:UFS-1+nspec)
@@ -423,46 +429,59 @@ contains
                    U_react(1:nspec_evolve) = U_new(UFS:UFS-1+nspec_evolve)
                    U_react(nspec_evolve+1) = U_new(UEDEN)  ! we have a choice of which energy variable to update
 
-                enddo
+                   ! do a simple Newton solve
+                   err = 1.e30_rt
 
-                ! do a simple Newton solve
-                err = 1.e30_rt
+                   ! iterative loop
+                   failed = .false.
+                   iter = 0
+                   do while (err > tol .and. iter < MAX_ITER)
 
-                ! iterative loop
-                iter = 0
-                do while (err > tol .and. iter < MAX_ITER)
+                      call f_sdc_jac(nspec_evolve+2, U_react, f, Jac, nspec_evolve+2, info, n_rpar, rpar)
 
-                   call f_sdc_jac(nspec_evolve+2, U_react, f, Jac, nspec_evolve+2, info, n_rpar, rpar)
+                      ! solve the linear system: Jac dU_react = -f
+                      call dgefa(Jac, nspec_evolve+2, nspec_evolve+2, ipvt, info)
+                      if (info /= 0) then
+                         failed = .true.
+                      endif
 
-                   ! solve the linear system: Jac dU_react = -f
-                   call dgefa(Jac, nspec_evolve+2, nspec_evolve+2, ipvt, info)
-                   if (info /= 0) then
-                      call amrex_error("singular matrix")
+                      f_rhs(:) = -f(:)
+                      call dgesl(Jac, nspec_evolve+2, nspec_evolve+2, ipvt, f_rhs, 0)
+
+                      dU_react(:) = f_rhs(:)
+
+                      U_react(:) = U_react(:) + dU_react(:)
+
+                      ! construct the norm of the correction
+                      err = sum(dU_react**2)/sum(U_react**2)
+
+                      iter = iter + 1
+                   enddo
+
+                   if (iter > MAX_ITER .or. failed .or. U_react(0) < ZERO) then
+                      ! increase the number of substeps and start over
+                      failed = .true.
+                      exit
                    endif
 
-                   f_rhs(:) = -f(:)
-                   call dgesl(Jac, nspec_evolve+2, nspec_evolve+2, ipvt, f_rhs, 0)
+                   ! update the full U_new
+                   U_new(URHO) = U_react(0)
+                   U_new(UFS:UFS-1+nspec_evolve) = U_react(1:nspec_evolve)
+                   U_new(UEDEN) = U_react(nspec_evolve+1)
 
-                   dU_react(:) = f_rhs(:)
-
-                   U_react(:) = U_react(:) + dU_react(:)
-
-                   ! construct the norm of the correction
-                   err = sum(dU_react**2)/sum(U_react**2)
-
-                   iter = iter + 1
                 enddo
 
-                if (iter > MAX_ITER .or. info /= 0) then
-                   ! increase the number of substeps and start over
+                if (.not. failed) exit
 
-             ! update the full U_new
-             U_new(URHO) = U_react(0)
-             U_new(UFS:UFS-1+nspec_evolve) = U_react(1:nspec_evolve)
-             U_new(UEDEN) = U_react(nspec_evolve+1)
+                ! retry with smaller steps
+                n_sub = n_sub * 2
+
+             enddo
 
              ! if we updated total energy, then correct internal, or vice versa
              U_new(UEINT) = U_new(UEDEN) - HALF*(sum(U_new(UMX:UMZ)**2)/U_new(URHO))
+
+             ! redo the update of the momenta to reduce accumulation of roundoff
 
              ! copy back to k_n
              k_n(i,j,k,:) = U_new(:)
