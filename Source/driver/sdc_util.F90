@@ -367,6 +367,8 @@ contains
 
     integer :: m, n
     real(rt) :: Jac(0:nspec_evolve+1, 0:nspec_evolve+1)
+    real(rt) :: w(0:nspec_evolve+1)
+    real(rt) :: dU_old
 
     real(rt) :: rpar(0:n_rpar-1)
 
@@ -436,7 +438,9 @@ contains
                    ! iterative loop
                    failed = .false.
                    iter = 0
-                   do while (err > tol .and. iter < MAX_ITER)
+                   dU_old = 1.e30_rt
+
+                   do while (err > tol .and. iter < MAX_ITER .and. iter >= 2)
 
                       call f_sdc_jac(nspec_evolve+2, U_react, f, Jac, nspec_evolve+2, info, n_rpar, rpar)
 
@@ -456,9 +460,18 @@ contains
                       ! construct the norm of the correction -- only
                       ! worry about species here, and use some
                       ! protection against divide by 0
-                      err = sqrt(sum(dU_react(1:nspec_evolve)**2))/sqrt(sum((U_react(1:nspec_evolve) + SMALL_X_SAFE)**2))
+                      !err = sqrt(sum(dU_react(1:nspec_evolve)**2))/sqrt(sum((U_react(1:nspec_evolve) + SMALL_X_SAFE)**2))
+                      w(:) = abs(dU_react(:)/(U_react(:) + SMALL_X_SAFE))
+
+                      err = sqrt(sum(w(:)**2)) !(dU_react(1:nspec_evolve)/(U_react(1:nspec_evolve) + SMALL_X_SAFE))**2))
 
                       iter = iter + 1
+
+                      ! Newton's method should converge quadratically --
+                      ! if it does not, then we are not within the
+                      ! convergence range for our initial guess, so we
+                      ! should subcycle more
+
                    enddo
 
                    if (iter >= MAX_ITER .or. failed .or. U_react(0) < ZERO) then
@@ -466,6 +479,7 @@ contains
                       failed = .true.
                       exit
                    endif
+
 
                    ! update the full U_new
                    U_new(URHO) = U_react(0)
