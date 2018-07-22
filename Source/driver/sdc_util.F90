@@ -488,12 +488,18 @@ contains
 
                 enddo
 
+                ! if we are here and didn't fail, then we completed
+                ! the integration successfully
                 if (.not. failed) exit
 
                 ! retry with smaller steps
                 n_sub = n_sub * 2
 
              enddo
+
+             if (failed) then
+                call amrex_error("didn't converge in sdc")
+             endif
 
              ! if we updated total energy, then correct internal, or vice versa
              U_new(UEINT) = U_new(UEDEN) - HALF*(sum(U_new(UMX:UMZ)**2)/U_new(URHO))
