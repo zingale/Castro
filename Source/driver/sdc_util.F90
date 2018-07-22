@@ -440,7 +440,7 @@ contains
                    iter = 0
                    dU_old = 1.e30_rt
 
-                   do while (err > tol .and. iter < MAX_ITER .and. iter >= 2)
+                   do while (err > tol .and. iter < MAX_ITER)
 
                       call f_sdc_jac(nspec_evolve+2, U_react, f, Jac, nspec_evolve+2, info, n_rpar, rpar)
 
