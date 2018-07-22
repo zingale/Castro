@@ -88,6 +88,7 @@ int         Castro::hse_interp_temp = 0;
 int         Castro::hse_reflect_vels = 0;
 int         Castro::mol_order = 2;
 int         Castro::sdc_order = 2;
+int         Castro::sdc_extra_iters = 0;
 int         Castro::sdc_solver = 1;
 amrex::Real Castro::sdc_solver_tol = 1.e-12;
 amrex::Real Castro::fixed_dt = -1.0;
