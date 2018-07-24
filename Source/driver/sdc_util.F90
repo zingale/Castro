@@ -75,7 +75,7 @@ contains
     dt_m = rpar(irp_dt)
     C_react(:) = rpar(irp_C_react:irp_C_react-1+nspec_evolve+2)
 
-    f(:) = -U(:) + dt_m * R_react(:) + C_react(:)
+    f(:) = U(:) - dt_m * R_react(:) - C_react(:)
 
   end subroutine f_sdc
 
@@ -329,6 +329,7 @@ contains
                               A_1_old, A1lo, A1hi, &
                               R_0_old, R0lo, R0hi, &
                               R_1_old, R1lo, R1hi, &
+                              sdc_iteration, &
                               m_start) bind(C, name="ca_sdc_update_o2")
 
     ! update k_m to k_n via advection -- this is a second-order accurate update
@@ -356,7 +357,7 @@ contains
     integer, intent(in) :: A1lo(3), A1hi(3)
     integer, intent(in) :: R0lo(3), R0hi(3)
     integer, intent(in) :: R1lo(3), R1hi(3)
-    integer, intent(in) :: m_start
+    integer, intent(in) :: sdc_iteration, m_start
 
 
     real(rt), intent(in) :: k_m(kmlo(1):kmhi(1), kmlo(2):kmhi(2), kmlo(3):kmhi(3), NVAR)
@@ -379,7 +380,7 @@ contains
     integer, parameter :: MAX_ITER = 100
     integer :: iter
 
-    real(rt) :: U_new(NVAR), U_old(NVAR), C(NVAR), R_full(NVAR), Cprime(NVAR)
+    real(rt) :: U_old(NVAR), U_new(NVAR), C(NVAR), R_full(NVAR)
 
     ! we will do the implicit update of only the terms that have reactive sources
     !
@@ -393,7 +394,6 @@ contains
     integer :: m, n
     real(rt) :: Jac(0:nspec_evolve+1, 0:nspec_evolve+1)
     real(rt) :: w(0:nspec_evolve+1)
-    real(rt) :: dU_old
 
     real(rt) :: rpar(0:n_rpar-1)
 
@@ -412,15 +412,15 @@ contains
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
 
+             U_old(:) = k_m(i,j,k,:)
+
              ! use the old state as the guess for the new state
              U_new(:) = k_m(i,j,k,:)
-             U_old(:) = k_m(i,j,k,:)
 
              ! construct the source term to the update
              ! for 2nd order, there is no advective correction, and we have
-             ! C = U^{m,(k+1)} - dt * R(U^{m+1,k}) + I_m^{m+1}
-             ! we'll write this as U + dt C'
-             Cprime(:) = -R_1_old(i,j,k,:) + &
+             ! C = - R(U^{m+1,k}) + I_m^{m+1}/dt
+             C(:) = -R_1_old(i,j,k,:) + &
                   HALF * (A_0_old(i,j,k,:) + A_1_old(i,j,k,:)) + &
                   HALF * (R_0_old(i,j,k,:) + R_1_old(i,j,k,:))
 
@@ -435,19 +435,20 @@ contains
                 do n = 1, n_sub
 
                    ! update the momenta for this zone -- they don't react
-                   U_new(UMX:UMZ) = U_old(UMX:UMZ) + n*dt_sub * Cprime(UMX:UMZ)
+                   U_new(UMX:UMZ) = U_old(UMX:UMZ) + n*dt_sub * C(UMX:UMZ)
 
                    ! update the non-reacting species
                    U_new(UFS+nspec_evolve:UFS-1+nspec) = U_old(UFS+nspec_evolve:UFS-1+nspec) + &
-                        n*dt_sub * Cprime(UFS+nspec_evolve:UFS-1+nspec)
+                        n*dt_sub * C(UFS+nspec_evolve:UFS-1+nspec)
 
-                   ! now only save the subset that participates in the nonlinear solve
-                   C_react(0) = U_new(URHO) + dt_sub * Cprime(URHO)
-                   C_react(1:nspec_evolve) = U_new(1:nspec_evolve) + dt_sub * Cprime(UFS:UFS-1+nspec_evolve)
+                   ! now only save the subset that participates in the
+                   ! nonlinear solve
+                   C_react(0) = U_new(URHO) + dt_sub * C(URHO)
+                   C_react(1:nspec_evolve) = U_new(1:nspec_evolve) + dt_sub * C(UFS:UFS-1+nspec_evolve)
                    if (sdc_solve_for_rhoe == 1) then
-                      C_react(nspec_evolve+1) = U_new(UEINT) + dt_sub * Cprime(UEINT)
+                      C_react(nspec_evolve+1) = U_new(UEINT) + dt_sub * C(UEINT)
                    else
-                      C_react(nspec_evolve+1) = U_new(UEDEN) + dt_sub * Cprime(UEDEN)
+                      C_react(nspec_evolve+1) = U_new(UEDEN) + dt_sub * C(UEDEN)
                    endif
 
                    ! load rpar
@@ -480,7 +481,6 @@ contains
                    ! iterative loop
                    failed = .false.
                    iter = 0
-                   dU_old = 1.e30_rt
 
                    do while (err > tol .and. iter < MAX_ITER)
 
@@ -502,10 +502,9 @@ contains
                       ! construct the norm of the correction -- only
                       ! worry about species here, and use some
                       ! protection against divide by 0
-                      !err = sqrt(sum(dU_react(1:nspec_evolve)**2))/sqrt(sum((U_react(1:nspec_evolve) + SMALL_X_SAFE)**2))
                       w(:) = abs(dU_react(:)/(U_react(:) + SMALL_X_SAFE))
 
-                      err = sqrt(sum(w(:)**2)) !(dU_react(1:nspec_evolve)/(U_react(1:nspec_evolve) + SMALL_X_SAFE))**2))
+                      err = sqrt(sum(w(:)**2))
 
                       iter = iter + 1
 
@@ -556,7 +555,7 @@ contains
              call single_zone_react_source(U_new, R_full, i, j, k, burn_state)
 
              ! redo the update of the momenta to reduce accumulation of roundoff
-             U_new(:) = U_old(:) + dt_m * R_full(:) + dt_m * Cprime(:)
+             U_new(:) = U_old(:) + dt_m * R_full(:) + dt_m * C(:)
 
              ! copy back to k_n
              k_n(i,j,k,:) = U_new(:)
