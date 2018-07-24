@@ -3,8 +3,8 @@ module rpar_sdc_module
   use network, only : nspec, nspec_evolve
   implicit none
 
-  integer, parameter :: irp_C_react = 0  ! nspec_evolve + 2 components
-  integer, parameter :: irp_dt = irp_C_react + nspec_evolve + 2
+  integer, parameter :: irp_f_source = 0  ! nspec_evolve + 2 components
+  integer, parameter :: irp_dt = irp_f_source + nspec_evolve + 2
   integer, parameter :: irp_mom = irp_dt + 1    ! 3 components
   integer, parameter :: irp_evar = irp_mom + 3
   integer, parameter :: irp_spec = irp_evar + 1  ! nspec - nspec_evolve components
@@ -42,7 +42,7 @@ contains
     real(rt), intent(in) :: rpar(0:npar-1)
 
     real(rt) :: U_full(nvar),  R_full(nvar)
-    real(rt) :: R_react(0:n-1), C_react(0:n-1)
+    real(rt) :: R_react(0:n-1), f_source(0:n-1)
     type(burn_t) :: burn_state
 
     real(rt) :: dt_m
@@ -73,9 +73,9 @@ contains
     endif
 
     dt_m = rpar(irp_dt)
-    C_react(:) = rpar(irp_C_react:irp_C_react-1+nspec_evolve+2)
+    f_source(:) = rpar(irp_f_source:irp_f_source-1+nspec_evolve+2)
 
-    f(:) = U(:) - dt_m * R_react(:) - C_react(:)
+    f(:) = U(:) - dt_m * R_react(:) - f_source(:)
 
   end subroutine f_sdc
 
@@ -103,7 +103,7 @@ contains
     real(rt), intent(in) :: rpar(0:npar-1)
 
     real(rt) :: U_full(nvar),  R_full(nvar)
-    real(rt) :: R_react(0:n-1), C_react(0:n-1)
+    real(rt) :: R_react(0:n-1), f_source(0:n-1)
     type(burn_t) :: burn_state
     type(eos_t) :: eos_state
     real(rt) :: dt_m
@@ -129,7 +129,7 @@ contains
 
     ! unpack rpar
     dt_m = rpar(irp_dt)
-    C_react(:) = rpar(irp_C_react:irp_C_react-1+nspec_evolve+2)
+    f_source(:) = rpar(irp_f_source:irp_f_source-1+nspec_evolve+2)
 
     ! compute the temperature and species derivatives --
     ! maybe this should be done using the burn_state
@@ -197,7 +197,7 @@ contains
 
     Jac(:,:) = Jac(:,:) - dt_m * matmul(dRdw, dwdU)
 
-    f(:) = U(:) - dt_m * R_react(:) - C_react(:)
+    f(:) = U(:) - dt_m * R_react(:) - f_source(:)
 
   end subroutine f_sdc_jac
 
@@ -381,6 +381,7 @@ contains
     integer :: iter
 
     real(rt) :: U_old(NVAR), U_new(NVAR), C(NVAR), R_full(NVAR)
+    real(rt) :: U_save(NVAR)
 
     ! we will do the implicit update of only the terms that have reactive sources
     !
@@ -388,7 +389,7 @@ contains
     !   1:nspec_evolve  : species
     !   nspec_evolve+1  : (rho E) or (rho e)
 
-    real(rt) :: U_react(0:nspec_evolve+1), C_react(0:nspec_evolve+1), R_react(0:nspec_evolve+1)
+    real(rt) :: U_react(0:nspec_evolve+1), f_source(0:nspec_evolve+1), R_react(0:nspec_evolve+1)
     real(rt) :: dU_react(0:nspec_evolve+1), f(0:nspec_evolve+1), f_rhs(0:nspec_evolve+1)
 
     integer :: m, n
@@ -402,20 +403,20 @@ contains
 
     integer, parameter :: lwa = (nspec_evolve+2)*(nspec_evolve+2+13)/2
     real(rt) :: wa(lwa)
+    logical :: converged
     real(rt) :: dt_sub
     logical :: failed
     integer :: n_sub
-    integer, parameter :: NSUB_MAX = 1024
+    integer, parameter :: NSUB_MAX = 128
 
     ! now consider the reacting system
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
 
-             U_old(:) = k_m(i,j,k,:)
-
-             ! use the old state as the guess for the new state
-             U_new(:) = k_m(i,j,k,:)
+             ! this will always be the solution at the top of the
+             ! original timestep (no subcycling)
+             U_save(:) = k_m(i,j,k,:)
 
              ! construct the source term to the update
              ! for 2nd order, there is no advective correction, and we have
@@ -430,29 +431,45 @@ contains
 
                 ! do the update in substeps
                 dt_sub = dt_m/n_sub
-                U_new(:) = U_old(:)
+
+                ! U_old will be the solution at the start of the current substep
+                U_old(:) = U_save(:)
 
                 do n = 1, n_sub
 
+                   ! this is the full state -- this will be updated as we
+                   ! solve the nonlinear system.  We want to start with a
+                   ! good initial guess.  For later iterations, we should
+                   ! begin with the result from the previous iteration.  For
+                   ! the first iteration, let's try to extrapolate forward
+                   ! in time.
+                   if (sdc_iteration == 0 .or. n_sub > 1) then
+                      U_new(:) = U_old(:) + dt_sub * A_m(i,j,k,:) + dt_sub * R_0_old(i,j,k,:)
+                   else
+                      U_new(:) = k_n(i,j,k,:)
+                   endif
+
+
                    ! update the momenta for this zone -- they don't react
-                   U_new(UMX:UMZ) = U_old(UMX:UMZ) + n*dt_sub * C(UMX:UMZ)
+                   U_new(UMX:UMZ) = U_old(UMX:UMZ) + dt_sub * C(UMX:UMZ)
 
                    ! update the non-reacting species
                    U_new(UFS+nspec_evolve:UFS-1+nspec) = U_old(UFS+nspec_evolve:UFS-1+nspec) + &
-                        n*dt_sub * C(UFS+nspec_evolve:UFS-1+nspec)
+                        dt_sub * C(UFS+nspec_evolve:UFS-1+nspec)
 
                    ! now only save the subset that participates in the
-                   ! nonlinear solve
-                   C_react(0) = U_new(URHO) + dt_sub * C(URHO)
-                   C_react(1:nspec_evolve) = U_new(1:nspec_evolve) + dt_sub * C(UFS:UFS-1+nspec_evolve)
+                   ! nonlinear solve -- note: we include the old state in
+                   ! f_source
+                   f_source(0) = U_old(URHO) + dt_sub * C(URHO)
+                   f_source(1:nspec_evolve) = U_old(UFS:UFS-1+nspec_evolve) + dt_sub * C(UFS:UFS-1+nspec_evolve)
                    if (sdc_solve_for_rhoe == 1) then
-                      C_react(nspec_evolve+1) = U_new(UEINT) + dt_sub * C(UEINT)
+                      f_source(nspec_evolve+1) = U_old(UEINT) + dt_sub * C(UEINT)
                    else
-                      C_react(nspec_evolve+1) = U_new(UEDEN) + dt_sub * C(UEDEN)
+                      f_source(nspec_evolve+1) = U_old(UEDEN) + dt_sub * C(UEDEN)
                    endif
 
                    ! load rpar
-                   rpar(irp_C_react:irp_C_react-1+nspec_evolve+2) = C_react(:)
+                   rpar(irp_f_source:irp_f_source-1+nspec_evolve+2) = f_source(:)
                    rpar(irp_dt) = dt_sub
                    rpar(irp_mom:irp_mom-1+3) = U_new(UMX:UMZ)
 
@@ -479,10 +496,10 @@ contains
                    err = 1.e30_rt
 
                    ! iterative loop
-                   failed = .false.
                    iter = 0
-
-                   do while (err > tol .and. iter < MAX_ITER)
+                   failed = .false.
+                   converged = .false.
+                   do while (.not. converged .and. iter < MAX_ITER)
 
                       call f_sdc_jac(nspec_evolve+2, U_react, f, Jac, nspec_evolve+2, info, n_rpar, rpar)
 
@@ -504,7 +521,11 @@ contains
                       ! protection against divide by 0
                       w(:) = abs(dU_react(:)/(U_react(:) + SMALL_X_SAFE))
 
-                      err = sqrt(sum(w(:)**2))
+                      err = sqrt(sum(w(1:nspec_evolve)**2))
+
+                      if (err < tol) then
+                         converged = .true.
+                      endif
 
                       iter = iter + 1
 
@@ -515,12 +536,17 @@ contains
 
                    enddo
 
-                   if (iter >= MAX_ITER .or. failed .or. U_react(0) < ZERO) then
-                      ! increase the number of substeps and start over
+                   if (.not. converged) then
                       failed = .true.
-                      exit
                    endif
 
+                   if (U_react(0) < ZERO) then
+                      failed = .true.
+                   endif
+
+                   if (failed) then
+                      exit
+                   endif
 
                    ! update the full U_new
                    ! if we updated total energy, then correct internal, or vice versa
@@ -533,6 +559,9 @@ contains
                       U_new(UEDEN) = U_react(nspec_evolve+1)
                       U_new(UEINT) = U_new(UEDEN) - HALF*sum(U_new(UMX:UMZ)**2)/U_new(URHO)
                    endif
+
+                   ! set the starting point for the next substep
+                   U_old(:) = U_new(:)
 
                 enddo
 
@@ -555,6 +584,7 @@ contains
              call single_zone_react_source(U_new, R_full, i, j, k, burn_state)
 
              ! redo the update of the momenta to reduce accumulation of roundoff
+             U_old(:) = U_save(:)
              U_new(:) = U_old(:) + dt_m * R_full(:) + dt_m * C(:)
 
              ! copy back to k_n
