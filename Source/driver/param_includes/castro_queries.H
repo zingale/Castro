@@ -92,6 +92,7 @@ pp.query("sdc_extra_iters", sdc_extra_iters);
 pp.query("sdc_solver", sdc_solver);
 pp.query("sdc_solver_tol", sdc_solver_tol);
 pp.query("sdc_solve_for_rhoe", sdc_solve_for_rhoe);
+pp.query("sdc_use_analytic_jac", sdc_use_analytic_jac);
 pp.query("fixed_dt", fixed_dt);
 pp.query("initial_dt", initial_dt);
 pp.query("dt_cutoff", dt_cutoff);
