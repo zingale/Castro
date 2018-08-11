@@ -1,19 +1,19 @@
 &fortin 
 
-  mass_P = 0.90
-  mass_S = 0.90
+  mass_P = 0.64
+  mass_S = 0.64
 
   central_density_P = -1.0d0
   central_density_S = -1.0d0
 
   nsub = 4
 
-  problem = 2
+  problem = 0
 
   roche_radius_factor = 2.0d0
 
-  collision_separation = 4.0d0
-  collision_impact_parameter = 0.0d0
+  collision_separation = 2.0
+  collision_impact_parameter = 0.0
 
   tde_separation = 8.0d0
   tde_beta = 6.0d0
@@ -38,10 +38,10 @@
   axis_1 = 1
   axis_2 = 2 
 
-  max_stellar_tagging_level = 20
-  max_temperature_tagging_level = 20
-  max_center_tagging_level = 20
-  stellar_density_threshold = 1.0d0
+  max_stellar_tagging_level = 0
+  max_temperature_tagging_level = 0
+  max_center_tagging_level = 0
+  stellar_density_threshold = 5.0d6
   temperature_tagging_threshold = 5.0d8
   center_tagging_radius = 0.0d0
   max_tagging_radius = 0.75d0
@@ -73,8 +73,8 @@
   hybrid_wd_c_frac = 0.50d0
   hybrid_wd_o_frac = 0.50d0
 
-  co_wd_c_frac = 0.40d0
-  co_wd_o_frac = 0.60d0
+  co_wd_c_frac = 0.5d0
+  co_wd_o_frac = 0.5d0
 
   onemg_wd_o_frac  = 0.60d0
   onemg_wd_ne_frac = 0.35d0
@@ -90,8 +90,8 @@
 
   sponge_lower_radius  = 0.0d0
   sponge_upper_radius  = 0.0d0
-  sponge_lower_density = 0.0d0
-  sponge_upper_density = 0.0d0
+  sponge_lower_density = 1.0d-1
+  sponge_upper_density = 1.0d0
   sponge_timescale     = 0.01d0
 
 /
@@ -115,7 +115,7 @@
   burning_mode = 1
 
   do_constant_volume_burn = T
-  call_eos_in_rhs = T
+  call_eos_in_rhs = F
 
   rtol_spec = 1.d-6
   atol_spec = 1.d-6
