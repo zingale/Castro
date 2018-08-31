@@ -355,7 +355,13 @@ Castro::variableSetUp ()
   // Component    NumSpec+1          is  rho_enuc= rho * (eout-ein)
   store_in_checkpoint = true;
   desc_lst.addDescriptor(Reactions_Type,IndexType::TheCellType(),
-			 StateDescriptor::Point,0,NumSpec+2,
+			 StateDescriptor::Point,0,
+#ifdef REUSE_REACT_STEPSIZE
+  // Component    NumSpec+2          is      react_stepsize (last ODE integration timestep)
+			 NumSpec+3,
+#else
+			 NumSpec+2,
+#endif
 			 &cell_cons_interp,state_data_extrap,store_in_checkpoint);
 #endif
 
@@ -550,6 +556,9 @@ Castro::variableSetUp ()
     }
   desc_lst.setComponent(Reactions_Type, NumSpec  , "enuc", bc, BndryFunc(ca_reactfill));
   desc_lst.setComponent(Reactions_Type, NumSpec+1, "rho_enuc", bc, BndryFunc(ca_reactfill));
+#ifdef REUSE_REACT_STEPSIZE
+  desc_lst.setComponent(Reactions_Type, NumSpec+2, "react_stepsize", bc, BndryFunc(ca_reactfill));
+#endif
 #endif
 
 #ifdef SDC

@@ -46,7 +46,12 @@ contains
     integer , intent(in   ) :: w_lo(3), w_hi(3)
     integer , intent(in   ) :: m_lo(3), m_hi(3)
     real(rt), intent(inout) :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
-    real(rt), intent(inout) :: reactions(r_lo(1):r_hi(1),r_lo(2):r_hi(2),r_lo(3):r_hi(3),nspec+2)
+    real(rt), intent(inout) :: reactions(r_lo(1):r_hi(1),r_lo(2):r_hi(2),r_lo(3):r_hi(3), &
+#ifdef REUSE_REACT_STEPSIZE
+                                         nspec+3)
+#else
+                                         nspec+2)
+#endif
     real(rt), intent(inout) :: weights(w_lo(1):w_hi(1),w_lo(2):w_hi(2),w_lo(3):w_hi(3))
     integer , intent(in   ) :: mask(m_lo(1):m_hi(1),m_lo(2):m_hi(2),m_lo(3):m_hi(3))
     real(rt), intent(in   ) :: time, dt_react
@@ -125,6 +130,11 @@ contains
 
              burn_state_in % dx = dx_min
 
+#ifdef REUSE_REACT_STEPSIZE
+             ! Set the ODE timestep to start with
+             burn_state_in % ode_step = reactions(i,j,k,nspec+3)
+#endif
+
              ! Ensure we start with no RHS or Jacobian calls registered.
 
              burn_state_in % n_rhs = 0
@@ -181,6 +191,11 @@ contains
                 enddo
                 reactions(i,j,k,nspec+1) = delta_e / dt_react
                 reactions(i,j,k,nspec+2) = delta_rho_e / dt_react
+
+#ifdef REUSE_REACT_STEPSIZE
+                ! Set the ODE timestep to start with
+                reactions(i,j,k,nspec+3) = burn_state_out % ode_step
+#endif
 
              endif
 
@@ -239,7 +254,12 @@ contains
     real(rt), intent(in   ) :: uold(uo_lo(1):uo_hi(1),uo_lo(2):uo_hi(2),uo_lo(3):uo_hi(3),NVAR)
     real(rt), intent(inout) :: unew(un_lo(1):un_hi(1),un_lo(2):un_hi(2),un_lo(3):un_hi(3),NVAR)
     real(rt), intent(in   ) :: asrc(as_lo(1):as_hi(1),as_lo(2):as_hi(2),as_lo(3):as_hi(3),NVAR)
-    real(rt), intent(inout) :: reactions(r_lo(1):r_hi(1),r_lo(2):r_hi(2),r_lo(3):r_hi(3),nspec+2)
+    real(rt), intent(inout) :: reactions(r_lo(1):r_hi(1),r_lo(2):r_hi(2),r_lo(3):r_hi(3), &
+#ifdef REUSE_REACT_STEPSIZE
+                                         nspec+3)
+#else
+                                         nspec+2)
+#endif
     integer , intent(in   ) :: mask(m_lo(1):m_hi(1),m_lo(2):m_hi(2),m_lo(3):m_hi(3))
     real(rt), intent(inout) :: time, dt_react
     integer , intent(in   ) :: sdc_iter
@@ -312,6 +332,11 @@ contains
 
              burn_state_in % sdc_iter = sdc_iter
 
+#ifdef REUSE_REACT_STEPSIZE
+             ! Set the ODE timestep to start with
+             burn_state_in % ode_step = reactions(i,j,k,nspec+3)
+#endif
+
              call integrator(burn_state_in, burn_state_out, dt_react, time)
 
              ! Update the state data.
@@ -335,6 +360,11 @@ contains
                 enddo
                 reactions(i,j,k,nspec+1) = (unew(i,j,k,UEINT) * rhonInv - uold(i,j,k,UEINT) * rhooInv) / dt_react
                 reactions(i,j,k,nspec+2) = (unew(i,j,k,UEINT) - uold(i,j,k,UEINT)) / dt_react
+
+#ifdef REUSE_REACT_STEPSIZE
+                ! Set the ODE timestep to start with
+                reactions(i,j,k,nspec+3) = burn_state_out % ode_step
+#endif
 
              endif
 
