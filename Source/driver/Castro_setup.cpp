@@ -647,22 +647,69 @@ Castro::variableSetUp ()
   }
 
 
+  // spectial StateData for when time_integration_method ==
+  // SpectralDeferredCorrections these hold the state at the
+  // intermediate time nodes and at old and current iterations
+  if (time_integration_method == SpectralDeferredCorrections) {
+
+    // the state at each of the SDC nodes
+    // note: we don't really need this for node 0, but we'll deal with
+    // that later
+    SDC_k_state_start = desc_lst.size();
+
+    for (int m=0; m < SDC_NODES; m++) {
+      store_in_checkpoint = false;
+      desc_lst.addDescriptor(SDC_k_state_start+m, IndexType::TheCellType(),
+                             StateDescriptor::Point, 0, NUM_STATE,
+                             interp, state_data_extrap, store_in_checkpoint);
+
+      desc_lst.setComponent(SDC_k_state_start+m,
+                            Density,
+                            name,
+                            bcs,
+                            BndryFunc(ca_denfill,ca_hypfill));
+
+    }
+
+    // the advection terms
+    SDC_A_state_start = desc_lst.size();
+
+    for (int m=0; m < SDC_NODES; m++) {
+      store_in_checkpoint = false;
+      desc_lst.addDescriptor(SDC_A_state_start+m, IndexType::TheCellType(),
+                             StateDescriptor::Point, 0, NUM_STATE,
+                             interp, state_data_extrap, store_in_checkpoint);
+
+      desc_lst.setComponent(SDC_A_state_start+m,
+                            Density,
+                            state_type_source_names,
+                            source_bcs,
+                            BndryFunc(ca_generic_single_fill,ca_generic_multi_fill));
+
+    }
+
 #ifdef REACTIONS
-  if (time_integration_method == SpectralDeferredCorrections && fourth_order == 1) {
 
-    // we are doing 4th order reactive SDC.  We need 2 ghost cells here
-    SDC_Source_Type = desc_lst.size();
+    // we are doing 4th order reactive SDC.  We need 2 ghost cells
+    // here (double check this)
+    SDC_R_state_start = desc_lst.size();
 
-    store_in_checkpoint = false;
-    desc_lst.addDescriptor(SDC_Source_Type, IndexType::TheCellType(),
-                           StateDescriptor::Point, 2, NUM_STATE,
-                           interp, state_data_extrap, store_in_checkpoint);
+    for (int m=0; m < SDC_NODES; m++) {
+      store_in_checkpoint = false;
+      desc_lst.addDescriptor(SDC_R_state_start+m, IndexType::TheCellType(),
+                             StateDescriptor::Point, 2, NUM_STATE,
+                             interp, state_data_extrap, store_in_checkpoint);
 
-    // this is the same thing we do for the sources
-    desc_lst.setComponent(SDC_Source_Type, Density, state_type_source_names, source_bcs,
-                          BndryFunc(ca_generic_single_fill, ca_generic_multi_fill));
-  }
+      // this is the same thing we do for the sources
+      desc_lst.setComponent(SDC_R_state_start+m,
+                            Density,
+                            state_type_source_names,
+                            source_bcs,
+                            BndryFunc(ca_generic_single_fill, ca_generic_multi_fill));
+
+    }
 #endif
+  }
 
   num_state_type = desc_lst.size();
 

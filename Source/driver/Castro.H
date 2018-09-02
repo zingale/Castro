@@ -776,30 +776,11 @@ protected:
 
     // MOL Butcher tableau
     static int MOL_STAGES;
-  
+
     static amrex::Vector< amrex::Vector<amrex::Real> > a_mol;
     static amrex::Vector<amrex::Real> b_mol;
     static amrex::Vector<amrex::Real> c_mol;
 
-    //
-    // Storage for the SDC time integration
-
-    // this is the new iterations solution at the time nodes
-    amrex::Vector<std::unique_ptr<amrex::MultiFab> > k_new;
-
-    // this is the old value of the advective update at the
-    // nodes of the time integration
-    amrex::Vector<std::unique_ptr<amrex::MultiFab> > A_old;
-
-    // this is the new value of the advective update at the
-    // nodes of the time integration
-    amrex::Vector<std::unique_ptr<amrex::MultiFab> > A_new;
-
-    // this is the old value of the reaction source at the
-    // nodes of the time integration
-#ifdef REACTIONS
-    amrex::Vector<std::unique_ptr<amrex::MultiFab> > R_old;
-#endif
 
     static int SDC_NODES;
     static amrex::Vector<amrex::Real> dt_sdc;
@@ -947,9 +928,12 @@ protected:
     static amrex::IntVect no_tile_size;
 
     static int Knapsack_Weight_Type;
-    static int SDC_Source_Type;
     static int num_state_type;
 
+    // for the "new" SDC evolution
+    static int SDC_k_state_start;
+    static int SDC_A_state_start;
+    static int SDC_R_state_start;
 
     // counters for various retries in Castro
 

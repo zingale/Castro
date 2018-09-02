@@ -159,7 +159,9 @@ Real         Castro::previousCPUTimeUsed = 0.0;
 Real         Castro::startCPUTime = 0.0;
 
 int          Castro::Knapsack_Weight_Type = -1;
-int          Castro::SDC_Source_Type = -1;
+int          Castro::SDC_k_state_start = -1;
+int          Castro::SDC_A_state_start = -1;
+int          Castro::SDC_R_state_start = -1;
 int          Castro::num_state_type = 0;
 
 // Note: Castro::variableSetUp is in Castro_setup.cpp
