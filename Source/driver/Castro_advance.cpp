@@ -121,7 +121,8 @@ Castro::advance (Real time,
 
       // store the new solution
       MultiFab& S_new = get_new_data(State_Type);
-      MultiFab::Copy(S_new, *(k_new[SDC_NODES-1]), 0, 0, S_new.nComp(), 0);
+      MultiFab& SDC_k_final = get_new_data(SDC_k_state_start+SDC_NODES-1);
+      MultiFab::Copy(S_new, SDC_k_final, 0, 0, S_new.nComp(), 0);
 
 #ifdef REACTIONS
       // store the reaction information as well -- note: this will be
@@ -130,13 +131,14 @@ Castro::advance (Real time,
 
       // this is done only for the plotfile
       MultiFab& R_new = get_new_data(Reactions_Type);
+      MultiFab& SDC_R_new = get_new_data(SDC_R_state_start+SDC_NODES-1);
 
       for (MFIter mfi(R_new, hydro_tile_size); mfi.isValid(); ++mfi) {
         const Box& bx = mfi.tilebox();
         const int idx = mfi.tileIndex();
 
         ca_store_reaction_state(BL_TO_FORTRAN_BOX(bx),
-                                BL_TO_FORTRAN_3D((*R_old[SDC_NODES-1])[mfi]),
+                                BL_TO_FORTRAN_3D(SDC_R_new[mfi]),
                                 BL_TO_FORTRAN_3D(S_new[mfi]),
                                 BL_TO_FORTRAN_3D(R_new[mfi]));
 
@@ -639,18 +641,16 @@ Castro::do_advance_sdc (Real time,
 
     current_sdc_node = m;
 
-    // k_new represents carries the solution.  Coming into here, it
+    // SDC_k_state_start carries the solution.  Coming into here, it
     // will be entirely the old state, but we update it on each time
     // node in place.
 
     Real node_time = time + dt_sdc[m]*dt;
 
-    // fill Sborder with the starting node's info -- we use S_new as
-    // our staging area.  Note we need to pass new_time here to the
-    // FillPatch so it only pulls from the new MF -- this will not
-    // work for multilevel.
-    MultiFab::Copy(S_new, *(k_new[m]), 0, 0, S_new.nComp(), 0);
-    expand_state(Sborder, cur_time, 1, NUM_GROW);
+    // fill Sborder with the starting node's info.  Note we need to
+    // pass new_time here to the FillPatch so it only pulls from the
+    // new MF -- this will not work for multilevel.
+    expand_state(Sborder, SDC_k_state_start+m, cur_time, 1, NUM_GROW);
 
     // Construct the "old-time" sources from Sborder.  Since we are
     // working from Sborder, this will actually evaluate the sources
@@ -1121,34 +1121,34 @@ Castro::initialize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle
 
     if (time_integration_method == SpectralDeferredCorrections) {
 
+      // initialize the state on the first SDC node to the old solution
       MultiFab& S_old = get_old_data(State_Type);
-      k_new.resize(SDC_NODES);
-      k_new[0].reset(new MultiFab(S_old, amrex::make_alias, 0, NUM_STATE));
-      for (int n = 1; n < SDC_NODES; ++n) {
-	k_new[n].reset(new MultiFab(grids, dmap, NUM_STATE, 0));
-	k_new[n]->setVal(0.0);
+      MultiFab& k_state = get_new_data(SDC_k_state_start);
+      MultiFab::Copy(k_state, S_old, 0, 0, NUM_STATE, 0);
+
+      // zero out the rest of the nodes
+      for (int m = 1; m < SDC_k_state_start+SDC_NODES-1; ++m) {
+        MultiFab& k_state = get_new_data(SDC_k_state_start+m);
+        k_state.setVal(0.0);
       }
 
-      A_old.resize(SDC_NODES);
-      for (int n = 0; n < SDC_NODES; ++n) {
-	A_old[n].reset(new MultiFab(grids, dmap, NUM_STATE, 0));
-	A_old[n]->setVal(0.0);
-      }
+      // zero out the reactive and advective states
+      for (int m = 0; m < SDC_NODES; ++m) {
+        MultiFab& A_state_old = get_old_data(SDC_A_state_start+m);
+        A_state_old.setVal(0.0);
 
-      A_new.resize(SDC_NODES);
-      A_new[0].reset(new MultiFab(*A_old[0], amrex::make_alias, 0, NUM_STATE));
-      for (int n = 1; n < SDC_NODES; ++n) {
-	A_new[n].reset(new MultiFab(grids, dmap, NUM_STATE, 0));
-        A_new[n]->setVal(0.0);
-      }
+        MultiFab& A_state_new = get_new_data(SDC_A_state_start+m);
+        A_state_new.setVal(0.0);
 
 #ifdef REACTIONS
-      R_old.resize(SDC_NODES);
-      for (int n = 0; n < SDC_NODES; ++n) {
-	R_old[n].reset(new MultiFab(grids, dmap, NUM_STATE, 0));
-        R_old[n]->setVal(0.0);
-      }
+        MultiFab& R_state_old = get_old_data(SDC_R_state_start+m);
+        R_state_old.setVal(0.0);
+
+        MultiFab& R_state_new = get_new_data(SDC_R_state_start+m);
+        R_state_new.setVal(0.0);
 #endif
+      }
+
     }
 
     // Zero out the current fluxes.
@@ -1220,15 +1220,6 @@ Castro::finalize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle)
     if (time_integration_method == MethodOfLines) {
       k_mol.clear();
       Sburn.clear();
-    }
-
-    if (time_integration_method == SpectralDeferredCorrections) {
-      k_new.clear();
-      A_new.clear();
-      A_old.clear();
-#ifdef REACTIONS
-      R_old.clear();
-#endif
     }
 
     // Record how many zones we have advanced.

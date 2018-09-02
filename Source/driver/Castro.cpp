@@ -3377,7 +3377,7 @@ Castro::swap_state_time_levels(const Real dt)
 
 #ifdef REACTIONS
         if (time_integration_method == SpectralDeferredCorrections &&
-            fourth_order == 1 && k == SDC_Source_Type)
+            k >= SDC_k_state_start && k < SDC_k_state_start + SDC_NODES)
             state[k].swapTimeLevels(0.0);
 #endif
         state[k].allocOldData();
