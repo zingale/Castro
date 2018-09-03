@@ -125,11 +125,12 @@ Castro::advance (Real time,
       MultiFab::Copy(S_new, SDC_k_final, 0, 0, S_new.nComp(), 0);
 
 #ifdef REACTIONS
-      // store the reaction information as well -- note: this will be
-      // the instantaneous reactive source.  In the future, we might
-      // want to do a quadrature over R_new[]
+      // store the reaction information as well to the main
+      // Reactions_Type StateData.  This is what is used in the
+      // plotfile.  Note: this will be the instantaneous reactive
+      // source.  In the future, we might want to do a quadrature over
+      // R_new
 
-      // this is done only for the plotfile
       MultiFab& R_new = get_new_data(Reactions_Type);
       MultiFab& SDC_R_new = get_new_data(SDC_R_state_start+SDC_NODES-1);
 
@@ -706,17 +707,19 @@ Castro::do_advance_sdc (Real time,
     // 0, the starting state is S_old and never changes with SDC
     // iteration, so we only do this once.
     if (!(sdc_iteration > 0 && m == 0)) {
-      A_new[m]->setVal(0.0);
-      construct_mol_hydro_source(time, dt, *A_new[m]);
+      MultiFab& A_new = get_new_data(SDC_A_state_start+m);
+      A_new.setVal(0.0);
+      construct_mol_hydro_source(time, dt, A_new);
     }
 
     // also, if we are the first SDC iteration, we haven't yet stored
     // any old advective terms, so we cannot yet do the quadrature
-    // over nodes.  Initialize those now.  Recall, A_new[0] and A_old[0]
-    // are aliased.
+    // over nodes.  Initialize those now.
     if (sdc_iteration == 0 && m == 0) {
-      for (int n=1; n < SDC_NODES; n++) {
-        MultiFab::Copy(*(A_old[n]), *(A_new[0]), 0, 0, NUM_STATE, 0);
+      for (int n=0; n < SDC_NODES; n++) {
+        MultiFab& A_old = get_old_data(SDC_A_state_start+n);
+        MultiFab& A_new = get_new_data(SDC_A_state_start+n);
+        MultiFab::Copy(A_old, A_new, 0, 0, NUM_STATE, 0);
       }
     }
 
@@ -740,8 +743,10 @@ Castro::do_advance_sdc (Real time,
 
   // store A_old for the next SDC iteration -- don't need to do n=0,
   // since that is unchanged
-  for (int n=1; n < SDC_NODES; n++) {
-    MultiFab::Copy(*(A_old[n]), *(A_new[n]), 0, 0, NUM_STATE, 0);
+  for (int m=1; m < SDC_NODES; m++) {
+    MultiFab& A_old = get_old_data(SDC_A_state_start+m);
+    MultiFab& A_new = get_new_data(SDC_A_state_start+m);
+    MultiFab::Copy(A_old, A_new, 0, 0, NUM_STATE, 0);
   }
 
 #ifdef REACTIONS
