@@ -110,7 +110,7 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt_m) {
 
       // TODO: we need k_start to have ghost cells -- is Sborder still valid?
       ca_make_cell_center(BL_TO_FORTRAN_BOX(bx1),
-                          BL_TO_FORTRAN_FAB(k_start[mfi]),
+                          BL_TO_FORTRAN_FAB(Sborder[mfi]),
                           BL_TO_FORTRAN_FAB(U_center));
 
       // convert the C source to cell-centers
