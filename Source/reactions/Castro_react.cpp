@@ -17,7 +17,8 @@ Castro::strang_react_first_half(Real time, Real dt)
 
     MultiFab& reactions = get_old_data(Reactions_Type);
 
-    reactions.setVal(0.0);
+    // Do not reset the react_stepsize component
+    reactions.setVal(0.0, 0, NumSpec+2, reactions.nGrow());
 
     if (do_react != 1) return;
 
@@ -151,7 +152,8 @@ Castro::strang_react_second_half(Real time, Real dt)
 
     MultiFab& reactions = get_new_data(Reactions_Type);
 
-    reactions.setVal(0.0);
+    // Do not reset the react_stepsize component
+    reactions.setVal(0.0, 0, NumSpec+2, reactions.nGrow());
 
     if (do_react != 1) return;
 
