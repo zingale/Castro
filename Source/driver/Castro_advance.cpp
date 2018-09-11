@@ -119,11 +119,6 @@ Castro::advance (Real time,
 	dt_new = do_advance_sdc(time, dt, amr_iteration, amr_ncycle);
       }
 
-      // store the new solution
-      MultiFab& S_new = get_new_data(State_Type);
-      MultiFab& SDC_k_final = get_new_data(SDC_k_state_start+SDC_NODES-1);
-      MultiFab::Copy(S_new, SDC_k_final, 0, 0, S_new.nComp(), 0);
-
 #ifdef REACTIONS
       // store the reaction information as well to the main
       // Reactions_Type StateData.  This is what is used in the
@@ -133,6 +128,7 @@ Castro::advance (Real time,
 
       MultiFab& R_new = get_new_data(Reactions_Type);
       MultiFab& SDC_R_new = get_new_data(SDC_R_state_start+SDC_NODES-1);
+      MultiFab& S_new = get_new_data(State_Type);
 
       for (MFIter mfi(R_new, hydro_tile_size); mfi.isValid(); ++mfi) {
         const Box& bx = mfi.tilebox();
@@ -726,8 +722,13 @@ Castro::do_advance_sdc (Real time,
 #ifdef REACTIONS
     // if this is the first node of a new iteration, then we need
     // to compute and store the old reactive source
-    if (m == 0) {
-      construct_old_react_source();
+    if (m == 0 && sdc_iteration == 0) {
+      construct_old_react_source(Sborder, *(R_old[0]));
+
+      // copy to the other notes
+      for (int n = 1; n < SDC_NODES; n++) {
+        MultiFab::Copy(*(R_old[n]), *(R_old[0]), 0, 0, R_old[0]->nComp(), 0);
+      }
     }
 #endif
 
@@ -741,6 +742,12 @@ Castro::do_advance_sdc (Real time,
 
   } // node iteration
 
+  // we are done with the integration over all nodes for this iteration
+
+  // note: as of right now, S_new is not updated with the state from
+  // the final time node.  This means we can still use S_new as
+  // "scratch" until we finally set it.
+
   // store A_old for the next SDC iteration -- don't need to do n=0,
   // since that is unchanged
   for (int m=1; m < SDC_NODES; m++) {
@@ -750,13 +757,30 @@ Castro::do_advance_sdc (Real time,
   }
 
 #ifdef REACTIONS
-  // we just did the update, so now recompute the "old" reactive source
-  // for the next SDC iteration
-  construct_old_react_source();
+  // we just did the update, so now recompute the "old" reactive
+  // source for the next SDC iteration.  We don't need to do this for
+  // m = 0, since that state never changes.
+
+  //for (int m = 1; m < SDC_NODES; ++m) {
+  //  // use a temporary storage
+  //  // TODO: do we need a clean state here?
+  //  MultiFab::Copy(S_new, *(k_new[m]), 0, 0, S_new.nComp(), 0);
+  //  expand_state(Sborder, cur_time, -1, Sborder.nGrow());
+  //  construct_old_react_source(Sborder, *(R_old[m]));
+  //}
+
+  // TODO: we need to copy the new reaction to the old for the 
+  // next iteration
+
 #endif
 
-
   // I think this bit only needs to be done for the last iteration...
+
+
+  // store the new solution
+  MultiFab& k_last = get_new_data(SDC_k_state_start+SDC_NODES-1);
+  MultiFab::Copy(S_new, k_last, 0, 0, S_new.nComp(), 0);
+
 
   // We need to make source_old and source_new be the source terms at
   // the old and new time.  we never actually evaluate the sources
