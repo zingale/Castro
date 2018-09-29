@@ -30,7 +30,6 @@ contains
                                    QREINT, QPRES, QTEMP, QGAME, QC, QGAMC, QFX, QFS, &
                                    small_dens, small_pres, &
                                    ppm_type, &
-                                   ppm_reference_eigenvectors, ppm_predict_gammae, &
                                    npassive, qpass_map, ppm_temp_fix, &
                                    fix_mass_flux
     use amrex_constants_module, only : ZERO, HALF, ONE
@@ -101,20 +100,17 @@ contains
 
     real(rt) :: cc, csq, cgassq, Clag
     real(rt) :: rho, u, v, w, p, rhoe_g, h_g, temp
-    real(rt) :: gam_g, game
+    real(rt) :: gam_g
 
     real(rt) :: drho, dptot, drhoe_g
-    real(rt) :: de, dge, dtau, dtaum, dtaup
+    real(rt) :: de, dge
     real(rt) :: dup, dvp, dptotp
     real(rt) :: dum, dvm, dptotm
-    real(rt) :: dT0, dTp, dTm
-    real(rt) :: p_r, p_T
 
-    real(rt) :: rho_ref, u_ref, v_ref, p_ref, rhoe_g_ref, h_g_ref, temp_ref
-    real(rt) :: tau_ref
+    real(rt) :: rho_ref, u_ref, v_ref, p_ref, rhoe_g_ref, h_g_ref
 
-    real(rt) :: cc_ref, csq_ref, Clag_ref, gam_g_ref, game_ref, gfactor
-    real(rt) :: cc_ev, csq_ev, Clag_ev, rho_ev, p_ev, h_g_ev, tau_ev, temp_ev
+    real(rt) :: cc_ref, csq_ref, Clag_ref, gam_g_ref
+    real(rt) :: cc_ev, csq_ev, Clag_ev, rho_ev, p_ev, h_g_ev
 
     real(rt) :: alpham, alphap, alpha0r, alpha0e_g
     real(rt) :: sourcr, sourcp, source, courn, eta, dlogatmp
@@ -174,8 +170,6 @@ contains
     do j = ilo2-dg(2), ihi2+dg(2)
        do i = ilo1-1, ihi1+1
 
-          gfactor = ONE ! to help compiler resolve ANTI dependence
-
           rho = q(i,j,k3d,QRHO)
 
           cc = qaux(i,j,k3d,QC)
@@ -192,7 +186,6 @@ contains
           temp = q(i,j,k3d,QTEMP)
 
           gam_g = qaux(i,j,k3d,QGAMC)
-          game = q(i,j,k3d,QGAME)
 
 
           !-------------------------------------------------------------------
@@ -210,12 +203,8 @@ contains
 
              p_ref    = Im(i,j,kc,1,1,QPRES)
              rhoe_g_ref = Im(i,j,kc,1,1,QREINT)
-             temp_ref = Im(i,j,kc,1,1,QTEMP)
-
-             tau_ref  = ONE/Im(i,j,kc,1,1,QRHO)
 
              gam_g_ref  = Im_gc(i,j,kc,1,1,1)
-             game_ref = Im(i,j,kc,1,1,QGAME)
 
              rho_ref = max(rho_ref, small_dens)
              p_ref = max(p_ref, small_pres)
@@ -241,163 +230,41 @@ contains
              dptot = p_ref - Im(i,j,kc,1,2,QPRES) - hdt*Im_src(i,j,kc,1,2,QPRES)
              drhoe_g = rhoe_g_ref - Im(i,j,kc,1,2,QREINT) - hdt*Im_src(i,j,kc,1,2,QREINT)
 
-             ! TODO: need to figure sources for this out...
-             dTm = temp_ref - Im(i,j,kc,1,1,QTEMP)
-             dT0 = temp_ref - Im(i,j,kc,1,2,QTEMP)
-             dTp = temp_ref - Im(i,j,kc,1,3,QTEMP)
-
-             ! we are treating tau as 1/rho, but we could have reconstructed
-             ! it separately
-             ! since d(rho)/dt = S_rho, d(tau**{-1})/dt = S_rho, so d(tau)/dt = -S_rho*tau**2
-             dtaum = tau_ref - ONE/Im(i,j,kc,1,1,QRHO) + hdt*Im_src(i,j,kc,1,1,QRHO)/Im(i,j,kc,1,1,QRHO)**2
-             dtau  = tau_ref - ONE/Im(i,j,kc,1,2,QRHO) + hdt*Im_src(i,j,kc,1,2,QRHO)/Im(i,j,kc,1,2,QRHO)**2
-             dtaup = tau_ref - ONE/Im(i,j,kc,1,3,QRHO) + hdt*Im_src(i,j,kc,1,3,QRHO)/Im(i,j,kc,1,3,QRHO)**2
-
              dup = u_ref - Im(i,j,kc,1,3,QU) - hdt*Im_src(i,j,kc,1,3,QU)
              dptotp = p_ref - Im(i,j,kc,1,3,QPRES) - hdt*Im_src(i,j,kc,1,3,QPRES)
 
+             rho_ev  = rho_ref
+             cc_ev   = cc_ref
+             csq_ev  = csq_ref
+             Clag_ev = Clag_ref
+             h_g_ev = h_g_ref
+             p_ev    = p_ref
 
-             ! Optionally use the reference state in evaluating the
-             ! eigenvectors
-             if (ppm_reference_eigenvectors == 0) then
-                rho_ev  = rho
-                cc_ev   = cc
-                csq_ev  = csq
-                Clag_ev = Clag
-                h_g_ev = h_g
-                p_ev    = p
-                tau_ev  = ONE/rho
-                temp_ev = temp
-             else
-                rho_ev  = rho_ref
-                cc_ev   = cc_ref
-                csq_ev  = csq_ref
-                Clag_ev = Clag_ref
-                h_g_ev = h_g_ref
-                p_ev    = p_ref
-                tau_ev  = tau_ref
-                temp_ev = temp_ref
-             endif
+             ! we are generally working with p in our eigensystem
 
-             if (ppm_temp_fix < 3) then
+             ! (rho, u, p, (rho e) eigensystem
 
-                ! we are generally working with p in our eigensystem
+             ! These are analogous to the beta's from the original PPM
+             ! paper (except we work with rho instead of tau).  This is
+             ! simply (l . dq), where dq = qref - I(q)
 
-                if (ppm_predict_gammae == 0) then
+             alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dum)*(rho_ev/cc_ev)
+             alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dup)*(rho_ev/cc_ev)
+             alpha0r = drho - dptot/csq_ev
+             alpha0e_g = drhoe_g - dptot*h_g_ev  ! note h_g has a 1/c**2 in it
 
-                   ! (rho, u, p, (rho e) eigensystem
-
-                   ! These are analogous to the beta's from the original PPM
-                   ! paper (except we work with rho instead of tau).  This is
-                   ! simply (l . dq), where dq = qref - I(q)
-
-                   alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dum)*(rho_ev/cc_ev)
-                   alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dup)*(rho_ev/cc_ev)
-                   alpha0r = drho - dptot/csq_ev
-                   alpha0e_g = drhoe_g - dptot*h_g_ev  ! note h_g has a 1/c**2 in it
-
-                else
-
-                   ! (tau, u, p, game) eigensystem
-
-                   ! This is the way things were done in the original PPM
-                   ! paper -- here we work with tau in the characteristic
-                   ! system
-
-                   alpham = HALF*( dum - dptotm*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alphap = HALF*(-dup - dptotp*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alpha0r = dtau + dptot*(ONE/Clag_ev)**2
-
-                   dge   = game_ref - Im(i,j,kc,1,2,QGAME)
-                   gfactor = (game - ONE)*(game - gam_g)
-                   alpha0e_g = gfactor*dptot/(tau_ev*Clag_ev**2) + dge
-
-                endif
-
-             else
-
-                ! (tau, u T) eigensystem
-
-                ! eos to get some thermodynamics
-                eos_state%T = temp_ev
-                eos_state%rho = rho_ev
-                eos_state%xn(:) = q(i,j,k3d,QFS:QFS-1+nspec)
-                eos_state%aux(:) = q(i,j,k3d,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                p_r = eos_state%dpdr
-                p_T = eos_state%dpdT
-
-                alpham = HALF*(rho_ev**2*p_r*dtaum/Clag_ev + dum - p_T*dTm/Clag_ev)/Clag_ev
-                alphap = HALF*(rho_ev**2*p_r*dtaup/Clag_ev - dup - p_T*dTp/Clag_ev)/Clag_ev
-                alpha0r = dtau + (-rho_ev**2*p_r*dtau + p_T*dT0)/Clag_ev**2
-
-                ! not used, but needed to prevent bad invalid ops
-                alpha0e_g = ZERO
-
-             endif    ! which tracing method
-
-             if (u-cc > ZERO) then
-                alpham = ZERO
-             else if (u-cc < ZERO) then
-                alpham = -alpham
-             else
-                alpham = -HALF*alpham
-             endif
-
-             if (u+cc > ZERO) then
-                alphap = ZERO
-             else if (u+cc < ZERO) then
-                alphap = -alphap
-             else
-                alphap = -HALF*alphap
-             endif
-
-             if (u > ZERO) then
-                alpha0r = ZERO
-                alpha0e_g = ZERO
-             else if (u < ZERO) then
-                alpha0r = -alpha0r
-                alpha0e_g = -alpha0e_g
-             else
-                alpha0r = -HALF*alpha0r
-                alpha0e_g = -HALF*alpha0e_g
-             endif
+             alpham = merge(ZERO, -alpham, u-cc > ZERO)
+             alphap = merge(ZERO, -alphap, u+cc > ZERO)
+             alpha0r = merge(ZERO, -alpha0r, u > ZERO)
+             alpha0e_g = merge(ZERO, -alpha0e_g, u > ZERO)
 
              ! The final interface states are just
              ! q_s = q_ref - sum(l . dq) r
              ! note that the a{mpz}right as defined above have the minus already
-             if (ppm_temp_fix < 3) then
-
-                if (ppm_predict_gammae == 0) then
-                   qxp(i,j,kc,QRHO  ) =  rho_ref +  alphap + alpham + alpha0r
-                   qxp(i,j,kc,QU    ) =    u_ref + (alphap - alpham)*cc_ev/rho_ev
-                   qxp(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
-                   qxp(i,j,kc,QPRES ) =    p_ref + (alphap + alpham)*csq_ev
-
-                else
-                   tau_s = tau_ref + alphap + alpham + alpha0r
-                   qxp(i,j,kc,QRHO  ) = ONE/tau_s
-
-                   qxp(i,j,kc,QU    ) = u_ref + (alpham - alphap)*Clag_ev
-                   qxp(i,j,kc,QPRES ) = p_ref - (alphap + alpham)*Clag_ev**2
-
-                   qxp(i,j,kc,QGAME) = game_ref + gfactor*(alpham + alphap)/tau_ev + alpha0e_g
-                   qxp(i,j,kc,QREINT) = qxp(i,j,kc,QPRES )/(qxp(i,j,kc,QGAME) - ONE)
-                endif
-
-             else
-                tau_s = tau_ref + alphap + alpham + alpha0r
-                qxp(i,j,kc,QRHO ) = ONE/tau_s
-
-                qxp(i,j,kc,QU   ) = u_ref + (alpham - alphap)*Clag_ev
-                qxp(i,j,kc,QTEMP) = temp_ref + (-Clag_ev**2 - rho_ev**2*p_r)*alpham/p_T + &
-                     rho_ev**2*p_r*alpha0r/p_T - (-Clag_ev**2 - rho_ev**2*p_r)*alphap/p_T
-
-                ! we defer getting the pressure until later, once we do the species
-                qxp(i,j,kc,QPRES) = small_pres ! just to make it defined
-             endif
+             qxp(i,j,kc,QRHO  ) =  rho_ref +  alphap + alpham + alpha0r
+             qxp(i,j,kc,QU    ) =    u_ref + (alphap - alpham)*cc_ev/rho_ev
+             qxp(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
+             qxp(i,j,kc,QPRES ) =    p_ref + (alphap + alpham)*csq_ev
 
              ! Enforce small_*
              qxp(i,j,kc,QRHO ) = max(qxp(i,j,kc,QRHO ), small_dens)
@@ -428,12 +295,8 @@ contains
 
              p_ref    = Ip(i,j,kc,1,3,QPRES)
              rhoe_g_ref = Ip(i,j,kc,1,3,QREINT)
-             temp_ref = Ip(i,j,kc,1,3,QTEMP)
-
-             tau_ref  = ONE/Ip(i,j,kc,1,3,QRHO)
 
              gam_g_ref  = Ip_gc(i,j,kc,1,3,1)
-             game_ref = Ip(i,j,kc,1,3,QGAME)
 
              rho_ref = max(rho_ref,small_dens)
              p_ref = max(p_ref, small_pres)
@@ -454,156 +317,40 @@ contains
              dptot = p_ref - Ip(i,j,kc,1,2,QPRES) - hdt*Ip_src(i,j,kc,1,2,QPRES)
              drhoe_g = rhoe_g_ref - Ip(i,j,kc,1,2,QREINT) - hdt*Ip_src(i,j,kc,1,2,QREINT)
 
-             dTm = temp_ref - Ip(i,j,kc,1,1,QTEMP)
-             dT0 = temp_ref - Ip(i,j,kc,1,2,QTEMP)
-             dTp = temp_ref - Ip(i,j,kc,1,3,QTEMP)
-
-             ! since d(rho)/dt = S_rho, d(tau**{-1})/dt = S_rho, so d(tau)/dt = -S_rho*tau**2
-             dtaum = tau_ref - ONE/Ip(i,j,kc,1,1,QRHO) + hdt*Ip_src(i,j,kc,1,1,QRHO)/Ip(i,j,kc,1,1,QRHO)**2
-             dtau = tau_ref - ONE/Ip(i,j,kc,1,2,QRHO) + hdt*Ip_src(i,j,kc,1,2,QRHO)/Ip(i,j,kc,1,2,QRHO)**2
-             dtaup = tau_ref - ONE/Ip(i,j,kc,1,3,QRHO) + hdt*Ip_src(i,j,kc,1,3,QRHO)/Ip(i,j,kc,1,3,QRHO)**2
-
              dup = u_ref - Ip(i,j,kc,1,3,QU) - hdt*Ip_src(i,j,kc,1,3,QU)
              dptotp = p_ref - Ip(i,j,kc,1,3,QPRES) - hdt*Ip_src(i,j,kc,1,3,QPRES)
 
-             ! Optionally use the reference state in evaluating the
-             ! eigenvectors
-             if (ppm_reference_eigenvectors == 0) then
-                rho_ev  = rho
-                cc_ev   = cc
-                csq_ev  = csq
-                Clag_ev = Clag
-                h_g_ev = h_g
-                p_ev    = p
-                tau_ev  = ONE/rho
-                temp_ev = temp
-             else
-                rho_ev  = rho_ref
-                cc_ev   = cc_ref
-                csq_ev  = csq_ref
-                Clag_ev = Clag_ref
-                h_g_ev = h_g_ref
-                p_ev    = p_ref
-                tau_ev  = tau_ref
-                temp_ev = temp_ref
-             endif
+             rho_ev  = rho_ref
+             cc_ev   = cc_ref
+             csq_ev  = csq_ref
+             Clag_ev = Clag_ref
+             h_g_ev = h_g_ref
+             p_ev    = p_ref
 
-             if (ppm_temp_fix < 3) then
+             ! (rho, u, p, (rho e)) eigensystem
 
-                if (ppm_predict_gammae == 0) then
+             ! These are analogous to the beta's from the original PPM
+             ! paper (except we work with rho instead of tau).  This is
+             ! simply (l . dq), where dq = qref - I(q)
 
-                   ! (rho, u, p, (rho e)) eigensystem
+             alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dum)*(rho_ev/cc_ev)
+             alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dup)*(rho_ev/cc_ev)
+             alpha0r = drho - dptot/csq_ev
+             alpha0e_g = drhoe_g - dptot*h_g_ev  ! h_g has a 1/c**2 in it
 
-                   ! These are analogous to the beta's from the original PPM
-                   ! paper (except we work with rho instead of tau).  This is
-                   ! simply (l . dq), where dq = qref - I(q)
-
-                   alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dum)*(rho_ev/cc_ev)
-                   alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dup)*(rho_ev/cc_ev)
-                   alpha0r = drho - dptot/csq_ev
-                   alpha0e_g = drhoe_g - dptot*h_g_ev  ! h_g has a 1/c**2 in it
-
-                else
-
-                   ! (tau, u, p, game) eigensystem
-
-                   ! This is the way things were done in the original PPM
-                   ! paper -- here we work with tau in the characteristic
-                   ! system
-                   alpham = HALF*( dum - dptotm*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alphap = HALF*(-dup - dptotp*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alpha0r = dtau + dptot*(ONE/Clag_ev)**2
-
-                   dge = game_ref - Ip(i,j,kc,1,2,QGAME)
-                   gfactor = (game - ONE)*(game - gam_g)
-                   alpha0e_g = gfactor*dptot/(tau_ev*Clag_ev**2) + dge
-
-                endif
-
-             else
-
-                ! (tau, u T) eigensystem
-
-                ! eos to get some thermodynamics
-                eos_state%T = temp_ev
-                eos_state%rho = rho_ev
-                eos_state%xn(:) = q(i,j,k3d,QFS:QFS-1+nspec)
-                eos_state%aux(:) = q(i,j,k3d,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                p_r = eos_state%dpdr
-                p_T = eos_state%dpdT
-
-                alpham = HALF*(rho_ev**2*p_r*dtaum/Clag_ev + dum - p_T*dTm/Clag_ev)/Clag_ev
-                alphap = HALF*(rho_ev**2*p_r*dtaup/Clag_ev - dup - p_T*dTp/Clag_ev)/Clag_ev
-                alpha0r = dtau + (-rho_ev**2*p_r*dtau + p_T*dT0)/Clag_ev**2
-
-                ! not used, but needed to prevent bad invalid ops
-                alpha0e_g = ZERO
-
-             endif
-
-             if (u-cc > ZERO) then
-                alpham = -alpham
-             else if (u-cc < ZERO) then
-                alpham = ZERO
-             else
-                alpham = -HALF*alpham
-             endif
-
-             if (u+cc > ZERO) then
-                alphap = -alphap
-             else if (u+cc < ZERO) then
-                alphap = ZERO
-             else
-                alphap = -HALF*alphap
-             endif
-
-             if (u > ZERO) then
-                alpha0r = -alpha0r
-                alpha0e_g = -alpha0e_g
-             else if (u < ZERO) then
-                alpha0r = ZERO
-                alpha0e_g = ZERO
-             else
-                alpha0r = -HALF*alpha0r
-                alpha0e_g = -HALF*alpha0e_g
-             endif
-
+             alpham = merge(-alpham, ZERO, u-cc > ZERO)
+             alphap = merge(-alphap, ZERO, u+cc > ZERO)
+             alpha0r = merge(-alpha0r, ZERO, u > ZERO)
+             alpha0e_g = merge(-alpha0e_g, ZERO, u > ZERO)
 
              ! The final interface states are just
              ! q_s = q_ref - sum (l . dq) r
              ! note that the a{mpz}left as defined above have the minus already
-             if (ppm_temp_fix < 3) then
 
-                if (ppm_predict_gammae == 0) then
-                   qxm(i+1,j,kc,QRHO  ) =  rho_ref +  alphap + alpham + alpha0r
-                   qxm(i+1,j,kc,QU    ) =    u_ref + (alphap - alpham)*cc_ev/rho_ev
-                   qxm(i+1,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
-                   qxm(i+1,j,kc,QPRES ) =    p_ref + (alphap + alpham)*csq_ev
-                else
-                   tau_s = tau_ref + alphap + alpham + alpha0r
-                   qxm(i+1,j,kc,QRHO  ) = ONE/tau_s
-
-                   qxm(i+1,j,kc,QU    ) = u_ref + (alpham - alphap)*Clag_ev
-                   qxm(i+1,j,kc,QPRES ) = p_ref - (alphap + alpham)*Clag_ev**2
-
-                   qxm(i+1,j,kc,QGAME) = game_ref + gfactor*(alpham + alphap)/tau_ev + alpha0e_g
-                   qxm(i+1,j,kc,QREINT) = qxm(i+1,j,kc,QPRES )/(qxm(i+1,j,kc,QGAME) - ONE)
-                endif
-
-             else
-                tau_s = tau_ref + alphap + alpham + alpha0r
-                qxm(i+1,j,kc,QRHO ) = ONE/tau_s
-
-                qxm(i+1,j,kc,QU   ) = u_ref + (alpham - alphap)*Clag_ev
-                qxm(i+1,j,kc,QTEMP) = temp_ref + (-Clag_ev**2 - rho_ev**2*p_r)*alpham/p_T + &
-                     rho_ev**2*p_r*alpha0r/p_T - (-Clag_ev**2 - rho_ev**2*p_r)*alphap/p_T
-
-                ! we defer getting the pressure until later, once we do the species
-                qxm(i+1,j,kc,QPRES) = small_pres ! just to make it defined
-             endif
+             qxm(i+1,j,kc,QRHO  ) =  rho_ref +  alphap + alpham + alpha0r
+             qxm(i+1,j,kc,QU    ) =    u_ref + (alphap - alpham)*cc_ev/rho_ev
+             qxm(i+1,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
+             qxm(i+1,j,kc,QPRES ) =    p_ref + (alphap + alpham)*csq_ev
 
              ! Enforce small_*
              qxm(i+1,j,kc,QRHO ) = max(qxm(i+1,j,kc,QRHO ),small_dens)
@@ -695,26 +442,14 @@ contains
              ! wave, so no projection is needed.  Since we are not
              ! projecting, the reference state doesn't matter
 
-             if (u > ZERO) then
-                qxp(i,j,kc,n) = q(i,j,k3d,n)
-             else if (u < ZERO) then
-                qxp(i,j,kc,n) = Im(i,j,kc,1,2,n)
-             else
-                qxp(i,j,kc,n) = q(i,j,k3d,n) + HALF*(Im(i,j,kc,1,2,n) - q(i,j,k3d,n))
-             endif
+             qxp(i,j,kc,n) = merge(q(i,j,k3d,n), Im(i,j,kc,1,2,n), u > ZERO)
           enddo
 
           ! Minus state on face i+1
           do i = ilo1-1, ihi1
              u = q(i,j,k3d,QU)
 
-             if (u > ZERO) then
-                qxm(i+1,j,kc,n) = Ip(i,j,kc,1,2,n)
-             else if (u < ZERO) then
-                qxm(i+1,j,kc,n) = q(i,j,k3d,n)
-             else
-                qxm(i+1,j,kc,n) = q(i,j,k3d,n) + HALF*(Ip(i,j,kc,1,2,n) - q(i,j,k3d,n))
-             endif
+             qxm(i+1,j,kc,n) = merge(Ip(i,j,kc,1,2,n), q(i,j,k3d,n), u > ZERO)
           enddo
 
 #if (AMREX_SPACEDIM == 1)
@@ -724,47 +459,6 @@ contains
 
        enddo
     enddo
-
-    if (ppm_temp_fix == 3) then
-
-       ! we predicted T, now make p, (rho e) consistent
-
-       do j = ilo2-dg(2), ihi2+dg(2)
-          do i = ilo1-1, ihi1+1
-
-             if (i >= ilo1) then
-                ! plus face
-                eos_state%T     = qxp(i,j,kc,QTEMP)
-                eos_state%rho   = qxp(i,j,kc,QRHO)
-                eos_state%xn(:) = qxp(i,j,kc,QFS:QFS-1+nspec)
-                eos_state%aux(:) = qxp(i,j,kc,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                qxp(i,j,kc,QPRES) = eos_state%p
-                qxp(i,j,kc,QREINT) = qxp(i,j,kc,QRHO)*eos_state%e
-
-                qxp(i,j,kc,QPRES) = max(qxp(i,j,kc,QPRES), small_pres)
-             endif
-
-             if (i <= ihi1) then
-                ! minus face
-                eos_state%T     = qxm(i+1,j,kc,QTEMP)
-                eos_state%rho   = qxm(i+1,j,kc,QRHO)
-                eos_state%xn(:) = qxm(i+1,j,kc,QFS:QFS-1+nspec)
-                eos_state%aux(:) = qxm(i+1,j,kc,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                qxm(i+1,j,kc,QPRES) = eos_state%p
-                qxm(i+1,j,kc,QREINT) = qxm(i+1,j,kc,QRHO)*eos_state%e
-
-                qxm(i+1,j,kc,QPRES) = max(qxm(i+1,j,kc,QPRES), small_pres)
-             endif
-
-          enddo
-       enddo
-    endif
 
 
 #if (AMREX_SPACEDIM >= 2)
@@ -776,8 +470,6 @@ contains
 
     do j = ilo2-1, ihi2+1
        do i = ilo1-1, ihi1+1
-
-          gfactor = ONE ! to help compiler resolve ANTI dependence
 
           rho = q(i,j,k3d,QRHO)
 
@@ -795,7 +487,6 @@ contains
           temp = q(i,j,k3d,QTEMP)
 
           gam_g = qaux(i,j,k3d,QGAMC)
-          game = q(i,j,k3d,QGAME)
 
           !-------------------------------------------------------------------
           ! plus state on face j
@@ -810,12 +501,8 @@ contains
 
              p_ref    = Im(i,j,kc,2,1,QPRES)
              rhoe_g_ref = Im(i,j,kc,2,1,QREINT)
-             temp_ref = Im(i,j,kc,2,1,QTEMP)
-
-             tau_ref  = ONE/Im(i,j,kc,2,1,QRHO)
 
              gam_g_ref  = Im_gc(i,j,kc,2,1,1)
-             game_ref = Im(i,j,kc,2,1,QGAME)
 
              rho_ref = max(rho_ref, small_dens)
              p_ref = max(p_ref, small_pres)
@@ -836,157 +523,39 @@ contains
              dptot = p_ref - Im(i,j,kc,2,2,QPRES) - hdt*Im_src(i,j,kc,2,2,QPRES)
              drhoe_g = rhoe_g_ref - Im(i,j,kc,2,2,QREINT) - hdt*Im_src(i,j,kc,2,2,QREINT)
 
-             dTm = temp_ref - Im(i,j,kc,2,1,QTEMP)
-             dT0 = temp_ref - Im(i,j,kc,2,2,QTEMP)
-             dTp = temp_ref - Im(i,j,kc,2,3,QTEMP)
-
-             ! since d(rho)/dt = S_rho, d(tau**{-1})/dt = S_rho, so d(tau)/dt = -S_rho*tau**2
-             dtaum = tau_ref - ONE/Im(i,j,kc,2,1,QRHO) + hdt*Im_src(i,j,kc,2,1,QRHO)/Im(i,j,kc,2,1,QRHO)**2
-             dtau = tau_ref - ONE/Im(i,j,kc,2,2,QRHO) + hdt*Im_src(i,j,kc,2,2,QRHO)/Im(i,j,kc,2,2,QRHO)**2
-             dtaup = tau_ref - ONE/Im(i,j,kc,2,3,QRHO) + hdt*Im_src(i,j,kc,2,2,QRHO)/Im(i,j,kc,2,3,QRHO)**2
-
              dvp = v_ref - Im(i,j,kc,2,3,QV) - hdt*Im_src(i,j,kc,2,3,QV)
              dptotp = p_ref - Im(i,j,kc,2,3,QPRES) - hdt*Im_src(i,j,kc,2,3,QPRES)
 
-             ! Optionally use the reference state in evaluating the
-             ! eigenvectors
-             if (ppm_reference_eigenvectors == 0) then
-                rho_ev  = rho
-                cc_ev   = cc
-                csq_ev  = csq
-                Clag_ev = Clag
-                h_g_ev = h_g
-                p_ev    = p
-                tau_ev  = ONE/rho
-                temp_ev = temp
-             else
-                rho_ev  = rho_ref
-                cc_ev   = cc_ref
-                csq_ev  = csq_ref
-                Clag_ev = Clag_ref
-                h_g_ev = h_g_ref
-                p_ev    = p_ref
-                tau_ev  = tau_ref
-                temp_ev = temp_ref
-             endif
+             rho_ev  = rho_ref
+             cc_ev   = cc_ref
+             csq_ev  = csq_ref
+             Clag_ev = Clag_ref
+             h_g_ev = h_g_ref
+             p_ev    = p_ref
 
-             if (ppm_temp_fix < 3) then
+             ! (rho, u, p, (rho e) eigensystem
 
-                if (ppm_predict_gammae == 0) then
+             ! These are analogous to the beta's from the original PPM
+             ! paper (except we work with rho instead of tau).  This
+             ! is simply (l . dq), where dq = qref - I(q)
 
-                   ! (rho, u, p, (rho e) eigensystem
+             alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dvm)*(rho_ev/cc_ev)
+             alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dvp)*(rho_ev/cc_ev)
+             alpha0r = drho - dptot/csq_ev
+             alpha0e_g = drhoe_g - dptot*h_g_ev
 
-                   ! These are analogous to the beta's from the original PPM
-                   ! paper (except we work with rho instead of tau).  This
-                   ! is simply (l . dq), where dq = qref - I(q)
-
-                   alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dvm)*(rho_ev/cc_ev)
-                   alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dvp)*(rho_ev/cc_ev)
-                   alpha0r = drho - dptot/csq_ev
-                   alpha0e_g = drhoe_g - dptot*h_g_ev
-
-                else
-
-                   ! (tau, u, p, game) eigensystem
-
-                   ! This is the way things were done in the original PPM
-                   ! paper -- here we work with tau in the characteristic
-                   ! system
-
-                   alpham = HALF*( dvm - dptotm*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alphap = HALF*(-dvp - dptotp*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alpha0r = dtau + dptot*(ONE/Clag_ev)**2
-
-                   dge = game_ref - Im(i,j,kc,2,2,QGAME)
-                   gfactor = (game - ONE)*(game - gam_g)
-                   alpha0e_g = gfactor*dptot/(tau_ev*Clag_ev**2) + dge
-
-                end if
-             else
-
-                ! (tau, u T) eigensystem
-
-                ! eos to get some thermodynamics
-                eos_state%T = temp_ev
-                eos_state%rho = rho_ev
-                eos_state%xn(:) = q(i,j,k3d,QFS:QFS-1+nspec)
-                eos_state%aux(:) = q(i,j,k3d,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                p_r = eos_state%dpdr
-                p_T = eos_state%dpdT
-
-                alpham = HALF*(rho_ev**2*p_r*dtaum/Clag_ev + dvm - p_T*dTm/Clag_ev)/Clag_ev
-                alphap = HALF*(rho_ev**2*p_r*dtaup/Clag_ev - dvp - p_T*dTp/Clag_ev)/Clag_ev
-                alpha0r = dtau + (-rho_ev**2*p_r*dtau + p_T*dT0)/Clag_ev**2
-
-                ! not used, but needed to prevent bad invalid ops
-                alpha0e_g = ZERO
-
-             endif    ! which tracing method
-
-             if (v-cc > ZERO) then
-                alpham = ZERO
-             else if (v-cc < ZERO) then
-                alpham = -alpham
-             else
-                alpham = -HALF*alpham
-             endif
-
-             if (v+cc > ZERO) then
-                alphap = ZERO
-             else if (v+cc < ZERO) then
-                alphap = -alphap
-             else
-                alphap = -HALF*alphap
-             endif
-
-             if (v > ZERO) then
-                alpha0r = ZERO
-                alpha0e_g = ZERO
-             else if (v < ZERO) then
-                alpha0r = -alpha0r
-                alpha0e_g = -alpha0e_g
-             else
-                alpha0r = -HALF*alpha0r
-                alpha0e_g = -HALF*alpha0e_g
-             endif
+             alpham = merge(ZERO, -alpham, v-cc > ZERO)
+             alphap = merge(ZERO, -alphap, v+cc > ZERO)
+             alpha0r = merge(ZERO, -alpha0r, v > ZERO)
+             alpha0e_g = merge(ZERO, -alpha0e_g, v > ZERO)
 
              ! The final interface states are just
              ! q_s = q_ref - sum (l . dq) r
              ! note that the a{mpz}right as defined above have the minus already
-             if (ppm_temp_fix < 3) then
-
-                if (ppm_predict_gammae == 0) then
-                   qyp(i,j,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
-                   qyp(i,j,kc,QV    ) = v_ref + (alphap - alpham)*cc_ev/rho_ev
-                   qyp(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
-                   qyp(i,j,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
-
-                else
-                   tau_s = tau_ref + alphap + alpham + alpha0r
-                   qyp(i,j,kc,QRHO  ) = ONE/tau_s
-
-                   qyp(i,j,kc,QV    ) = v_ref + (alpham - alphap)*Clag_ev
-                   qyp(i,j,kc,QPRES ) = p_ref - (alphap + alpham)*Clag_ev**2
-
-                   qyp(i,j,kc,QGAME) = game_ref + gfactor*(alpham + alphap)/tau_ev + alpha0e_g
-                   qyp(i,j,kc,QREINT) = qyp(i,j,kc,QPRES )/(qyp(i,j,kc,QGAME) - ONE)
-                endif
-
-             else
-                tau_s = tau_ref + alphap + alpham + alpha0r
-                qyp(i,j,kc,QRHO ) = ONE/tau_s
-
-                qyp(i,j,kc,QV   ) = v_ref + (alpham - alphap)*Clag_ev
-                qyp(i,j,kc,QTEMP) = temp_ref + (-Clag_ev**2 - rho_ev**2*p_r)*alpham/p_T + &
-                     rho_ev**2*p_r*alpha0r/p_T - (-Clag_ev**2 - rho_ev**2*p_r)*alphap/p_T
-
-                ! we defer getting the pressure until later, once we do the species
-                qyp(i,j,kc,QPRES) = small_pres ! just to make it defined
-
-             endif
+             qyp(i,j,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
+             qyp(i,j,kc,QV    ) = v_ref + (alphap - alpham)*cc_ev/rho_ev
+             qyp(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
+             qyp(i,j,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
 
              ! Enforce small_*
              qyp(i,j,kc,QRHO ) = max(qyp(i,j,kc,QRHO ), small_dens)
@@ -1011,12 +580,8 @@ contains
 
              p_ref    = Ip(i,j,kc,2,3,QPRES)
              rhoe_g_ref = Ip(i,j,kc,2,3,QREINT)
-             temp_ref = Ip(i,j,kc,2,3,QTEMP)
-
-             tau_ref  = ONE/Ip(i,j,kc,2,3,QRHO)
 
              gam_g_ref  = Ip_gc(i,j,kc,2,3,1)
-             game_ref = Ip(i,j,kc,2,3,QGAME)
 
              rho_ref = max(rho_ref, small_dens)
              p_ref = max(p_ref, small_pres)
@@ -1037,156 +602,40 @@ contains
              dptot = p_ref - Ip(i,j,kc,2,2,QPRES) - hdt*Ip_src(i,j,kc,2,2,QPRES)
              drhoe_g = rhoe_g_ref - Ip(i,j,kc,2,2,QREINT) - hdt*Ip_src(i,j,kc,2,2,QREINT)
 
-             dTm = temp_ref - Ip(i,j,kc,2,1,QTEMP)
-             dT0 = temp_ref - Ip(i,j,kc,2,2,QTEMP)
-             dTp = temp_ref - Ip(i,j,kc,2,3,QTEMP)
-
-             ! since d(rho)/dt = S_rho, d(tau**{-1})/dt = S_rho, so d(tau)/dt = -S_rho*tau**2
-             dtaum = tau_ref - ONE/Ip(i,j,kc,2,1,QRHO) + hdt*Ip_src(i,j,kc,2,2,QRHO)/Ip(i,j,kc,2,2,QRHO)**2
-             dtau = tau_ref - ONE/Ip(i,j,kc,2,2,QRHO) + hdt*Ip_src(i,j,kc,2,2,QRHO)/Ip(i,j,kc,2,2,QRHO)**2
-             dtaup = tau_ref - ONE/Ip(i,j,kc,2,3,QRHO) + hdt*Ip_src(i,j,kc,2,2,QRHO)/Ip(i,j,kc,2,2,QRHO)**2
-
              dvp = v_ref - Ip(i,j,kc,2,3,QV) - hdt*Ip_src(i,j,kc,2,3,QV)
              dptotp = p_ref - Ip(i,j,kc,2,3,QPRES) - hdt*Ip_src(i,j,kc,2,3,QPRES)
 
-             ! Optionally use the reference state in evaluating the
-             ! eigenvectors
-             if (ppm_reference_eigenvectors == 0) then
-                rho_ev  = rho
-                cc_ev   = cc
-                csq_ev  = csq
-                Clag_ev = Clag
-                h_g_ev = h_g
-                p_ev    = p
-                tau_ev  = ONE/rho
-                temp_ev = temp
-             else
-                rho_ev  = rho_ref
-                cc_ev   = cc_ref
-                csq_ev  = csq_ref
-                Clag_ev = Clag_ref
-                h_g_ev = h_g_ref
-                p_ev    = p_ref
-                tau_ev  = tau_ref
-                temp_ev = temp_ref
-             endif
+             rho_ev  = rho_ref
+             cc_ev   = cc_ref
+             csq_ev  = csq_ref
+             Clag_ev = Clag_ref
+             h_g_ev = h_g_ref
+             p_ev    = p_ref
 
-             if (ppm_temp_fix < 3) then
+             ! (rho, u, p, (rho e) eigensystem
 
-                if (ppm_predict_gammae == 0) then
+             ! These are analogous to the beta's from the original PPM
+             ! paper.  This is simply (l . dq), where dq = qref - I(q)
 
-                   ! (rho, u, p, (rho e) eigensystem
+             alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dvm)*(rho_ev/cc_ev)
+             alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dvp)*(rho_ev/cc_ev)
+             alpha0r = drho - dptot/csq_ev
+             alpha0e_g = drhoe_g - dptot*h_g_ev
 
-                   ! These are analogous to the beta's from the original PPM
-                   ! paper.  This is simply (l . dq), where dq = qref - I(q)
-
-                   alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dvm)*(rho_ev/cc_ev)
-                   alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dvp)*(rho_ev/cc_ev)
-                   alpha0r = drho - dptot/csq_ev
-                   alpha0e_g = drhoe_g - dptot*h_g_ev
-
-                else
-
-                   ! (tau, u, p, game) eigensystem
-
-                   ! This is the way things were done in the original PPM
-                   ! paper -- here we work with tau in the characteristic
-                   ! system
-
-                   alpham = HALF*( dvm - dptotm*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alphap = HALF*(-dvp - dptotp*(ONE/Clag_ev))*(ONE/Clag_ev)
-                   alpha0r = dtau + dptot*(ONE/Clag_ev)**2
-
-                   dge = game_ref - Ip(i,j,kc,2,2,QGAME)
-                   gfactor = (game - ONE)*(game - gam_g)
-                   alpha0e_g = gfactor*dptot/(tau_ev*Clag_ev**2) + dge
-
-                end if
-             else
-
-                ! (tau, u T) eigensystem
-
-                ! eos to get some thermodynamics
-                eos_state%T = temp_ev
-                eos_state%rho = rho_ev
-                eos_state%xn(:) = q(i,j,k3d,QFS:QFS-1+nspec)
-                eos_state%aux(:) = q(i,j,k3d,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                p_r = eos_state%dpdr
-                p_T = eos_state%dpdT
-
-                alpham = HALF*(rho_ev**2*p_r*dtaum/Clag_ev + dvm - p_T*dTm/Clag_ev)/Clag_ev
-                alphap = HALF*(rho_ev**2*p_r*dtaup/Clag_ev - dvp - p_T*dTp/Clag_ev)/Clag_ev
-                alpha0r = dtau + (-rho_ev**2*p_r*dtau + p_T*dT0)/Clag_ev**2
-
-                ! not used, but needed to prevent bad invalid ops
-                alpha0e_g = ZERO
-
-             endif
-
-             if (v-cc > ZERO) then
-                alpham = -alpham
-             else if (v-cc < ZERO) then
-                alpham = ZERO
-             else
-                alpham = -HALF*alpham
-             endif
-
-             if (v+cc > ZERO) then
-                alphap = -alphap
-             else if (v+cc < ZERO) then
-                alphap = ZERO
-             else
-                alphap = -HALF*alphap
-             endif
-
-             if (v > ZERO) then
-                alpha0r = -alpha0r
-                alpha0e_g = -alpha0e_g
-             else if (v < ZERO) then
-                alpha0r = ZERO
-                alpha0e_g = ZERO
-             else
-                alpha0r = -HALF*alpha0r
-                alpha0e_g = -HALF*alpha0e_g
-             endif
+             alpham = merge(-alpham , ZERO, v-cc > ZERO)
+             alphap = merge(-alphap, ZERO, v+cc > ZERO)
+             alpha0r = merge(-alpha0r, ZERO, v > ZERO)
+             alpha0e_g = merge(-alpha0e_g, ZERO, v > ZERO)
 
              ! The final interface states are just
              ! q_s = q_ref - sum (l . dq) r
              ! note that the a{mpz}left as defined above has the minus already
-             if (ppm_temp_fix < 3) then
 
-                if (ppm_predict_gammae == 0) then
-                   qym(i,j+1,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
-                   qym(i,j+1,kc,QV    ) = v_ref + (alphap - alpham)*cc_ev/rho_ev
-                   qym(i,j+1,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
-                   qym(i,j+1,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
+             qym(i,j+1,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
+             qym(i,j+1,kc,QV    ) = v_ref + (alphap - alpham)*cc_ev/rho_ev
+             qym(i,j+1,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
+             qym(i,j+1,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
 
-                else
-                   tau_s = tau_ref + alphap + alpham + alpha0r
-                   qym(i,j+1,kc,QRHO  ) = ONE/tau_s
-
-                   qym(i,j+1,kc,QV    ) = v_ref + (alpham - alphap)*Clag_ev
-                   qym(i,j+1,kc,QPRES ) = p_ref - (alphap + alpham)*Clag_ev**2
-
-                   qym(i,j+1,kc,QGAME) = game_ref + gfactor*(alpham + alphap)/tau_ev + alpha0e_g
-                   qym(i,j+1,kc,QREINT) = qym(i,j+1,kc,QPRES )/(qym(i,j+1,kc,QGAME) - ONE)
-
-                endif
-             else
-                tau_s = tau_ref + alphap + alpham + alpha0r
-                qym(i,j+1,kc,QRHO ) = ONE/tau_s
-
-                qym(i,j+1,kc,QV   ) = v_ref + (alpham - alphap)*Clag_ev
-                qym(i,j+1,kc,QTEMP) = temp_ref + (-Clag_ev**2 - rho_ev**2*p_r)*alpham/p_T + &
-                     rho_ev**2*p_r*alpha0r/p_T - (-Clag_ev**2 - rho_ev**2*p_r)*alphap/p_T
-
-                ! we defer getting the pressure until later, once we do the species
-                qym(i,j+1,kc,QPRES) = small_pres ! just to make it defined
-
-             endif
 
              ! Enforce small_*
              qym(i,j+1,kc,QRHO ) = max(qym(i,j+1,kc,QRHO ), small_dens)
@@ -1217,14 +666,7 @@ contains
        do j = ilo2, ihi2+1
           do i = ilo1-1, ihi1+1
              v = q(i,j,k3d,QV)
-
-             if (v > ZERO) then
-                qyp(i,j,kc,n) = q(i,j,k3d,n)
-             else if (v < ZERO) then
-                qyp(i,j,kc,n) = Im(i,j,kc,2,2,n)
-             else
-                qyp(i,j,kc,n) = q(i,j,k3d,n) + HALF*(Im(i,j,kc,2,2,n) - q(i,j,k3d,n))
-             endif
+             qyp(i,j,kc,n) = merge(q(i,j,k3d,n), Im(i,j,kc,2,2,n), v > ZERO)
           enddo
        end do
 
@@ -1232,57 +674,12 @@ contains
        do j = ilo2-1, ihi2
           do i = ilo1-1, ihi1+1
              v = q(i,j,k3d,QV)
-
-             if (v > ZERO) then
-                qym(i,j+1,kc,n) = Ip(i,j,kc,2,2,n)
-             else if (v < ZERO) then
-                qym(i,j+1,kc,n) = q(i,j,k3d,n)
-             else
-                qym(i,j+1,kc,n) = q(i,j,k3d,n) + HALF*(Ip(i,j,kc,2,2,n) - q(i,j,k3d,n))
-             endif
+             qym(i,j+1,kc,n) = merge(Ip(i,j,kc,2,2,n), q(i,j,k3d,n), v > ZERO)
           enddo
 
        enddo
     enddo
 
-    if (ppm_temp_fix == 3) then
-       do j = ilo2-1, ihi2+1
-          do i = ilo1-1, ihi1+1
-
-             if (j >= ilo2) then
-                ! plus face
-                eos_state%T     = qyp(i,j,kc,QTEMP)
-                eos_state%rho   = qyp(i,j,kc,QRHO)
-                eos_state%xn(:) = qyp(i,j,kc,QFS:QFS-1+nspec)
-                eos_state%aux(:) = qyp(i,j,kc,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                qyp(i,j,kc,QPRES) = eos_state%p
-                qyp(i,j,kc,QREINT) = qyp(i,j,kc,QRHO)*eos_state%e
-
-                qyp(i,j,kc,QPRES) = max(qyp(i,j,kc,QPRES), small_pres)
-             endif
-
-             if (j <= ihi2) then
-                ! minus face
-                eos_state%T     = qym(i,j+1,kc,QTEMP)
-                eos_state%rho   = qym(i,j+1,kc,QRHO)
-                eos_state%xn(:) = qym(i,j+1,kc,QFS:QFS-1+nspec)
-                eos_state%aux(:) = qym(i,j+1,kc,QFX:QFX-1+naux)
-
-                call eos(eos_input_rt, eos_state)
-
-                qym(i,j+1,kc,QPRES) = eos_state%p
-                qym(i,j+1,kc,QREINT) = qym(i,j+1,kc,QRHO)*eos_state%e
-
-                qym(i,j+1,kc,QPRES) = max(qym(i,j+1,kc,QPRES), small_pres)
-             endif
-
-          enddo
-       enddo
-
-    endif
 #endif
 
   end subroutine tracexy_ppm
@@ -1301,8 +698,6 @@ contains
                                    QREINT, QPRES, QTEMP, QGAME, QC, QGAMC, QFS, QFX, &
                                    small_dens, small_pres, &
                                    ppm_type, &
-                                   ppm_reference_eigenvectors, ppm_predict_gammae, &
-                                   ppm_temp_fix, &
                                    npassive, qpass_map
     use amrex_constants_module, only : ZERO, HALF, ONE
     use eos_type_module, only : eos_t, eos_input_rt
@@ -1362,20 +757,17 @@ contains
 
     real(rt) :: cc, csq, cgassq, Clag
     real(rt) :: rho, u, v, w, p, rhoe_g, h_g, temp
-    real(rt) :: gam_g, game
+    real(rt) :: gam_g
 
     real(rt) :: drho, dptot, drhoe_g
-    real(rt) :: de, dge, dtau, dtaum, dtaup
+    real(rt) :: de, dge
     real(rt) :: dwp, dptotp
     real(rt) :: dwm, dptotm
-    real(rt) :: dT0, dTp, dTm
-    real(rt) :: p_r, p_T
 
-    real(rt) :: rho_ref, w_ref, p_ref, rhoe_g_ref, h_g_ref, temp_ref
-    real(rt) :: tau_ref
+    real(rt) :: rho_ref, w_ref, p_ref, rhoe_g_ref, h_g_ref
 
-    real(rt) :: cc_ref, csq_ref, Clag_ref, gam_g_ref, game_ref, gfactor
-    real(rt) :: cc_ev, csq_ev, Clag_ev, rho_ev, p_ev, h_g_ev, tau_ev, temp_ev
+    real(rt) :: cc_ref, csq_ref, Clag_ref, gam_g_ref
+    real(rt) :: cc_ev, csq_ev, Clag_ev, rho_ev, p_ev, h_g_ev
 
     real(rt) :: alpham, alphap, alpha0r, alpha0e_g
 
@@ -1408,8 +800,6 @@ contains
     do j = ilo2-1, ihi2+1
        do i = ilo1-1, ihi1+1
 
-          gfactor = ONE ! to help compiler resolve ANTI dependence
-
           rho  = q(i,j,k3d,QRHO)
 
           cc   = qaux(i,j,k3d,QC)
@@ -1426,7 +816,6 @@ contains
           temp = q(i,j,k3d,QTEMP)
 
           gam_g = qaux(i,j,k3d,QGAMC)
-          game = q(i,j,k3d,QGAME)
 
           ! Set the reference state
           ! This will be the fastest moving state to the left
@@ -1435,12 +824,8 @@ contains
 
           p_ref    = Im(i,j,kc,3,1,QPRES)
           rhoe_g_ref = Im(i,j,kc,3,1,QREINT)
-          temp_ref = Im(i,j,kc,3,1,QTEMP)
-
-          tau_ref  = ONE/Im(i,j,kc,3,1,QRHO)
 
           gam_g_ref  = Im_gc(i,j,kc,3,1,1)
-          game_ref = Im(i,j,kc,3,1,QGAME)
 
           rho_ref = max(rho_ref, small_dens)
           p_ref = max(p_ref, small_pres)
@@ -1464,154 +849,38 @@ contains
           dptot = p_ref - Im(i,j,kc,3,2,QPRES) - hdt*Im_src(i,j,kc,3,2,QPRES)
           drhoe_g = rhoe_g_ref - Im(i,j,kc,3,2,QREINT) - hdt*Im_src(i,j,kc,3,2,QREINT)
 
-          dTm = temp_ref - Im(i,j,kc,3,1,QTEMP)
-          dT0 = temp_ref - Im(i,j,kc,3,2,QTEMP)
-          dTp = temp_ref - Im(i,j,kc,3,3,QTEMP)
-
-          ! since d(rho)/dt = S_rho, d(tau**{-1})/dt = S_rho, so d(tau)/dt = -S_rho*tau**2
-          dtaum = tau_ref - ONE/Im(i,j,kc,3,1,QRHO) + hdt*Im_src(i,j,kc,3,1,QRHO)/Im(i,j,kc,3,1,QRHO)**2
-          dtau = tau_ref - ONE/Im(i,j,kc,3,2,QRHO) + hdt*Im_src(i,j,kc,3,2,QRHO)/Im(i,j,kc,3,2,QRHO)**2
-          dtaup = tau_ref - ONE/Im(i,j,kc,3,3,QRHO) + hdt*Im_src(i,j,kc,3,3,QRHO)/Im(i,j,kc,3,3,QRHO)**2
-
           dwp = w_ref - Im(i,j,kc,3,3,QW) - hdt*Im_src(i,j,kc,3,3,QW)
           dptotp = p_ref - Im(i,j,kc,3,3,QPRES) - hdt*Im_src(i,j,kc,3,3,QPRES)
 
+          rho_ev  = rho_ref
+          cc_ev   = cc_ref
+          csq_ev  = csq_ref
+          Clag_ev = Clag_ref
+          h_g_ev = h_g_ref
+          p_ev    = p_ref
 
-          ! Optionally use the reference state in evaluating the
-          ! eigenvectors
-          if (ppm_reference_eigenvectors == 0) then
-             rho_ev  = rho
-             cc_ev   = cc
-             csq_ev  = csq
-             Clag_ev = Clag
-             h_g_ev = h_g
-             p_ev    = p
-             tau_ev  = ONE/rho
-             temp_ev = temp
-          else
-             rho_ev  = rho_ref
-             cc_ev   = cc_ref
-             csq_ev  = csq_ref
-             Clag_ev = Clag_ref
-             h_g_ev = h_g_ref
-             p_ev    = p_ref
-             tau_ev  = tau_ref
-             temp_ev = temp_ref
-          endif
+          ! (rho, u, p, (rho e) eigensystem
 
-          if (ppm_temp_fix < 3) then
+          ! These are analogous to the beta's from the original PPM
+          ! paper.  This is simply (l . dq), where dq = qref - I(q)
+          alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dwm)*(rho_ev/cc_ev)
+          alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dwp)*(rho_ev/cc_ev)
+          alpha0r = drho - dptot/csq_ev
+          alpha0e_g = drhoe_g - dptot*h_g_ev
 
-             if (ppm_predict_gammae == 0) then
-
-                ! (rho, u, p, (rho e) eigensystem
-
-                ! These are analogous to the beta's from the original PPM
-                ! paper.  This is simply (l . dq), where dq = qref - I(q)
-                alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dwm)*(rho_ev/cc_ev)
-                alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dwp)*(rho_ev/cc_ev)
-                alpha0r = drho - dptot/csq_ev
-                alpha0e_g = drhoe_g - dptot*h_g_ev
-
-             else
-
-                ! (tau, u, p, game) eigensystem
-
-                ! This is the way things were done in the original PPM
-                ! paper -- here we work with tau in the characteristic
-                ! system
-
-                alpham = HALF*( dwm - dptotm*(ONE/Clag_ev))*(ONE/Clag_ev)
-                alphap = HALF*(-dwp - dptotp*(ONE/Clag_ev))*(ONE/Clag_ev)
-                alpha0r = dtau + dptot*(ONE/Clag_ev)**2
-
-                dge = game_ref - Im(i,j,kc,3,2,QGAME)
-                gfactor = (game - ONE)*(game - gam_g)
-                alpha0e_g = gfactor*dptot/(tau_ev*Clag_ev**2) + dge
-
-             endif
-          else
-
-             ! (tau, u T) eigensystem
-
-             ! eos to get some thermodynamics
-             eos_state%T = temp_ev
-             eos_state%rho = rho_ev
-             eos_state%xn(:) = q(i,j,k3d,QFS:QFS-1+nspec)
-             eos_state%aux(:) = q(i,j,k3d,QFX:QFX-1+naux)
-
-             call eos(eos_input_rt, eos_state)
-
-             p_r = eos_state%dpdr
-             p_T = eos_state%dpdT
-
-             alpham = HALF*(rho_ev**2*p_r*dtaum/Clag_ev + dwm - p_T*dTm/Clag_ev)/Clag_ev
-             alphap = HALF*(rho_ev**2*p_r*dtaup/Clag_ev - dwp - p_T*dTp/Clag_ev)/Clag_ev
-             alpha0r = dtau + (-rho_ev**2*p_r*dtau + p_T*dT0)/Clag_ev**2
-
-             ! not used, but needed to prevent bad invalid ops
-             alpha0e_g = ZERO
-
-          endif
-
-          if (w-cc > ZERO) then
-             alpham = ZERO
-          else if (w-cc < ZERO) then
-             alpham = -alpham
-          else
-             alpham = -HALF*alpham
-          endif
-          if (w+cc > ZERO) then
-             alphap = ZERO
-          else if (w+cc < ZERO) then
-             alphap = -alphap
-          else
-             alphap = -HALF*alphap
-          endif
-          if (w > ZERO) then
-             alpha0r = ZERO
-             alpha0e_g = ZERO
-          else if (w < ZERO) then
-             alpha0r = -alpha0r
-             alpha0e_g = -alpha0e_g
-          else
-             alpha0r = -HALF*alpha0r
-             alpha0e_g = -HALF*alpha0e_g
-          endif
+          alpham = merge(ZERO, -alpham, w-cc > ZERO)
+          alphap = merge(ZERO, -alphap, w+cc > ZERO)
+          alpha0r = merge(ZERO, -alpha0r, w > ZERO)
+          alpha0e_g = merge(ZERO, -alpha0e_g, w > ZERO)
 
           ! The final interface states are just
           ! q_s = q_ref - sum (l . dq) r
           ! note that the a{mpz}right as defined above have the minus already
-          if (ppm_temp_fix < 3) then
 
-             if (ppm_predict_gammae == 0) then
-                qzp(i,j,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
-                qzp(i,j,kc,QW    ) = w_ref + (alphap - alpham)*cc_ev/rho_ev
-                qzp(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
-                qzp(i,j,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
-
-             else
-                tau_s = tau_ref + alphap + alpham + alpha0r
-                qzp(i,j,kc,QRHO  ) = ONE/tau_s
-
-                qzp(i,j,kc,QW    ) = w_ref + (alpham - alphap)*Clag_ev
-                qzp(i,j,kc,QPRES ) = p_ref - (alphap + alpham)*Clag_ev**2
-
-                qzp(i,j,kc,QGAME) = game_ref + gfactor*(alpham + alphap)/tau_ev + alpha0e_g
-                qzp(i,j,kc,QREINT) = qzp(i,j,kc,QPRES )/(qzp(i,j,kc,QGAME) - ONE)
-
-             endif
-          else
-             tau_s = tau_ref + alphap + alpham + alpha0r
-             qzp(i,j,kc,QRHO ) = ONE/tau_s
-
-             qzp(i,j,kc,QW   ) = w_ref + (alpham - alphap)*Clag_ev
-             qzp(i,j,kc,QTEMP) = temp_ref + (-Clag_ev**2 - rho_ev**2*p_r)*alpham/p_T + &
-                  rho_ev**2*p_r*alpha0r/p_T - (-Clag_ev**2 - rho_ev**2*p_r)*alphap/p_T
-
-             ! we defer getting the pressure until later, once we do the species
-             qzp(i,j,kc,QPRES) = small_pres ! just to make it defined
-
-          endif
+          qzp(i,j,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
+          qzp(i,j,kc,QW    ) = w_ref + (alphap - alpham)*cc_ev/rho_ev
+          qzp(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
+          qzp(i,j,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
 
           ! Enforce small_*
           qzp(i,j,kc,QRHO ) = max(qzp(i,j,kc,QRHO ), small_dens)
@@ -1646,7 +915,6 @@ contains
           temp = q(i,j,k3d-1,QTEMP)
 
           gam_g = qaux(i,j,k3d-1,QGAMC)
-          game = q(i,j,k3d-1,QGAME)
 
           ! Set the reference state
           ! This will be the fastest moving state to the right
@@ -1655,13 +923,8 @@ contains
 
           p_ref    = Ip(i,j,km,3,3,QPRES)
           rhoe_g_ref = Ip(i,j,km,3,3,QREINT)
-          temp_ref = Ip(i,j,km,3,3,QTEMP)
-
-          tau_ref  = ONE/Ip(i,j,km,3,3,QRHO)
 
           gam_g_ref  = Ip_gc(i,j,km,3,3,1)
-          game_ref = Ip(i,j,km,3,3,QGAME)
-
 
           rho_ref = max(rho_ref,small_dens)
           p_ref = max(p_ref,small_pres)
@@ -1685,153 +948,38 @@ contains
           dptot = p_ref - Ip(i,j,km,3,2,QPRES) - hdt*Ip_src(i,j,km,3,2,QPRES)
           drhoe_g = rhoe_g_ref - Ip(i,j,km,3,2,QREINT) - hdt*Ip_src(i,j,km,3,2,QREINT)
 
-          ! since d(rho)/dt = S_rho, d(tau**{-1})/dt = S_rho, so d(tau)/dt = -S_rho*tau**2
-          dtaum = tau_ref - ONE/Ip(i,j,km,3,1,QRHO) + hdt*Ip_src(i,j,km,3,1,QRHO)/Ip(i,j,km,3,1,QRHO)**2
-          dtau = tau_ref - ONE/Ip(i,j,km,3,2,QRHO) + hdt*Ip_src(i,j,km,3,2,QRHO)/Ip(i,j,km,3,2,QRHO)**2
-          dtaup = tau_ref - ONE/Ip(i,j,km,3,3,QRHO) + hdt*Ip_src(i,j,km,3,3,QRHO)/Ip(i,j,km,3,3,QRHO)**2
-
-          dTm = temp_ref - Ip(i,j,km,3,1,QTEMP)
-          dT0 = temp_ref - Ip(i,j,km,3,2,QTEMP)
-          dTp = temp_ref - Ip(i,j,km,3,3,QTEMP)
-
           dwp = w_ref - Ip(i,j,km,3,3,QW) - hdt*Ip_src(i,j,km,3,3,QW)
           dptotp = p_ref - Ip(i,j,km,3,3,QPRES) - hdt*Ip_src(i,j,km,3,3,QPRES)
 
+          rho_ev  = rho_ref
+          cc_ev   = cc_ref
+          csq_ev  = csq_ref
+          Clag_ev = Clag_ref
+          h_g_ev = h_g_ref
+          p_ev    = p_ref
 
-          ! Optionally use the reference state in evaluating the
-          ! eigenvectors
-          if (ppm_reference_eigenvectors == 0) then
-             rho_ev  = rho
-             cc_ev   = cc
-             csq_ev  = csq
-             Clag_ev = Clag
-             h_g_ev = h_g
-             p_ev    = p
-             tau_ev  = ONE/rho
-             temp_ev = temp
-          else
-             rho_ev  = rho_ref
-             cc_ev   = cc_ref
-             csq_ev  = csq_ref
-             Clag_ev = Clag_ref
-             h_g_ev = h_g_ref
-             p_ev    = p_ref
-             tau_ev  = tau_ref
-             temp_ev = temp_ref
-          endif
+          ! (rho, u, p, (rho e) eigensystem
 
-          if (ppm_temp_fix < 3) then
+          ! These are analogous to the beta's from the original PPM
+          ! paper.  This is simply (l . dq), where dq = qref - I(q)
+          alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dwm)*(rho_ev/cc_ev)
+          alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dwp)*(rho_ev/cc_ev)
+          alpha0r = drho - dptot/csq_ev
+          alpha0e_g = drhoe_g - dptot*h_g_ev
 
-             if (ppm_predict_gammae == 0) then
-
-                ! (rho, u, p, (rho e) eigensystem
-
-                ! These are analogous to the beta's from the original PPM
-                ! paper.  This is simply (l . dq), where dq = qref - I(q)
-                alpham = HALF*(dptotm*(ONE/(rho_ev*cc_ev)) - dwm)*(rho_ev/cc_ev)
-                alphap = HALF*(dptotp*(ONE/(rho_ev*cc_ev)) + dwp)*(rho_ev/cc_ev)
-                alpha0r = drho - dptot/csq_ev
-                alpha0e_g = drhoe_g - dptot*h_g_ev
-
-             else
-
-                ! (tau, u, p, game) eigensystem
-
-                ! This is the way things were done in the original PPM
-                ! paper -- here we work with tau in the characteristic
-                ! system
-
-                alpham = HALF*( dwm - dptotm*(ONE/Clag_ev))*(ONE/Clag_ev)
-                alphap = HALF*(-dwp - dptotp*(ONE/Clag_ev))*(ONE/Clag_ev)
-                alpha0r = dtau + dptot*(ONE/Clag_ev)**2
-
-                dge = game_ref - Ip(i,j,km,3,2,QGAME)
-                gfactor = (game - ONE)*(game - gam_g)
-                alpha0e_g = gfactor*dptot/(tau_ev*Clag_ev**2) + dge
-
-             endif
-          else
-             ! (tau, u T) eigensystem
-
-             ! eos to get some thermodynamics
-             eos_state%T = temp_ev
-             eos_state%rho = rho_ev
-             eos_state%xn(:) = q(i,j,k3d-1,QFS:QFS-1+nspec)
-             eos_state%aux(:) = q(i,j,k3d-1,QFX:QFX-1+naux)
-
-             call eos(eos_input_rt, eos_state)
-
-             p_r = eos_state%dpdr
-             p_T = eos_state%dpdT
-
-             alpham = HALF*(rho_ev**2*p_r*dtaum/Clag_ev + dwm - p_T*dTm/Clag_ev)/Clag_ev
-             alphap = HALF*(rho_ev**2*p_r*dtaup/Clag_ev - dwp - p_T*dTp/Clag_ev)/Clag_ev
-             alpha0r = dtau + (-rho_ev**2*p_r*dtau + p_T*dT0)/Clag_ev**2
-
-             ! not used, but needed to prevent bad invalid ops
-             alpha0e_g = ZERO
-
-          endif
-
-          if (w-cc > ZERO) then
-             alpham = -alpham
-          else if (w-cc < ZERO) then
-             alpham = ZERO
-          else
-             alpham = -HALF*alpham
-          endif
-
-          if (w+cc > ZERO) then
-             alphap = -alphap
-          else if (w+cc < ZERO) then
-             alphap = ZERO
-          else
-             alphap = -HALF*alphap
-          endif
-
-          if (w > ZERO) then
-             alpha0r = -alpha0r
-             alpha0e_g = -alpha0e_g
-          else if (w < ZERO) then
-             alpha0r = ZERO
-             alpha0e_g = ZERO
-          else
-             alpha0r = -HALF*alpha0r
-             alpha0e_g = -HALF*alpha0e_g
-          endif
+          alpham = merge(-alpham, ZERO, w-cc > ZERO)
+          alphap = merge(-alphap, ZERO, w+cc > ZERO)
+          alpha0r = merge(-alpha0r, ZERO, w > ZERO)
+          alpha0e_g = merge(-alpha0e_g, ZERO, w > ZERO)
 
           ! The final interface states are just
           ! q_s = q_ref - sum (l . dq) r
           ! note that the a{mpz}left as defined above have the minus already
-          if (ppm_temp_fix < 3) then
-             if (ppm_predict_gammae == 0) then
-                qzm(i,j,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
-                qzm(i,j,kc,QW    ) = w_ref + (alphap - alpham)*cc_ev/rho_ev
-                qzm(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
-                qzm(i,j,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
 
-             else
-                tau_s = tau_ref + alphap + alpham + alpha0r
-                qzm(i,j,kc,QRHO  ) = ONE/tau_s
-
-                qzm(i,j,kc,QW    ) = w_ref + (alpham - alphap)*Clag_ev
-                qzm(i,j,kc,QPRES ) = p_ref - (alphap + alpham)*Clag_ev**2
-
-                qzm(i,j,kc,QGAME) = game_ref + gfactor*(alpham + alphap)/tau_ev + alpha0e_g
-                qzm(i,j,kc,QREINT) = qzm(i,j,kc,QPRES )/(qzm(i,j,kc,QGAME) - ONE)
-
-             endif
-          else
-             tau_s = tau_ref + alphap + alpham + alpha0r
-             qzm(i,j,kc,QRHO ) = ONE/tau_s
-
-             qzm(i,j,kc,QW   ) = w_ref + (alpham - alphap)*Clag_ev
-             qzm(i,j,kc,QTEMP) = temp_ref + (-Clag_ev**2 - rho_ev**2*p_r)*alpham/p_T + &
-                  rho_ev**2*p_r*alpha0r/p_T - (-Clag_ev**2 - rho_ev**2*p_r)*alphap/p_T
-
-             ! we defer getting the pressure until later, once we do the species
-             qzm(i,j,kc,QPRES) = small_pres ! just to make it defined
-          endif
+          qzm(i,j,kc,QRHO  ) = rho_ref + alphap + alpham + alpha0r
+          qzm(i,j,kc,QW    ) = w_ref + (alphap - alpham)*cc_ev/rho_ev
+          qzm(i,j,kc,QREINT) = rhoe_g_ref + (alphap + alpham)*h_g_ev*csq_ev + alpha0e_g
+          qzm(i,j,kc,QPRES ) = p_ref + (alphap + alpham)*csq_ev
 
           ! Enforce small_*
           qzm(i,j,kc,QRHO ) = max(qzm(i,j,kc,QRHO ),small_dens)
@@ -1862,66 +1010,15 @@ contains
 
              ! Plus state on face kc
              w = q(i,j,k3d,QW)
-
-             if (w > ZERO) then
-                qzp(i,j,kc,n) = q(i,j,k3d,n)
-             else if (w < ZERO) then
-                qzp(i,j,kc,n) = Im(i,j,kc,3,2,n)
-             else
-                qzp(i,j,kc,n) = q(i,j,k3d,n) + HALF*(Im(i,j,kc,3,2,n) - q(i,j,k3d,n))
-             endif
+             qzp(i,j,kc,n) = merge(q(i,j,k3d,n), Im(i,j,kc,3,2,n), w > ZERO)
 
              ! Minus state on face k
              w = q(i,j,k3d-1,QW)
-
-             if (w > ZERO) then
-                qzm(i,j,kc,n) = Ip(i,j,km,3,2,n)
-             else if (w < ZERO) then
-                qzm(i,j,kc,n) = q(i,j,k3d-1,n)
-             else
-                qzm(i,j,kc,n) = q(i,j,k3d-1,n) + HALF*(Ip(i,j,km,3,2,n) - q(i,j,k3d-1,n))
-             endif
+             qzm(i,j,kc,n) = merge(Ip(i,j,km,3,2,n), q(i,j,k3d-1,n), w > ZERO)
 
           enddo
        enddo
     enddo
-
-    if (ppm_temp_fix == 3) then
-       ! we predicted T, now make p, (rho e) consistent
-
-       do j = ilo2-1, ihi2+1
-          do i = ilo1-1, ihi1+1
-
-             ! plus face
-             eos_state%T     = qzp(i,j,kc,QTEMP)
-             eos_state%rho   = qzp(i,j,kc,QRHO)
-             eos_state%xn(:) = qzp(i,j,kc,QFS:QFS-1+nspec)
-             eos_state%aux(:) = qzp(i,j,kc,QFX:QFX-1+naux)
-
-             call eos(eos_input_rt, eos_state)
-
-             qzp(i,j,kc,QPRES) = eos_state%p
-             qzp(i,j,kc,QREINT) = qzp(i,j,kc,QRHO)*eos_state%e
-             qzp(i,j,kc,QPRES) = max(qzp(i,j,kc,QPRES), small_pres)
-
-
-             ! minus face
-             eos_state%T     = qzm(i,j,kc,QTEMP)
-             eos_state%rho   = qzm(i,j,kc,QRHO)
-             eos_state%xn(:) = qzm(i,j,kc,QFS:QFS-1+nspec)
-             eos_state%aux(:) = qzm(i,j,kc,QFX:QFX-1+naux)
-
-             call eos(eos_input_rt, eos_state)
-
-             qzm(i,j,kc,QPRES) = eos_state%p
-             qzm(i,j,kc,QREINT) = qzm(i,j,kc,QRHO)*eos_state%e
-
-             qzm(i,j,kc,QPRES) = max(qzm(i,j,kc,QPRES), small_pres)
-
-          enddo
-       enddo
-
-    endif
 
   end subroutine tracez_ppm
 
