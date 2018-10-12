@@ -49,11 +49,33 @@ Castro::fill_thermo_source (Real time, Real dt,
 
       const Box& bx = mfi.tilebox();
 
+      FArrayBox* state_oldfab = &(state_old[mfi]);
+      FArrayBox* state_newfab = &(state_new[mfi]);
+      FArrayBox* thermo_srcfab = &(thermo_src[mfi]);
+
+      const auto& gd = geom.data();
+
+      AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
+      [=] AMREX_CUDA_DEVICE ()
+      {
+          Box tbx = getThreadBox(bx);
+          if (tbx.ok()) {
+              ca_thermo_src_device(BL_TO_FORTRAN_BOX(tbx),
+                                   BL_TO_FORTRAN_ANYD(*state_oldfab),
+                                   BL_TO_FORTRAN_ANYD(*state_newfab),
+                                   BL_TO_FORTRAN_ANYD(*thermo_srcfab),
+                                   gd.ProbLo(), gd.CellSize(), time, dt);
+          }
+      });
+
+      if (0) {
 #pragma gpu
       ca_thermo_src(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
                     BL_TO_FORTRAN_ANYD(state_old[mfi]),
                     BL_TO_FORTRAN_ANYD(state_new[mfi]),
                     BL_TO_FORTRAN_ANYD(thermo_src[mfi]),
                     AMREX_REAL_ANYD(prob_lo),AMREX_REAL_ANYD(dx),time,dt);
+      }
+
     }
 }

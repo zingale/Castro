@@ -463,8 +463,43 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 
       const Box& obx = mfi.growntilebox(1);
 
-      // Compute divergence of velocity field.
+      FArrayBox* qfab = &(q[mfi]);
+      FArrayBox* divfab = &(div[mfi]);
+      FArrayBox* flatnfab = &(flatn[mfi]);
+      FArrayBox* qmfab = &(qm[mfi]);
+      FArrayBox* qpfab = &(qp[mfi]);
 
+      const auto& gd = geom.data();
+
+      AMREX_CUDA_LAUNCH_DEVICE (Strategy(obx),
+      [=] AMREX_CUDA_DEVICE ()
+      {	  
+          Box tbx = getThreadBox(obx);
+          if (tbx.ok()) {
+              // Compute divergence of velocity field.
+              divu_device(BL_TO_FORTRAN_BOX(tbx),
+                          BL_TO_FORTRAN_ANYD(*qfab),
+                          gd.CellSize(),
+                          BL_TO_FORTRAN_ANYD(*divfab));
+
+              // Compute flattening coefficient for slope calculations.
+              ca_uflaten_cuda_device
+                  (BL_TO_FORTRAN_BOX(tbx),
+                   BL_TO_FORTRAN_ANYD(*qfab),
+                   BL_TO_FORTRAN_ANYD(*flatnfab));
+
+              // Do PPM reconstruction to the zone edges.
+              ca_ppm_reconstruct_cuda_device
+                  (BL_TO_FORTRAN_BOX(tbx),
+                   BL_TO_FORTRAN_ANYD(*qfab),
+                   BL_TO_FORTRAN_ANYD(*flatnfab),
+                   BL_TO_FORTRAN_ANYD(*qmfab),
+                   BL_TO_FORTRAN_ANYD(*qpfab));
+          }
+      });
+
+      if (0) {
+      // Compute divergence of velocity field.
 #pragma gpu
       divu(AMREX_INT_ANYD(obx.loVect()), AMREX_INT_ANYD(obx.hiVect()),
            BL_TO_FORTRAN_ANYD(q[mfi]),
@@ -487,6 +522,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
            BL_TO_FORTRAN_ANYD(qm[mfi]),
            BL_TO_FORTRAN_ANYD(qp[mfi]));
 
+      }
   } // MFIter loop
 
 
@@ -517,26 +553,25 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 	  const int nstate = NUM_STATE;
 	  const Real bm = b_mol[mol_iteration];
 
-	  AMREX_CUDA_LAUNCH_LAMBDA (Strategy(ebx),
+          AMREX_CUDA_LAUNCH_DEVICE (Strategy(ebx),
           [=] AMREX_CUDA_DEVICE ()
-	  {	  
-	    Box tbx = getThreadBox(ebx);
-	    if (tbx.ok()) {
-	      ca_construct_flux_cuda_device(BL_TO_FORTRAN_BOX(tbx),
-					    BL_TO_FORTRAN_BOX(gd.Domain()),
-					    gd.CellSize(), dt,
-					    idir_f,
-					    BL_TO_FORTRAN_ANYD(*sfab),
-					    BL_TO_FORTRAN_ANYD(*divfab),
-					    BL_TO_FORTRAN_ANYD(*qauxfab),
-					    BL_TO_FORTRAN_ANYD(*qmfab),
-					    BL_TO_FORTRAN_ANYD(*qpfab),
-					    BL_TO_FORTRAN_ANYD(*qefab),
-					    BL_TO_FORTRAN_ANYD(*fluxfab),
-					    BL_TO_FORTRAN_ANYD(*areafab));
-	      fluxesfab->saxpy(bm, *fluxfab, tbx, tbx, 0, 0, nstate);
-
-	    }		  
+          {	  
+              Box tbx = getThreadBox(ebx);
+              if (tbx.ok()) {
+                  ca_construct_flux_cuda_device(BL_TO_FORTRAN_BOX(tbx),
+                                                BL_TO_FORTRAN_BOX(gd.Domain()),
+                                                gd.CellSize(), dt,
+                                                idir_f,
+                                                BL_TO_FORTRAN_ANYD(*sfab),
+                                                BL_TO_FORTRAN_ANYD(*divfab),
+                                                BL_TO_FORTRAN_ANYD(*qauxfab),
+                                                BL_TO_FORTRAN_ANYD(*qmfab),
+                                                BL_TO_FORTRAN_ANYD(*qpfab),
+                                                BL_TO_FORTRAN_ANYD(*qefab),
+                                                BL_TO_FORTRAN_ANYD(*fluxfab),
+                                                BL_TO_FORTRAN_ANYD(*areafab));
+                  fluxesfab->saxpy(bm, *fluxfab, tbx, tbx, 0, 0, nstate);
+              }		  
 	  });
 
 	  if (0) {
@@ -571,6 +606,45 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 
       const Box& bx = mfi.tilebox();
 
+      FArrayBox* qe0fab = &(qe[0][mfi]);
+      FArrayBox* qe1fab = &(qe[1][mfi]);
+      FArrayBox* qe2fab = &(qe[2][mfi]);
+      FArrayBox* flux0fab = &(flux[0][mfi]);
+      FArrayBox* flux1fab = &(flux[1][mfi]);
+      FArrayBox* flux2fab = &(flux[2][mfi]);
+      FArrayBox* area0fab = &(area[0][mfi]);
+      FArrayBox* area1fab = &(area[1][mfi]);
+      FArrayBox* area2fab = &(area[2][mfi]);
+      FArrayBox* volumefab = &(volume[mfi]);
+      FArrayBox* sources_for_hydrofab = &(sources_for_hydro[mfi]);
+      FArrayBox* k_stagefab = &(k_stage[mfi]);
+
+      const auto& gd = geom.data();
+
+      AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
+      [=] AMREX_CUDA_DEVICE ()
+      {	  
+          Box tbx = getThreadBox(bx);
+          if (tbx.ok()) {
+              ca_construct_hydro_update_cuda_device
+                  (BL_TO_FORTRAN_BOX(tbx),
+                   gd.CellSize(), dt,
+                   BL_TO_FORTRAN_ANYD(*qe0fab),
+                   BL_TO_FORTRAN_ANYD(*qe1fab),
+                   BL_TO_FORTRAN_ANYD(*qe2fab),
+                   BL_TO_FORTRAN_ANYD(*flux0fab),
+                   BL_TO_FORTRAN_ANYD(*flux1fab),
+                   BL_TO_FORTRAN_ANYD(*flux2fab),
+                   BL_TO_FORTRAN_ANYD(*area0fab),
+                   BL_TO_FORTRAN_ANYD(*area1fab),
+                   BL_TO_FORTRAN_ANYD(*area2fab),
+                   BL_TO_FORTRAN_ANYD(*volumefab),
+                   BL_TO_FORTRAN_ANYD(*sources_for_hydrofab),
+                   BL_TO_FORTRAN_ANYD(*k_stagefab));
+          }
+      });
+
+      if (0) {
 #pragma gpu
       ca_construct_hydro_update_cuda
           (AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
@@ -587,6 +661,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
            BL_TO_FORTRAN_ANYD(volume[mfi]),
            BL_TO_FORTRAN_ANYD(sources_for_hydro[mfi]),
            BL_TO_FORTRAN_ANYD(k_stage[mfi]));
+      }
 
   } // MFIter loop
 
@@ -656,6 +731,23 @@ Castro::cons_to_prim(const Real time)
         // Convert the conservative state to the primitive variable state.
         // This fills both q and qaux.
 
+        FArrayBox* Sborderfab = &(Sborder[mfi]);
+        FArrayBox* qfab = &(q[mfi]);
+        FArrayBox* qauxfab = &(qaux[mfi]);
+
+        AMREX_CUDA_LAUNCH_DEVICE (Strategy(qbx),
+        [=] AMREX_CUDA_DEVICE ()
+        {
+            Box tbx = getThreadBox(qbx);
+            if (tbx.ok()) {
+                ca_ctoprim_device(BL_TO_FORTRAN_BOX(tbx),
+                                  BL_TO_FORTRAN_ANYD(*Sborderfab),
+                                  BL_TO_FORTRAN_ANYD(*qfab),
+                                  BL_TO_FORTRAN_ANYD(*qauxfab));
+            }
+        });
+
+        if (0) {
 #pragma gpu
         ca_ctoprim(AMREX_INT_ANYD(qbx.loVect()), AMREX_INT_ANYD(qbx.hiVect()),
                    BL_TO_FORTRAN_ANYD(Sborder[mfi]),
@@ -665,6 +757,7 @@ Castro::cons_to_prim(const Real time)
 #endif
                    BL_TO_FORTRAN_ANYD(q[mfi]),
                    BL_TO_FORTRAN_ANYD(qaux[mfi]));
+        }
 
         // Convert the source terms expressed as sources to the conserved state to those
         // expressed as sources for the primitive state.

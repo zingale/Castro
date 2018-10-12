@@ -2633,9 +2633,23 @@ Castro::normalize_species (MultiFab& S_new, int ng)
     {
        const Box& bx = mfi.growntilebox(ng);
 
+       FArrayBox* S_newfab = &(S_new[mfi]);
+
+       AMREX_CUDA_LAUNCH_DEVICE( Strategy(bx),
+       [=] AMREX_CUDA_DEVICE ()
+       {
+           Box tbx = getThreadBox(bx);
+           if (tbx.ok()) {
+               ca_normalize_species_device(BL_TO_FORTRAN_BOX(tbx),
+                                           BL_TO_FORTRAN_ANYD(*S_newfab));
+           }
+       });
+
+       if (0) {
 #pragma gpu
        ca_normalize_species(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
                             BL_TO_FORTRAN_ANYD(S_new[mfi]));
+       }
     }
 }
 
@@ -3077,10 +3091,26 @@ Castro::reset_internal_energy(MultiFab& S_new)
     {
         const Box& bx = mfi.growntilebox(ng);
 
+        FArrayBox* S_newfab = &(S_new[mfi]);
+        const int pfw = print_fortran_warnings;
+
+        AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
+        [=] AMREX_CUDA_DEVICE ()
+        {	  
+            Box tbx = getThreadBox(bx);
+            if (tbx.ok()) {
+                ca_reset_internal_e_device(BL_TO_FORTRAN_BOX(tbx),
+                                           BL_TO_FORTRAN_ANYD(*S_newfab),
+                                           pfw);
+            }
+        });
+
+        if (0) {
 #pragma gpu
         ca_reset_internal_e(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
 			    BL_TO_FORTRAN_ANYD(S_new[mfi]),
 			    print_fortran_warnings);
+        }
     }
 
     // Flush Fortran output
@@ -3153,9 +3183,25 @@ Castro::computeTemp(MultiFab& State, int ng)
 	State[mfi].copy(temp,bx,0,bx,Temp,1);
       } else {
 #endif
+
+          FArrayBox* Statefab = &(State[mfi]);
+
+          AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
+          [=] AMREX_CUDA_DEVICE ()
+          {	  
+              Box tbx = getThreadBox(bx);
+              if (tbx.ok()) {
+                  ca_compute_temp_device(BL_TO_FORTRAN_BOX(tbx),
+                                         BL_TO_FORTRAN_ANYD(*Statefab));
+              }
+          });
+
+
+        if (0) {
 #pragma gpu
 	ca_compute_temp(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
 			BL_TO_FORTRAN_ANYD(State[mfi]));
+        }
 #ifdef RADIATION
       }
 #endif

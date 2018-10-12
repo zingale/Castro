@@ -629,8 +629,11 @@ public:
     //
     static amrex::Real num_zones_advanced;
 
+#if AMREX_USE_CUDA
+public:
+#else
 protected:
-
+#endif
     //
     // Build a mask that ghost cells overlapping with interior cells in the same multifab
     // are set to 0, whereas others are set to 1.
