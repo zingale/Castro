@@ -502,6 +502,44 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 
           int idir_f = idir + 1;
 
+	  FArrayBox* sfab = &(Sborder[mfi]);
+	  FArrayBox* divfab = &(div[mfi]);
+	  FArrayBox* qauxfab = &(qaux[mfi]);
+	  FArrayBox* qmfab = &(qm[mfi]);
+	  FArrayBox* qpfab = &(qp[mfi]);
+	  FArrayBox* qefab = &(qe[idir][mfi]);
+	  FArrayBox* fluxfab = &(flux[idir][mfi]);
+	  FArrayBox* areafab = &(area[idir][mfi]);
+
+	  FArrayBox* fluxesfab = &((*fluxes[idir])[mfi]);
+
+	  const auto& gd = geom.data();
+	  const int nstate = NUM_STATE;
+	  const Real bm = b_mol[mol_iteration];
+
+	  AMREX_CUDA_LAUNCH_LAMBDA (Strategy(ebx),
+          [=] AMREX_CUDA_DEVICE ()
+	  {	  
+	    Box tbx = getThreadBox(ebx);
+	    if (tbx.ok()) {
+	      ca_construct_flux_cuda_device(BL_TO_FORTRAN_BOX(tbx),
+					    BL_TO_FORTRAN_BOX(gd.Domain()),
+					    gd.CellSize(), dt,
+					    idir_f,
+					    BL_TO_FORTRAN_ANYD(*sfab),
+					    BL_TO_FORTRAN_ANYD(*divfab),
+					    BL_TO_FORTRAN_ANYD(*qauxfab),
+					    BL_TO_FORTRAN_ANYD(*qmfab),
+					    BL_TO_FORTRAN_ANYD(*qpfab),
+					    BL_TO_FORTRAN_ANYD(*qefab),
+					    BL_TO_FORTRAN_ANYD(*fluxfab),
+					    BL_TO_FORTRAN_ANYD(*areafab));
+	      fluxesfab->saxpy(bm, *fluxfab, tbx, tbx, 0, 0, nstate);
+
+	    }		  
+	  });
+
+	  if (0) {
 #pragma gpu
           ca_construct_flux_cuda
               (AMREX_INT_ANYD(ebx.loVect()), AMREX_INT_ANYD(ebx.hiVect()),
@@ -520,7 +558,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
           // Store the fluxes from this advance -- we weight them by the
           // integrator weight for this stage
           (*fluxes[idir])[mfi].saxpy(b_mol[mol_iteration], flux[idir][mfi], ebx, ebx, 0, 0, NUM_STATE);
-
+	  }
       }
 
   } // MFIter loop
