@@ -62,11 +62,30 @@ Castro::volWgtSum (const std::string& name,
 	MultiFab::Multiply(*mf, mask, 0, 0, 1, 0);
     }
 
+    {
+        HostDeviceScalar<Real> cs(sum);
+        Real* p = cs.devicePtr();
+
 #ifdef _OPENMP
 #pragma omp parallel reduction(+:sum)
 #endif    
     for (MFIter mfi(*mf,true); mfi.isValid(); ++mfi)
     {
+        const Box& box = mfi.tilebox();
+        FArrayBox      * fab = &((*mf)[mfi]);
+        FArrayBox const* vfab = &(volume[mfi]);
+        const auto& gd = geom.data();
+
+        AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( box, tbx,
+        {
+            ca_summass_device(BL_TO_FORTRAN_BOX(tbx),
+                              BL_TO_FORTRAN_ANYD(*fab),
+                              gd.CellSize(),
+                              BL_TO_FORTRAN_ANYD(*vfab),
+                              p);
+        });
+
+#if 0
         FArrayBox& fab = (*mf)[mfi];
 
         const Box& box  = mfi.tilebox();
@@ -84,6 +103,8 @@ Castro::volWgtSum (const std::string& name,
 		   AMREX_REAL_ANYD(dx),
                    BL_TO_FORTRAN_ANYD(volume[mfi]),
                    AMREX_MFITER_REDUCE_SUM(&sum));
+#endif
+    }
 
     }
 
