@@ -471,31 +471,27 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 
       const auto& gd = geom.data();
 
-      AMREX_CUDA_LAUNCH_DEVICE (Strategy(obx),
-      [=] AMREX_CUDA_DEVICE ()
+      AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( obx, tbx,
       {	  
-          Box tbx = getThreadBox(obx);
-          if (tbx.ok()) {
-              // Compute divergence of velocity field.
-              divu_device(BL_TO_FORTRAN_BOX(tbx),
-                          BL_TO_FORTRAN_ANYD(*qfab),
-                          gd.CellSize(),
-                          BL_TO_FORTRAN_ANYD(*divfab));
-
-              // Compute flattening coefficient for slope calculations.
-              ca_uflaten_cuda_device
-                  (BL_TO_FORTRAN_BOX(tbx),
-                   BL_TO_FORTRAN_ANYD(*qfab),
-                   BL_TO_FORTRAN_ANYD(*flatnfab));
-
-              // Do PPM reconstruction to the zone edges.
-              ca_ppm_reconstruct_cuda_device
-                  (BL_TO_FORTRAN_BOX(tbx),
-                   BL_TO_FORTRAN_ANYD(*qfab),
-                   BL_TO_FORTRAN_ANYD(*flatnfab),
-                   BL_TO_FORTRAN_ANYD(*qmfab),
-                   BL_TO_FORTRAN_ANYD(*qpfab));
-          }
+          // Compute divergence of velocity field.
+          divu_device(BL_TO_FORTRAN_BOX(tbx),
+                      BL_TO_FORTRAN_ANYD(*qfab),
+                      gd.CellSize(),
+                      BL_TO_FORTRAN_ANYD(*divfab));
+          
+          // Compute flattening coefficient for slope calculations.
+          ca_uflaten_cuda_device
+              (BL_TO_FORTRAN_BOX(tbx),
+               BL_TO_FORTRAN_ANYD(*qfab),
+               BL_TO_FORTRAN_ANYD(*flatnfab));
+          
+          // Do PPM reconstruction to the zone edges.
+          ca_ppm_reconstruct_cuda_device
+              (BL_TO_FORTRAN_BOX(tbx),
+               BL_TO_FORTRAN_ANYD(*qfab),
+               BL_TO_FORTRAN_ANYD(*flatnfab),
+               BL_TO_FORTRAN_ANYD(*qmfab),
+               BL_TO_FORTRAN_ANYD(*qpfab));
       });
 
       if (0) {
@@ -553,25 +549,21 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 	  const int nstate = NUM_STATE;
 	  const Real bm = b_mol[mol_iteration];
 
-          AMREX_CUDA_LAUNCH_DEVICE (Strategy(ebx),
-          [=] AMREX_CUDA_DEVICE ()
+          AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( ebx, tbx,
           {	  
-              Box tbx = getThreadBox(ebx);
-              if (tbx.ok()) {
-                  ca_construct_flux_cuda_device(BL_TO_FORTRAN_BOX(tbx),
-                                                BL_TO_FORTRAN_BOX(gd.Domain()),
-                                                gd.CellSize(), dt,
-                                                idir_f,
-                                                BL_TO_FORTRAN_ANYD(*sfab),
-                                                BL_TO_FORTRAN_ANYD(*divfab),
-                                                BL_TO_FORTRAN_ANYD(*qauxfab),
-                                                BL_TO_FORTRAN_ANYD(*qmfab),
-                                                BL_TO_FORTRAN_ANYD(*qpfab),
-                                                BL_TO_FORTRAN_ANYD(*qefab),
-                                                BL_TO_FORTRAN_ANYD(*fluxfab),
-                                                BL_TO_FORTRAN_ANYD(*areafab));
-                  fluxesfab->saxpy(bm, *fluxfab, tbx, tbx, 0, 0, nstate);
-              }		  
+              ca_construct_flux_cuda_device(BL_TO_FORTRAN_BOX(tbx),
+                                            BL_TO_FORTRAN_BOX(gd.Domain()),
+                                            gd.CellSize(), dt,
+                                            idir_f,
+                                            BL_TO_FORTRAN_ANYD(*sfab),
+                                            BL_TO_FORTRAN_ANYD(*divfab),
+                                            BL_TO_FORTRAN_ANYD(*qauxfab),
+                                            BL_TO_FORTRAN_ANYD(*qmfab),
+                                            BL_TO_FORTRAN_ANYD(*qpfab),
+                                            BL_TO_FORTRAN_ANYD(*qefab),
+                                            BL_TO_FORTRAN_ANYD(*fluxfab),
+                                            BL_TO_FORTRAN_ANYD(*areafab));
+              fluxesfab->saxpy(bm, *fluxfab, tbx, tbx, 0, 0, nstate);
 	  });
 
 	  if (0) {
@@ -621,27 +613,23 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 
       const auto& gd = geom.data();
 
-      AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
-      [=] AMREX_CUDA_DEVICE ()
+      AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
       {	  
-          Box tbx = getThreadBox(bx);
-          if (tbx.ok()) {
-              ca_construct_hydro_update_cuda_device
-                  (BL_TO_FORTRAN_BOX(tbx),
-                   gd.CellSize(), dt,
-                   BL_TO_FORTRAN_ANYD(*qe0fab),
-                   BL_TO_FORTRAN_ANYD(*qe1fab),
-                   BL_TO_FORTRAN_ANYD(*qe2fab),
-                   BL_TO_FORTRAN_ANYD(*flux0fab),
-                   BL_TO_FORTRAN_ANYD(*flux1fab),
-                   BL_TO_FORTRAN_ANYD(*flux2fab),
-                   BL_TO_FORTRAN_ANYD(*area0fab),
-                   BL_TO_FORTRAN_ANYD(*area1fab),
-                   BL_TO_FORTRAN_ANYD(*area2fab),
-                   BL_TO_FORTRAN_ANYD(*volumefab),
-                   BL_TO_FORTRAN_ANYD(*sources_for_hydrofab),
-                   BL_TO_FORTRAN_ANYD(*k_stagefab));
-          }
+          ca_construct_hydro_update_cuda_device
+              (BL_TO_FORTRAN_BOX(tbx),
+               gd.CellSize(), dt,
+               BL_TO_FORTRAN_ANYD(*qe0fab),
+               BL_TO_FORTRAN_ANYD(*qe1fab),
+               BL_TO_FORTRAN_ANYD(*qe2fab),
+               BL_TO_FORTRAN_ANYD(*flux0fab),
+               BL_TO_FORTRAN_ANYD(*flux1fab),
+               BL_TO_FORTRAN_ANYD(*flux2fab),
+               BL_TO_FORTRAN_ANYD(*area0fab),
+               BL_TO_FORTRAN_ANYD(*area1fab),
+               BL_TO_FORTRAN_ANYD(*area2fab),
+               BL_TO_FORTRAN_ANYD(*volumefab),
+               BL_TO_FORTRAN_ANYD(*sources_for_hydrofab),
+               BL_TO_FORTRAN_ANYD(*k_stagefab));
       });
 
       if (0) {
@@ -735,16 +723,12 @@ Castro::cons_to_prim(const Real time)
         FArrayBox* qfab = &(q[mfi]);
         FArrayBox* qauxfab = &(qaux[mfi]);
 
-        AMREX_CUDA_LAUNCH_DEVICE (Strategy(qbx),
-        [=] AMREX_CUDA_DEVICE ()
+        AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( qbx, tbx,
         {
-            Box tbx = getThreadBox(qbx);
-            if (tbx.ok()) {
-                ca_ctoprim_device(BL_TO_FORTRAN_BOX(tbx),
-                                  BL_TO_FORTRAN_ANYD(*Sborderfab),
-                                  BL_TO_FORTRAN_ANYD(*qfab),
-                                  BL_TO_FORTRAN_ANYD(*qauxfab));
-            }
+            ca_ctoprim_device(BL_TO_FORTRAN_BOX(tbx),
+                              BL_TO_FORTRAN_ANYD(*Sborderfab),
+                              BL_TO_FORTRAN_ANYD(*qfab),
+                              BL_TO_FORTRAN_ANYD(*qauxfab));
         });
 
         if (0) {

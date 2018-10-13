@@ -2635,14 +2635,10 @@ Castro::normalize_species (MultiFab& S_new, int ng)
 
        FArrayBox* S_newfab = &(S_new[mfi]);
 
-       AMREX_CUDA_LAUNCH_DEVICE( Strategy(bx),
-       [=] AMREX_CUDA_DEVICE ()
+       AMREX_CUDA_LAUNCH_DEVICE_LAMBDA( bx, tbx,
        {
-           Box tbx = getThreadBox(bx);
-           if (tbx.ok()) {
-               ca_normalize_species_device(BL_TO_FORTRAN_BOX(tbx),
-                                           BL_TO_FORTRAN_ANYD(*S_newfab));
-           }
+           ca_normalize_species_device(BL_TO_FORTRAN_BOX(tbx),
+                                       BL_TO_FORTRAN_ANYD(*S_newfab));
        });
 
        if (0) {
@@ -3094,15 +3090,11 @@ Castro::reset_internal_energy(MultiFab& S_new)
         FArrayBox* S_newfab = &(S_new[mfi]);
         const int pfw = print_fortran_warnings;
 
-        AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
-        [=] AMREX_CUDA_DEVICE ()
+        AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
         {	  
-            Box tbx = getThreadBox(bx);
-            if (tbx.ok()) {
-                ca_reset_internal_e_device(BL_TO_FORTRAN_BOX(tbx),
-                                           BL_TO_FORTRAN_ANYD(*S_newfab),
-                                           pfw);
-            }
+            ca_reset_internal_e_device(BL_TO_FORTRAN_BOX(tbx),
+                                       BL_TO_FORTRAN_ANYD(*S_newfab),
+                                       pfw);
         });
 
         if (0) {
@@ -3186,14 +3178,10 @@ Castro::computeTemp(MultiFab& State, int ng)
 
           FArrayBox* Statefab = &(State[mfi]);
 
-          AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
-          [=] AMREX_CUDA_DEVICE ()
+          AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
           {	  
-              Box tbx = getThreadBox(bx);
-              if (tbx.ok()) {
-                  ca_compute_temp_device(BL_TO_FORTRAN_BOX(tbx),
-                                         BL_TO_FORTRAN_ANYD(*Statefab));
-              }
+              ca_compute_temp_device(BL_TO_FORTRAN_BOX(tbx),
+                                     BL_TO_FORTRAN_ANYD(*Statefab));
           });
 
 

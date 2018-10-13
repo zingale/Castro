@@ -55,17 +55,13 @@ Castro::fill_thermo_source (Real time, Real dt,
 
       const auto& gd = geom.data();
 
-      AMREX_CUDA_LAUNCH_DEVICE (Strategy(bx),
-      [=] AMREX_CUDA_DEVICE ()
+      AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
       {
-          Box tbx = getThreadBox(bx);
-          if (tbx.ok()) {
-              ca_thermo_src_device(BL_TO_FORTRAN_BOX(tbx),
-                                   BL_TO_FORTRAN_ANYD(*state_oldfab),
-                                   BL_TO_FORTRAN_ANYD(*state_newfab),
-                                   BL_TO_FORTRAN_ANYD(*thermo_srcfab),
-                                   gd.ProbLo(), gd.CellSize(), time, dt);
-          }
+          ca_thermo_src_device(BL_TO_FORTRAN_BOX(tbx),
+                               BL_TO_FORTRAN_ANYD(*state_oldfab),
+                               BL_TO_FORTRAN_ANYD(*state_newfab),
+                               BL_TO_FORTRAN_ANYD(*thermo_srcfab),
+                               gd.ProbLo(), gd.CellSize(), time, dt);
       });
 
       if (0) {
