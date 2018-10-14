@@ -1185,16 +1185,33 @@ Castro::estTimeStep (Real dt_old)
 	    {
 	      Real dt = max_dt / cfl;
 
+              {
+              HostDeviceScalar<Real> cs(dt);
+              Real* p = cs.devicePtr();
+              const auto& gd = geom.data();
+
 	      for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
 		{
 		  const Box& box = mfi.tilebox();
+                  FArrayBox const* statefab = &(stateMF[mfi]);
 
+                  AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( box, tbx,
+                  {
+                      ca_estdt_device(BL_TO_FORTRAN_BOX(tbx),
+                                      BL_TO_FORTRAN_ANYD(*statefab),
+                                      gd.CellSize(),
+                                      p);
+                  });
+
+#if 0
 #pragma gpu
 		  ca_estdt(AMREX_INT_ANYD(box.loVect()), AMREX_INT_ANYD(box.hiVect()),
 			   BL_TO_FORTRAN_ANYD(stateMF[mfi]),
 			   AMREX_REAL_ANYD(dx),
                            AMREX_MFITER_REDUCE_MIN(&dt));
+#endif
 		}
+              }
               estdt_hydro = std::min(estdt_hydro, dt);
             }
 	  }

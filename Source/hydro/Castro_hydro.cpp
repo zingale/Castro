@@ -876,19 +876,39 @@ Castro::check_for_cfl_violation(const Real dt)
 
     MultiFab& S_new = get_new_data(State_Type);
 
+    {
+        HostDeviceScalar<Real> cs(courno);
+        Real* p = cs.devicePtr();
+        const int print = print_fortran_warnings;
+        const auto& gd = geom.data();
+
 #ifdef _OPENMP
 #pragma omp parallel reduction(max:courno)
 #endif
     for (MFIter mfi(S_new, hydro_tile_size); mfi.isValid(); ++mfi) {
 
         const Box& bx = mfi.tilebox();
+        FArrayBox const* qfab = &(q[mfi]);
+        FArrayBox const* qauxfab = &(qaux[mfi]);
 
+        AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
+        {
+            ca_compute_cfl_device(BL_TO_FORTRAN_BOX(tbx),
+                                  BL_TO_FORTRAN_ANYD(*qfab),
+                                  BL_TO_FORTRAN_ANYD(*qauxfab),
+                                  dt, gd.CellSize(),
+                                  p, print);
+        });
+
+#if 0
 #pragma gpu
         ca_compute_cfl(BL_TO_FORTRAN_BOX(bx),
                        BL_TO_FORTRAN_ANYD(q[mfi]),
                        BL_TO_FORTRAN_ANYD(qaux[mfi]),
                        dt, AMREX_REAL_ANYD(dx), AMREX_MFITER_REDUCE_MAX(&courno), print_fortran_warnings);
+#endif
 
+    }
     }
 
     ParallelDescriptor::ReduceRealMax(courno);
