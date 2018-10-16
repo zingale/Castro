@@ -1183,11 +1183,8 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp parallel reduction(min:estdt_hydro)
 #endif
 	    {
-	      Real dt = max_dt / cfl;
-
-              {
-              HostDeviceScalar<Real> cs(dt);
-              Real* p = cs.devicePtr();
+              DeviceScalar<Real> dt(max_dt/cfl);
+              Real* p = dt.dataPtr();
               const auto& gd = geom.data();
 
 	      for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
@@ -1211,8 +1208,8 @@ Castro::estTimeStep (Real dt_old)
                            AMREX_MFITER_REDUCE_MIN(&dt));
 #endif
 		}
-              }
-              estdt_hydro = std::min(estdt_hydro, dt);
+
+              estdt_hydro = std::min(estdt_hydro, dt.dataValue());
             }
 	  }
 

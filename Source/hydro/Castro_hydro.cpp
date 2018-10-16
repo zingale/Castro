@@ -876,15 +876,16 @@ Castro::check_for_cfl_violation(const Real dt)
 
     MultiFab& S_new = get_new_data(State_Type);
 
-    {
-        HostDeviceScalar<Real> cs(courno);
-        Real* p = cs.devicePtr();
-        const int print = print_fortran_warnings;
-        const auto& gd = geom.data();
+    const int print = print_fortran_warnings;
+    const auto& gd = geom.data();
 
 #ifdef _OPENMP
 #pragma omp parallel reduction(max:courno)
 #endif
+    {
+    DeviceScalar<Real> local_courno(courno);
+    Real* p = local_courno.dataPtr();
+
     for (MFIter mfi(S_new, hydro_tile_size); mfi.isValid(); ++mfi) {
 
         const Box& bx = mfi.tilebox();
@@ -909,6 +910,8 @@ Castro::check_for_cfl_violation(const Real dt)
 #endif
 
     }
+
+    courno = std::max(courno, local_courno.dataValue());
     }
 
     ParallelDescriptor::ReduceRealMax(courno);

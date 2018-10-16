@@ -62,13 +62,13 @@ Castro::volWgtSum (const std::string& name,
 	MultiFab::Multiply(*mf, mask, 0, 0, 1, 0);
     }
 
-    {
-        HostDeviceScalar<Real> cs(sum);
-        Real* p = cs.devicePtr();
-
 #ifdef _OPENMP
 #pragma omp parallel reduction(+:sum)
-#endif    
+#endif
+    {
+    DeviceScalar<Real> local_sum(0.0);
+    Real* p = local_sum.dataPtr();
+
     for (MFIter mfi(*mf,true); mfi.isValid(); ++mfi)
     {
         const Box& box = mfi.tilebox();
@@ -106,6 +106,7 @@ Castro::volWgtSum (const std::string& name,
 #endif
     }
 
+    sum += local_sum.dataValue();
     }
 
     if (!local)
