@@ -213,6 +213,10 @@ Castro::variableCleanUp ()
 
     network_finalize();
     eos_finalize();
+#ifdef SPONGE
+    sponge_finalize();
+#endif
+    amrinfo_finalize();
 }
 
 void
@@ -348,6 +352,14 @@ Castro::read_params ()
 
     if (time_integration_method != CornerTransportUpwind && use_retry)
         amrex::Error("Method of lines integration is incompatible with the timestep retry mechanism.");
+
+#ifdef AMREX_USE_CUDA
+    // not use ctu if using gpu
+    if (do_ctu == 1)
+      {
+	 amrex::Error("Running with CUDA requires do_ctu = 0");
+      }
+#endif
 
     // fourth order implies MOL or SDC
     if (fourth_order == 1 && time_integration_method == CornerTransportUpwind)
@@ -614,6 +626,12 @@ Castro::buildMetrics ()
         area[dir].clear();
 	area[dir].define(getEdgeBoxArray(dir),dmap,1,NUM_GROW);
         geom.GetFaceArea(area[dir],dir);
+    }
+    for (int dir = BL_SPACEDIM; dir < 3; dir++)
+    {
+        area[dir].clear();
+        area[dir].define(grids, dmap, 1, 0);
+        area[dir].setVal(0.0);
     }
 
     dLogArea[0].clear();
@@ -915,11 +933,10 @@ Castro::initData ()
          AmrLevel::FillPatch(*this, Sborder, NUM_GROW, cur_time, State_Type, 0, NUM_STATE);
 
          // note: this cannot be tiled
+
          for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
            {
              const Box& box     = mfi.validbox();
-             const int* lo      = box.loVect();
-             const int* hi      = box.hiVect();
 
              ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(box),
                                      BL_TO_FORTRAN_FAB(Sborder[mfi]));
@@ -1812,8 +1829,6 @@ Castro::check_for_post_regrid (Real time)
 
 	tags.setVal(TagBox::CLEAR);
 
-	int err_idx = -1;
-
 	for (int i = 0; i < err_list.size(); ++i)
             apply_tagging_func(tags, TagBox::CLEAR, TagBox::SET, time, i);
 
@@ -2622,7 +2637,7 @@ Castro::normalize_species (MultiFab& S_new, int ng)
        const Box& bx = mfi.growntilebox(ng);
 
 #pragma gpu
-       ca_normalize_species(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()), 
+       ca_normalize_species(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
                             BL_TO_FORTRAN_ANYD(S_new[mfi]));
     }
 }
@@ -2687,13 +2702,12 @@ Castro::enforce_min_density (MultiFab& S_old, MultiFab& S_new, int ng)
 	FArrayBox& statenew = S_new[mfi];
 	const FArrayBox& vol      = volume[mfi];
 
-#pragma gpu
 	ca_enforce_minimum_density
-            (AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
+            (AMREX_ARLIM_ANYD(bx.loVect()), AMREX_ARLIM_ANYD(bx.hiVect()),
              BL_TO_FORTRAN_ANYD(stateold),
              BL_TO_FORTRAN_ANYD(statenew),
              BL_TO_FORTRAN_ANYD(vol),
-             AMREX_MFITER_REDUCE_MIN(&dens_change),
+             &dens_change,
              verbose);
 
     }
@@ -2816,8 +2830,6 @@ Castro::apply_problem_tags (TagBoxArray& tags,
 
     BL_PROFILE("Castro::apply_problem_tags()");
 
-    const int*  domain_lo = geom.Domain().loVect();
-    const int*  domain_hi = geom.Domain().hiVect();
     const Real* dx        = geom.CellSize();
     const Real* prob_lo   = geom.ProbLo();
 
@@ -2991,6 +3003,18 @@ Castro::derive (const std::string& name,
 #endif
 
     AmrLevel::derive(name,time,mf,dcomp);
+}
+
+void
+Castro::amrinfo_init ()
+{
+   ca_amrinfo_init();
+}
+
+void
+Castro::amrinfo_finalize()
+{
+   ca_amrinfo_finalize();
 }
 
 void
@@ -3207,7 +3231,7 @@ Castro::computeTemp(int is_new, int ng)
         // general EOS version
 
         if (fourth_order) {
-          // note, this is working on a growntilebox, but we will not have 
+          // note, this is working on a growntilebox, but we will not have
           // valid cell-centers in the very last ghost cell
           ca_compute_temp(AMREX_ARLIM_ARG(bx.loVect()), AMREX_ARLIM_ARG(bx.hiVect()),
                           BL_TO_FORTRAN_3D(Stemp[mfi]));
@@ -3289,18 +3313,18 @@ Castro::computeTemp(MultiFab& State, int ng)
   for (MFIter mfi(State,true); mfi.isValid(); ++mfi)
     {
       const Box& bx = mfi.growntilebox(ng);
-      
+
 #ifdef RADIATION
       if (Radiation::do_real_eos == 0) {
 	temp.resize(bx);
 	temp.copy(State[mfi],bx,Eint,bx,0,1);
-	
+
 	ca_compute_temp_given_cv
-	  (bx.loVect(), bx.hiVect(), 
-	   BL_TO_FORTRAN(temp), 
+	  (bx.loVect(), bx.hiVect(),
+	   BL_TO_FORTRAN(temp),
 	   BL_TO_FORTRAN(State[mfi]),
 	   &Radiation::const_c_v, &Radiation::c_v_exp_m, &Radiation::c_v_exp_n);
-	
+
 	State[mfi].copy(temp,bx,0,bx,Temp,1);
       } else {
 #endif
