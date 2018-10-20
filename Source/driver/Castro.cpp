@@ -1183,7 +1183,7 @@ Castro::estTimeStep (Real dt_old)
 #pragma omp parallel reduction(min:estdt_hydro)
 #endif
 	    {
-              DeviceScalar<Real> dt(max_dt/cfl);
+              Cuda::DeviceScalar<Real> dt(max_dt/cfl);
               Real* p = dt.dataPtr();
               const auto& gd = geom.data();
 

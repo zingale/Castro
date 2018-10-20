@@ -883,7 +883,7 @@ Castro::check_for_cfl_violation(const Real dt)
 #pragma omp parallel reduction(max:courno)
 #endif
     {
-    DeviceScalar<Real> local_courno(courno);
+    Cuda::DeviceScalar<Real> local_courno(courno);
     Real* p = local_courno.dataPtr();
 
     for (MFIter mfi(S_new, hydro_tile_size); mfi.isValid(); ++mfi) {

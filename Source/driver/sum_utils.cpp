@@ -66,7 +66,7 @@ Castro::volWgtSum (const std::string& name,
 #pragma omp parallel reduction(+:sum)
 #endif
     {
-    DeviceScalar<Real> local_sum(0.0);
+    Cuda::DeviceScalar<Real> local_sum(0.0);
     Real* p = local_sum.dataPtr();
 
     for (MFIter mfi(*mf,true); mfi.isValid(); ++mfi)
