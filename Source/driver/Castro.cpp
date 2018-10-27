@@ -1192,7 +1192,7 @@ Castro::estTimeStep (Real dt_old)
 		  const Box& box = mfi.tilebox();
                   FArrayBox const* statefab = &(stateMF[mfi]);
 
-                  AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( box, tbx,
+                  AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( box, tbx,
                   {
                       ca_estdt_device(BL_TO_FORTRAN_BOX(tbx),
                                       BL_TO_FORTRAN_ANYD(*statefab),
@@ -2649,7 +2649,7 @@ Castro::normalize_species (MultiFab& S_new, int ng)
 
        FArrayBox* S_newfab = &(S_new[mfi]);
 
-       AMREX_CUDA_LAUNCH_DEVICE_LAMBDA( bx, tbx,
+       AMREX_GPU_LAUNCH_DEVICE_LAMBDA( bx, tbx,
        {
            ca_normalize_species_device(BL_TO_FORTRAN_BOX(tbx),
                                        BL_TO_FORTRAN_ANYD(*S_newfab));
@@ -3104,7 +3104,7 @@ Castro::reset_internal_energy(MultiFab& S_new)
         FArrayBox* S_newfab = &(S_new[mfi]);
         const int pfw = print_fortran_warnings;
 
-        AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
+        AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
         {	  
             ca_reset_internal_e_device(BL_TO_FORTRAN_BOX(tbx),
                                        BL_TO_FORTRAN_ANYD(*S_newfab),
@@ -3192,7 +3192,7 @@ Castro::computeTemp(MultiFab& State, int ng)
 
           FArrayBox* Statefab = &(State[mfi]);
 
-          AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
+          AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
           {	  
               ca_compute_temp_device(BL_TO_FORTRAN_BOX(tbx),
                                      BL_TO_FORTRAN_ANYD(*Statefab));

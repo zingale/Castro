@@ -76,7 +76,7 @@ Castro::volWgtSum (const std::string& name,
         FArrayBox const* vfab = &(volume[mfi]);
         const auto& gd = geom.data();
 
-        AMREX_CUDA_LAUNCH_DEVICE_LAMBDA ( box, tbx,
+        AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( box, tbx,
         {
             ca_summass_device(BL_TO_FORTRAN_BOX(tbx),
                               BL_TO_FORTRAN_ANYD(*fab),
