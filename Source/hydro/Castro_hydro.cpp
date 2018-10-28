@@ -471,7 +471,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 
       const auto& gd = geom.data();
 
-      AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( obx, tbx,
+      AMREX_LAUNCH_DEVICE_LAMBDA ( obx, tbx,
       {	  
           // Compute divergence of velocity field.
           divu_device(BL_TO_FORTRAN_BOX(tbx),
@@ -549,7 +549,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 	  const int nstate = NUM_STATE;
 	  const Real bm = b_mol[mol_iteration];
 
-          AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( ebx, tbx,
+          AMREX_LAUNCH_DEVICE_LAMBDA ( ebx, tbx,
           {	  
               ca_construct_flux_cuda_device(BL_TO_FORTRAN_BOX(tbx),
                                             BL_TO_FORTRAN_BOX(gd.Domain()),
@@ -613,7 +613,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
 
       const auto& gd = geom.data();
 
-      AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
+      AMREX_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
       {	  
           ca_construct_hydro_update_cuda_device
               (BL_TO_FORTRAN_BOX(tbx),
@@ -723,7 +723,7 @@ Castro::cons_to_prim(const Real time)
         FArrayBox* qfab = &(q[mfi]);
         FArrayBox* qauxfab = &(qaux[mfi]);
 
-        AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( qbx, tbx,
+        AMREX_LAUNCH_DEVICE_LAMBDA ( qbx, tbx,
         {
             ca_ctoprim_device(BL_TO_FORTRAN_BOX(tbx),
                               BL_TO_FORTRAN_ANYD(*Sborderfab),
@@ -892,7 +892,7 @@ Castro::check_for_cfl_violation(const Real dt)
         FArrayBox const* qfab = &(q[mfi]);
         FArrayBox const* qauxfab = &(qaux[mfi]);
 
-        AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
+        AMREX_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
         {
             ca_compute_cfl_device(BL_TO_FORTRAN_BOX(tbx),
                                   BL_TO_FORTRAN_ANYD(*qfab),

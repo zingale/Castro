@@ -55,7 +55,7 @@ Castro::fill_thermo_source (Real time, Real dt,
 
       const auto& gd = geom.data();
 
-      AMREX_GPU_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
+      AMREX_LAUNCH_DEVICE_LAMBDA ( bx, tbx,
       {
           ca_thermo_src_device(BL_TO_FORTRAN_BOX(tbx),
                                BL_TO_FORTRAN_ANYD(*state_oldfab),
