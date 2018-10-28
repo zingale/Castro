@@ -17,7 +17,7 @@ Castro::strang_react_first_half(Real time, Real dt)
 
     MultiFab& reactions = get_old_data(Reactions_Type);
 
-    // Do not reset the react_stepsize component
+    // Do not reset the VODE state components
     reactions.setVal(0.0, 0, NumSpec+2, reactions.nGrow());
 
     if (do_react != 1) return;
@@ -152,7 +152,7 @@ Castro::strang_react_second_half(Real time, Real dt)
 
     MultiFab& reactions = get_new_data(Reactions_Type);
 
-    // Do not reset the react_stepsize component
+    // Do not reset the VODE state components
     reactions.setVal(0.0, 0, NumSpec+2, reactions.nGrow());
 
     if (do_react != 1) return;
@@ -339,7 +339,8 @@ Castro::react_state(Real time, Real dt)
 
     MultiFab& reactions = get_old_data(Reactions_Type);
 
-    reactions.setVal(0.0);
+    // Do not reset the VODE state components
+    reactions.setVal(0.0, 0, NumSpec+2, reactions.nGrow());
 
 #ifdef _OPENMP
 #pragma omp parallel
@@ -361,7 +362,7 @@ Castro::react_state(Real time, Real dt)
 		       a.dataPtr(), ARLIM_3D(a.loVect()), ARLIM_3D(a.hiVect()),
 		       r.dataPtr(), ARLIM_3D(r.loVect()), ARLIM_3D(r.hiVect()),
 		       m.dataPtr(), ARLIM_3D(m.loVect()), ARLIM_3D(m.hiVect()),
-		       time, dt, sdc_iteration);
+			   time, dt, sdc_iteration, sdc_iteration+1==sdc_iters);
 
     }
 

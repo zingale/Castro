@@ -357,8 +357,13 @@ Castro::variableSetUp ()
   desc_lst.addDescriptor(Reactions_Type,IndexType::TheCellType(),
 			 StateDescriptor::Point,0,
 #ifdef REUSE_REACT_STEPSIZE
-  // Component    NumSpec+2          is      react_stepsize (last ODE integration timestep)
-			 NumSpec+3,
+#ifdef SDC
+  // Components NumSpec+2:NumSpec+2 + 6*(Numspec+6) - 1 + 90 (common blocks) is the VODE history
+			 7*NumSpec+128,
+#else
+  // Components NumSpec+2:NumSpec+2 + 6*(Numspec+2) - 1 + 90 (common blocks) is the VODE history
+			 7*NumSpec+104,
+#endif
 #else
 			 NumSpec+2,
 #endif
@@ -557,7 +562,90 @@ Castro::variableSetUp ()
   desc_lst.setComponent(Reactions_Type, NumSpec  , "enuc", bc, BndryFunc(ca_reactfill));
   desc_lst.setComponent(Reactions_Type, NumSpec+1, "rho_enuc", bc, BndryFunc(ca_reactfill));
 #ifdef REUSE_REACT_STEPSIZE
-  desc_lst.setComponent(Reactions_Type, NumSpec+2, "react_stepsize", bc, BndryFunc(ca_reactfill));
+#ifdef SDC
+  for (int j=0; j<6; ++j)
+	{
+	  for (int i=0; i<NumSpec+6; ++i)
+		{
+		  set_scalar_bc(bc,phys_bc);
+		  name_react = "nordsieck_" + std::to_string(j) + "_" + std::to_string(i);
+		  desc_lst.setComponent(Reactions_Type, NumSpec+2+i+j*(NumSpec+6), name_react, bc,BndryFunc(ca_reactfill));
+		}
+	}
+  for (int i=0; i<49; ++i) // Real VODE common block data
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "vode_rsav_" + std::to_string(i+1);
+      desc_lst.setComponent(Reactions_Type, 7*NumSpec+38+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  for (int i=0; i<41; ++i) // Integer VODE common block data, saved as reals for convenience
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "vode_isav_" + std::to_string(i+1);
+      desc_lst.setComponent(Reactions_Type, 7*NumSpec+87+i, name_react, bc,BndryFunc(ca_reactfill));
+    }  
+#else
+  for (int i=0; i<NumSpec; ++i)
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "nordsieck_0_" + spec_names[i];
+      desc_lst.setComponent(Reactions_Type, NumSpec+2+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  desc_lst.setComponent(Reactions_Type, 2*NumSpec+2, "nordsieck_0_temp", bc, BndryFunc(ca_reactfill));
+  desc_lst.setComponent(Reactions_Type, 2*NumSpec+3, "nordsieck_0_enuc", bc, BndryFunc(ca_reactfill));
+  for (int i=0; i<NumSpec; ++i)
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "nordsieck_1_" + spec_names[i];
+      desc_lst.setComponent(Reactions_Type, 2*NumSpec+4+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  desc_lst.setComponent(Reactions_Type, 3*NumSpec+4, "nordsieck_1_temp", bc, BndryFunc(ca_reactfill));
+  desc_lst.setComponent(Reactions_Type, 3*NumSpec+5, "nordsieck_1_enuc", bc, BndryFunc(ca_reactfill));
+  for (int i=0; i<NumSpec; ++i)
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "nordsieck_2_" + spec_names[i];
+      desc_lst.setComponent(Reactions_Type, 3*NumSpec+6+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  desc_lst.setComponent(Reactions_Type, 4*NumSpec+6, "nordsieck_2_temp", bc, BndryFunc(ca_reactfill));
+  desc_lst.setComponent(Reactions_Type, 4*NumSpec+7, "nordsieck_2_enuc", bc, BndryFunc(ca_reactfill));
+  for (int i=0; i<NumSpec; ++i)
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "nordsieck_3_" + spec_names[i];
+      desc_lst.setComponent(Reactions_Type, 4*NumSpec+8+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  desc_lst.setComponent(Reactions_Type, 5*NumSpec+8, "nordsieck_3_temp", bc, BndryFunc(ca_reactfill));
+  desc_lst.setComponent(Reactions_Type, 5*NumSpec+9, "nordsieck_3_enuc", bc, BndryFunc(ca_reactfill));
+  for (int i=0; i<NumSpec; ++i)
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "nordsieck_4_" + spec_names[i];
+      desc_lst.setComponent(Reactions_Type, 5*NumSpec+10+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  desc_lst.setComponent(Reactions_Type, 6*NumSpec+10, "nordsieck_4_temp", bc, BndryFunc(ca_reactfill));
+  desc_lst.setComponent(Reactions_Type, 6*NumSpec+11, "nordsieck_4_enuc", bc, BndryFunc(ca_reactfill));
+  for (int i=0; i<NumSpec; ++i)
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "nordsieck_5_" + spec_names[i];
+      desc_lst.setComponent(Reactions_Type, 6*NumSpec+12+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  desc_lst.setComponent(Reactions_Type, 7*NumSpec+12, "nordsieck_5_temp", bc, BndryFunc(ca_reactfill));
+  desc_lst.setComponent(Reactions_Type, 7*NumSpec+13, "nordsieck_5_enuc", bc, BndryFunc(ca_reactfill));
+  for (int i=0; i<49; ++i) // Real VODE common block data
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "vode_rsav_" + std::to_string(i+1);
+      desc_lst.setComponent(Reactions_Type, 7*NumSpec+14+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+  for (int i=0; i<41; ++i) // Integer VODE common block data, saved as reals for convenience
+    {
+      set_scalar_bc(bc,phys_bc);
+      name_react = "vode_isav_" + std::to_string(i+1);
+      desc_lst.setComponent(Reactions_Type, 7*NumSpec+63+i, name_react, bc,BndryFunc(ca_reactfill));
+    }
+#endif
 #endif
 #endif
 

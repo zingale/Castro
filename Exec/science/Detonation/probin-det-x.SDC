@@ -42,4 +42,6 @@
    rtol_temp = 1.e-8
    use_tables = T
    jacobian = 2
+
+   burner_verbose = T
 /

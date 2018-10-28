@@ -40,8 +40,13 @@ module sdc_type_module
      integer :: sdc_iter
 
 #ifdef REUSE_REACT_STEPSIZE
-     real(rt) :: ode_step
+    ! This is the VODE history data
+    real(rt) :: nordsieck(SVAR*6) ! For BDF, MAXORD=5
+    real(rt) :: vode_rsav(49) ! Real common block data
+    integer  :: vode_isav(41) ! Integer common block data
+    logical  :: restart_burn
 #endif
+     
   end type sdc_t
 
 end module sdc_type_module

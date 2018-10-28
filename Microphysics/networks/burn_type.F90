@@ -72,8 +72,11 @@ module burn_type_module
     real(rt) :: time
 
 #ifdef REUSE_REACT_STEPSIZE
-    ! ODE timestep
-    real(rt) :: ode_step
+    ! This is the VODE history data
+    real(rt) :: nordsieck(neqs*6) ! For BDF, MAXORD=5
+    real(rt) :: vode_rsav(49) ! Real common block data
+    integer  :: vode_isav(41) ! Integer common block data
+    logical  :: restart_burn
 #endif
 
     ! Was the burn successful?
@@ -134,7 +137,8 @@ contains
     to_state % time = from_state % time
 
 #ifdef REUSE_REACT_STEPSIZE
-    to_state % ode_step = from_state % ode_step
+    to_state % nordsieck(1:neqs*6) = from_state % nordsieck(1:neqs*6)
+    to_state % restart_burn = from_state % restart_burn
 #endif
 
     to_state % success = from_state % success

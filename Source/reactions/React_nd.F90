@@ -48,7 +48,7 @@ contains
     real(rt), intent(inout) :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
     real(rt), intent(inout) :: reactions(r_lo(1):r_hi(1),r_lo(2):r_hi(2),r_lo(3):r_hi(3), &
 #ifdef REUSE_REACT_STEPSIZE
-                                         nspec+3)
+                                         7*nspec+104)
 #else
                                          nspec+2)
 #endif
@@ -143,8 +143,17 @@ contains
              burn_state_in % dx = dx_min
 
 #ifdef REUSE_REACT_STEPSIZE
-             ! Set the ODE timestep to start with
-             burn_state_in % ode_step = reactions(i,j,k,nspec+3)
+             if (strang_half == 1) then
+                ! Set the history to start with if we are on the first Strang step
+                burn_state_in % restart_burn = .true.
+                burn_state_in % nordsieck(1:6*nspec+12) = reactions(i,j,k,nspec+3:7*nspec+14)
+                burn_state_in % vode_rsav(1:49) = reactions(i,j,k,7*nspec+15:7*nspec+63)
+                do n = 1, 41
+                   burn_state_in % vode_isav(n) = int(reactions(i,j,k,7*nspec+63+n))
+                enddo
+             else
+                burn_state_in % restart_burn = .false.
+             endif
 #endif
 
              ! Ensure we start with no RHS or Jacobian calls registered.
@@ -205,8 +214,14 @@ contains
                 reactions(i,j,k,nspec+2) = delta_rho_e / dt_react
 
 #ifdef REUSE_REACT_STEPSIZE
-                ! Set the ODE timestep to start with
-                reactions(i,j,k,nspec+3) = burn_state_out % ode_step
+                if (strang_half == 2) then
+                   ! Set the history to start with next if we are finishing the second Strang step
+                   reactions(i,j,k,nspec+3:7*nspec+14) = burn_state_out % nordsieck(1:6*nspec+12)
+                   reactions(i,j,k,7*nspec+15:7*nspec+63) = burn_state_out % vode_rsav(1:49)
+                   do n = 1, 41
+                      reactions(i,j,k,7*nspec+63+n) = real(burn_state_out % vode_isav(n), kind=rt)
+                   enddo
+                endif
 #endif
 
              endif
@@ -241,7 +256,7 @@ contains
                             asrc,as_lo,as_hi, &
                             reactions,r_lo,r_hi, &
                             mask,m_lo,m_hi, &
-                            time,dt_react,sdc_iter) bind(C, name="ca_react_state")
+                            time,dt_react,sdc_iter, final_sdc_iter) bind(C, name="ca_react_state")
 
     use network           , only : nspec, naux
     use meth_params_module, only : NVAR, URHO, UMX, UMZ, UEDEN, UEINT, UTEMP, &
@@ -268,13 +283,14 @@ contains
     real(rt), intent(in   ) :: asrc(as_lo(1):as_hi(1),as_lo(2):as_hi(2),as_lo(3):as_hi(3),NVAR)
     real(rt), intent(inout) :: reactions(r_lo(1):r_hi(1),r_lo(2):r_hi(2),r_lo(3):r_hi(3), &
 #ifdef REUSE_REACT_STEPSIZE
-                                         nspec+3)
+                                         7*nspec+128)
 #else
                                          nspec+2)
 #endif
     integer , intent(in   ) :: mask(m_lo(1):m_hi(1),m_lo(2):m_hi(2),m_lo(3):m_hi(3))
     real(rt), intent(inout) :: time, dt_react
     integer , intent(in   ) :: sdc_iter
+    logical , intent(in   ) :: final_sdc_iter
 
     integer          :: i, j, k, n
     real(rt)         :: rhooInv, rhonInv, delta_e, delta_rho_e
@@ -350,8 +366,12 @@ contains
              burn_state_in % sdc_iter = sdc_iter
 
 #ifdef REUSE_REACT_STEPSIZE
-             ! Set the ODE timestep to start with
-             burn_state_in % ode_step = reactions(i,j,k,nspec+3)
+             burn_state_in % restart_burn = .true.
+             burn_state_in % nordsieck(1:6*nspec+36) = reactions(i,j,k,nspec+3:7*nspec+38)
+             burn_state_in % vode_rsav(1:49) = reactions(i,j,k,7*nspec+39:7*nspec+87)
+             do n = 1, 41
+                burn_state_in % vode_isav(n) = int(reactions(i,j,k,7*nspec+87+n))
+             enddo
 #endif
 
              call integrator(burn_state_in, burn_state_out, dt_react, time)
@@ -379,8 +399,11 @@ contains
                 reactions(i,j,k,nspec+2) = (unew(i,j,k,UEINT) - uold(i,j,k,UEINT)) / dt_react
 
 #ifdef REUSE_REACT_STEPSIZE
-                ! Set the ODE timestep to start with
-                reactions(i,j,k,nspec+3) = burn_state_out % ode_step
+                reactions(i,j,k,nspec+3:7*nspec+38) = burn_state_out % nordsieck(1:6*nspec+36)
+                reactions(i,j,k,7*nspec+39:7*nspec+87) = burn_state_out % vode_rsav(1:49)
+                do n = 1, 41
+                   reactions(i,j,k,7*nspec+87+n) = real(burn_state_out % vode_isav(n))
+                enddo
 #endif
 
              endif
