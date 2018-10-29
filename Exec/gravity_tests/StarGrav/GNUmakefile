@@ -13,6 +13,7 @@ USE_MPI    = TRUE
 
 USE_GRAV   = TRUE
 USE_REACT  = FALSE
+USE_ROTATION = TRUE
 
 ifdef MICROPHYSICS_HOME
 
@@ -21,7 +22,8 @@ EOS_DIR     := helmholtz
 
 # This sets the network directory in $(MICROPHYSICS_HOME)/networks
 NETWORK_DIR := general_null
-GENERAL_NET_INPUTS = $(MICROPHYSICS_HOME)/networks/$(NETWORK_DIR)/ignition_wdconvect.net
+#GENERAL_NET_INPUTS = $(MICROPHYSICS_HOME)/networks/$(NETWORK_DIR)/ignition_wdconvect.net
+GENERAL_NET_INPUTS = $(MICROPHYSICS_HOME)/networks/$(NETWORK_DIR)/aprox21.net
 
 else
 
