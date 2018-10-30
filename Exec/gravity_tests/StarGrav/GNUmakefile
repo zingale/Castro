@@ -10,6 +10,7 @@ DIM        = 2
 COMP	   = gnu
 
 USE_MPI    = TRUE
+USE_OMP    = TRUE
 
 USE_GRAV   = TRUE
 USE_REACT  = FALSE

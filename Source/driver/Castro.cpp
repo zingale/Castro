@@ -890,10 +890,13 @@ Castro::initData ()
     MAESTRO_init();
 #else
     {
-       for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+       for (MFIter mfi(S_new, true); mfi.isValid(); ++mfi)
        {
 	  RealBox gridloc = RealBox(grids[mfi.index()],geom.CellSize(),geom.ProbLo());
-          const Box& box     = mfi.validbox();
+          const Box& box     = mfi.tilebox();
           const int* lo      = box.loVect();
           const int* hi      = box.hiVect();
 

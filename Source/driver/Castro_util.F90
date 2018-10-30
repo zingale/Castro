@@ -13,7 +13,7 @@ contains
 
     use amrinfo_module, only: amr_level
     use prob_params_module, only: problo, probhi, physbc_lo, physbc_hi, dx_level, &
-                                  domlo_level, domhi_level, Interior
+         domlo_level, domhi_level, Interior
     use amrex_constants_module, only: ZERO, HALF
     use amrex_fort_module, only: rt => amrex_real
 
@@ -389,7 +389,7 @@ contains
     real(rt), intent(in) :: state(state_lo(1):state_hi(1),state_lo(2):state_hi(2),state_lo(3):state_hi(3),NVAR)
 
     ! Local variables
-    integer  :: i, j, k
+    integer  :: i, j, k, n
     real(rt) :: spec_sum
 
     do k = lo(3), hi(3)
@@ -402,6 +402,7 @@ contains
              if (abs(state(i,j,k,URHO)-spec_sum) .gt. 1.e-8_rt * state(i,j,k,URHO)) then
 
                 print *,'Sum of (rho X)_i vs rho at (i,j,k): ',i,j,k,spec_sum,state(i,j,k,URHO)
+                print *, state(i,j,k,UFS:UFS+nspec-1)
                 call amrex_error("Error:: Failed check of initial species summing to 1")
 
              end if
@@ -762,7 +763,7 @@ contains
 
 
   subroutine ca_find_center(data,new_center,icen,dx,problo) &
-                         bind(C, name="ca_find_center")
+       bind(C, name="ca_find_center")
 
     use amrex_constants_module, only: ZERO, HALF, TWO
     use prob_params_module, only: dg, dim
@@ -832,10 +833,10 @@ contains
 
 
   subroutine ca_compute_avgstate(lo,hi,dx,dr,nc,&
-                                 state,s_lo,s_hi,radial_state, &
-                                 vol,v_lo,v_hi,radial_vol, &
-                                 problo,numpts_1d) &
-                                 bind(C, name="ca_compute_avgstate")
+       state,s_lo,s_hi,radial_state, &
+       vol,v_lo,v_hi,radial_vol, &
+       problo,numpts_1d) &
+       bind(C, name="ca_compute_avgstate")
 
     use meth_params_module, only: URHO, UMX, UMY, UMZ
     use prob_params_module, only: center, dim
@@ -886,7 +887,7 @@ contains
              end if
 #endif
              radial_state(URHO,index) = radial_state(URHO,index) &
-                                      + vol(i,j,k)*state(i,j,k,URHO)
+                  + vol(i,j,k)*state(i,j,k,URHO)
              !
              ! Store the radial component of the momentum in the
              ! UMX, UMY and UMZ components for now.
