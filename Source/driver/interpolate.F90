@@ -186,7 +186,7 @@ contains
     if (AMREX_SPACEDIM /= 2) call amrex_error("only implemented for 2d")
     if (coord_type /= 0 .and. coord_type /= 1) call amrex_error("only implemented for cartesian or r-z geometries")
 
-    interpolated = interpolate(r, npts_model, model_r, model_var, iloc)
+    interpolated = centered_interpolate(r, npts_model, model_r, model_var, iloc)
 
     status = .true.
 
@@ -198,10 +198,10 @@ contains
 
        do i = 1, n_boxes
           rm = r - 0.5 * dx(1) + dx(1) * (float(i-1) + 0.5d0) / float(n_boxes)
-          sum = sum + 1.0d0 / float(n_boxes) * interpolate(rm, npts_model, model_r, model_var)
+          sum = sum + 1.0d0 / float(n_boxes) * centered_interpolate(rm, npts_model, model_r, model_var)
        enddo
 
-       rel_error = abs(sum - interpolated) / interpolated
+       rel_error = abs(sum - interpolated) / abs(interpolated)
 
        interpolated = sum
 
@@ -212,12 +212,11 @@ contains
   end subroutine conservative_interpolate
 
 
-  function conservative_interpolate_loop(r, npts_model, model_r, model_var, iloc) result(interpolate)
+  function centered_interpolate(r, npts_model, model_r, model_var, iloc) result(interpolate)
 
     !     given the array of model coordinates (model_r), and variable (model_var),
     !     find the value of model_var at point r (var_r) using linear interpolation.
     !     Eventually, we can do something fancier here.
-    use prob_params_module, only : coord_type
     use amrex_fort_module, only : rt => amrex_real
     real(rt)        , intent(in   ) :: r
     integer         , intent(in   ) :: npts_model
@@ -272,7 +271,7 @@ contains
 
     endif
 
-  end function conservative_interpolate_loop
+  end function centered_interpolate
 
 
   subroutine tri_interpolate(x, y, z, npts_x, npts_y, npts_z, &

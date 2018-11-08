@@ -75,7 +75,6 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
 
   use probdata_module
   use interpolate_module
-  use eos_module
   use meth_params_module, only : NVAR, URHO, UMX, UMY, UTEMP,&
        UEDEN, UEINT, UFS, small_temp
   use network, only : nspec
@@ -83,6 +82,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   use prob_params_module, only : center
   use eos_type_module
   use eos_module
+  use fundamental_constants_module
 
   use amrex_fort_module, only : rt => amrex_real
   implicit none
@@ -93,7 +93,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   real(rt)         xlo(2), xhi(2), time, delta(2)
   real(rt)         state(state_l1:state_h1,state_l2:state_h2,NVAR)
 
-  real(rt)         xcen,ycen,dist,pres,total
+  real(rt)         xcen,ycen,dist,pres,total,M_model,M_interpolated
   integer i,j,n
   real(rt)      :: model_eden(npts_model)
   real(rt) :: smallx = 1.d-10
@@ -121,61 +121,116 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
 
         dist = sqrt(xcen**2 + ycen**2)
 
-        call conservative_interpolate(state(i,j,UEDEN), dist,npts_model,model_r,model_eden, delta, status)
-
-        if (state(i,j,UEDEN) < 0.0d0 .or. state(i,j,UEDEN) /= state(i,j,UEDEN) .or. (.not. status)) then
-            print *, "conservative interpolate of eden_model failed :("
-            state(i,j,UEDEN) = interpolate(dist,npts_model,model_r,model_eden)
-        endif
+        state(i,j,URHO)  = interpolate(dist,npts_model,model_r,model_state(:,idens_model))
+        state(i,j,UTEMP) = interpolate(dist,npts_model,model_r,model_state(:,itemp_model))
 
         do n = 1, nspec
-           call conservative_interpolate(state(i,j,UFS-1+n),dist,npts_model,model_r,model_state(:,ispec_model-1+n)*model_state(:,idens_model), delta, status)
-
-           if (state(i,j,UFS-1+n) < 0.0d0 .or. state(i,j,UFS-1+n) /= state(i,j,UFS-1+n) .or. (.not. status)) then
-               print *, "conservative interpolate of X_i*dens_model failed :("
-               state(i,j,UFS-1+n) = interpolate(dist,npts_model,model_r,model_state(:,ispec_model-1+n)*model_state(:,idens_model))
-           endif
+           state(i,j,UFS-1+n) = interpolate(dist,npts_model,model_r,model_state(:,ispec_model-1+n))
         enddo
 
-        state(i,j,URHO) = sum(state(i,j,UFS:UFS+nspec-1))
-
-        if (state(i,j,URHO) < 0.0d0 .or. state(i,j,URHO) /= state(i,j,URHO)) then
-            print *, "summing of species' partial densities failed"
-            print *, "species : ", state(i,j,UFS:UFS+nspec-1)
-            state(i,j,URHO) = interpolate(dist,npts_model,model_r,model_state(:,idens_model))
-        endif
+        ! call conservative_interpolate(state(i,j,UEDEN), dist,npts_model,model_r,model_eden, delta, status)
+        !
+        ! if (state(i,j,UEDEN) < 0.0d0 .or. state(i,j,UEDEN) /= state(i,j,UEDEN) .or. (.not. status)) then
+        !     print *, "conservative interpolate of eden_model failed :("
+        !     state(i,j,UEDEN) = centered_interpolate(dist,npts_model,model_r,model_eden)
+        ! endif
+        !
+        !
+        ! do n = 1, nspec
+        !    call conservative_interpolate(state(i,j,UFS-1+n),dist,npts_model,model_r,model_state(:,ispec_model-1+n)*model_state(:,idens_model), delta, status)
+        !
+        !    if (state(i,j,UFS-1+n) < 0.0d0 .or. state(i,j,UFS-1+n) /= state(i,j,UFS-1+n) .or. (.not. status)) then
+        !        print *, "conservative interpolate of X_i*dens_model failed :(", state(i,j,UFS-1+n)
+        !        state(i,j,UFS-1+n) = centered_interpolate(dist,npts_model,model_r,model_state(:,ispec_model-1+n)*model_state(:,idens_model))
+        !    endif
+        ! enddo
+        !
+        ! state(i,j,URHO) = sum(state(i,j,UFS:UFS+nspec-1))
+        !
+        ! if (state(i,j,URHO) < 0.0d0 .or. state(i,j,URHO) /= state(i,j,URHO)) then
+        !     print *, "summing of species' partial densities failed"
+        !     print *, "species : ", state(i,j,UFS:UFS+nspec-1)
+        !     state(i,j,URHO) = centered_interpolate(dist,npts_model,model_r,model_state(:,idens_model))
+        ! endif
 
      enddo
   enddo
 
   do j = lo(2), hi(2)
      do i = lo(1), hi(1)
+        ! eos_state%rho = state(i,j,URHO)
+        ! eos_state%e = state(i,j,UEDEN) / state(i,j,URHO)
+        ! eos_state%xn(:) = state(i,j,UFS:UFS-1+nspec) / state(i,j,URHO)
+        ! eos_state % T   = 10000.0e0_rt
+        !
+        ! call eos(eos_input_re, eos_state)
+        !
+        ! state(i,j,UTEMP) = eos_state%T
+        !
+        ! state(i,j,UEDEN) = eos_state%e
+        !
+        ! state(i,j,UEINT) = state(i,j,URHO) * state(i,j,UEDEN)
+        ! state(i,j,UEDEN) = state(i,j,URHO) * state(i,j,UEDEN)
+        !
+        ! ! make sure that the species (mass fractions) sum to 1
+        ! total = 0.0d0
+        ! do n = 1, nspec
+        !    total = total + state(i,j,UFS+n-1)
+        ! enddo
+        !
+        ! do n = 1,nspec
+        !    state(i,j,UFS+n-1) = max(smallx, state(i,j,UFS+n-1)/total * state(i,j,URHO))
+        ! enddo
+
+
         eos_state%rho = state(i,j,URHO)
-        eos_state%e = state(i,j,UEDEN) / state(i,j,URHO)
-        eos_state%xn(:) = state(i,j,UFS:UFS-1+nspec) / state(i,j,URHO)
-        eos_state % T   = 10000.0e0_rt
+        eos_state%T = state(i,j,UTEMP)
+        eos_state%xn(:) = state(i,j,UFS:UFS-1+nspec)
 
-        call eos(eos_input_re, eos_state)
-
-        state(i,j,UTEMP) = eos_state%T
+        call eos(eos_input_rt, eos_state)
 
         state(i,j,UEDEN) = eos_state%e
 
         state(i,j,UEINT) = state(i,j,URHO) * state(i,j,UEDEN)
         state(i,j,UEDEN) = state(i,j,URHO) * state(i,j,UEDEN)
 
-        ! make sure that the species (mass fractions) sum to 1
-        total = 0.0d0
-        do n = 1, nspec
-           total = total + state(i,j,UFS+n-1)
-        enddo
-
         do n = 1,nspec
-           state(i,j,UFS+n-1) = max(smallx, state(i,j,UFS+n-1)/total * state(i,j,URHO))
-        enddo
+           state(i,j,UFS+n-1) = state(i,j,URHO) * state(i,j,UFS+n-1)
+        end do
 
      enddo
   enddo
+
+  ! Calculate total mass of model and interpolated
+  !
+  ! xcen = xlo(1) + delta(1)*(float(hi(1)-lo(1)) + 0.5e0_rt) - center(1)
+  ! ycen = xlo(2) + delta(2)*0.5e0_rt - center(2)
+  ! dist = sqrt(xcen**2 + ycen**2)
+  !
+  ! call conservative_interpolate(M_model,dist,npts_model,model_r,model_state(:,imass_model), delta, status)
+  !
+  ! xcen = xlo(1) + delta(1)*0.5e0_rt - center(1)
+  ! dist = sqrt(xcen**2 + ycen**2)
+  !
+  ! call conservative_interpolate(M_interpolated,dist,npts_model,model_r,model_state(:,imass_model), delta, status)
+  !
+  ! M_model = M_model - M_interpolated
+  !
+  ! M_interpolated = 0.0d0
+  !
+  ! do i = lo(1), hi(1)
+  !     xcen = xlo(1) + delta(1)*(float(i-lo(1)) + 0.5e0_rt) - center(1)
+  !     ycen = xlo(2) + delta(2)*0.5e0_rt - center(2)
+  !     M_interpolated = M_interpolated + state(i,lo(2),URHO) * (xcen**2 + ycen**2)
+  ! enddo
+  !
+  ! M_interpolated = M_interpolated * 4.0d0 * M_PI * delta(1) / M_SOLAR
+  !
+  ! if (lo(1) .eq. 0) then
+  !     print *, "rel M error =", abs(M_interpolated - M_model) / M_model, "M_interpolated =", M_interpolated, "M_model =", M_model, "rho_centre = ", state(hi(1), hi(2), URHO), "lo", lo(1), "hi", hi(1)
+  ! endif
+  !
+  ! print *, "M = ", xlo(1) -center(1), xhi(1) - center(1), xlo(2), xhi(2), M_interpolated
 
   ! Initial velocities = 0
   state(state_l1:state_h1,state_l2:state_h2,UMX:UMY) = 0.e0_rt

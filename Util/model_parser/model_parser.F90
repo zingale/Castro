@@ -5,12 +5,12 @@ module model_parser_module
   ! those defined by the network
 
   ! the model file is assumed to be of the follow form:
-  ! # npts = 896                                     
+  ! # npts = 896
   ! # num of variables = 6
-  ! # density 
-  ! # temperature 
+  ! # density
+  ! # temperature
   ! # pressure
-  ! # carbon-12 
+  ! # carbon-12
   ! # oxygen-16
   ! # magnesium-24
   ! 195312.5000  5437711139.  8805500.952   .4695704813E+28  0.3  0.7  0
@@ -20,7 +20,7 @@ module model_parser_module
   ! map them into the model_state array.  We ignore anything other than
   ! density, temperature, pressure and composition.
   !
-  ! composition is assumed to be in terms of mass fractions     
+  ! composition is assumed to be in terms of mass fractions
 
   use amrex_paralleldescriptor_module, only: amrex_pd_ioprocessor
   use network
@@ -29,11 +29,12 @@ module model_parser_module
   implicit none
 
   ! integer keys for indexing the model_state array
-  integer, parameter :: nvars_model = 3 + nspec
+  integer, parameter :: nvars_model = 4 + nspec
   integer, parameter :: idens_model = 1
   integer, parameter :: itemp_model = 2
   integer, parameter :: ipres_model = 3
   integer, parameter :: ispec_model = 4
+  integer, parameter :: imass_model = nvars_model
 
   ! number of points in the model file
   integer,   allocatable, save :: npts_model
@@ -43,7 +44,7 @@ module model_parser_module
   real (rt), allocatable, save :: model_r(:)
 
 #ifdef AMREX_USE_CUDA
-  attributes(managed) :: model_state, model_r, npts_model
+  attributes(managed) :: model_state, model_r, npts_model, model_m
 #endif
 
   ! model_initialized will be .true. once the model is read in and the
@@ -157,6 +158,10 @@ contains
              found_model = .true.
              found_pres  = .true.
 
+          else if (varnames_stored(j) == "mass") then
+             model_state(i,imass_model) = vars_stored(j)
+             found_model = .true.
+
           else
              do comp = 1, nspec
                 if (varnames_stored(j) == spec_names(comp)) then
@@ -223,7 +228,7 @@ contains
   function get_model_npts(model_file)
 
     integer :: get_model_npts
-  
+
     ! look in the model file and return the number of points
     character(len=256), intent(in   ) :: model_file
 
@@ -244,7 +249,7 @@ contains
   end function get_model_npts
 
   subroutine close_model_file
-    
+
     if (model_initialized) then
        deallocate(model_r)
        deallocate(model_state)
@@ -255,4 +260,3 @@ contains
   end subroutine close_model_file
 
 end module model_parser_module
-
