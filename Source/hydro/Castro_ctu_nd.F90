@@ -277,16 +277,16 @@ contains
 
     if (ppm_type .gt. 0) then
        ! x-index, y-index, z-index, dim, characteristics, variables
-       call bl_allocate ( Ip, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,AMREX_SPACEDIM,1,3,1,NQ)
-       call bl_allocate ( Im, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,AMREX_SPACEDIM,1,3,1,NQ)
+       call bl_allocate ( Ip, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,3,1,NQ,1,AMREX_SPACEDIM)
+       call bl_allocate ( Im, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,3,1,NQ,1,AMREX_SPACEDIM)
 
        ! for source terms
-       call bl_allocate ( Ip_src, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,AMREX_SPACEDIM,1,3,1,QVAR)
-       call bl_allocate ( Im_src, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,AMREX_SPACEDIM,1,3,1,QVAR)
+       call bl_allocate ( Ip_src, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,3,1,QVAR,1,AMREX_SPACEDIM)
+       call bl_allocate ( Im_src, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,3,1,QVAR,1,AMREX_SPACEDIM)
 
        ! for gamc -- needed for the reference state in eigenvectors
-       call bl_allocate ( Ip_gc, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,AMREX_SPACEDIM,1,3,1,1)
-       call bl_allocate ( Im_gc, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,AMREX_SPACEDIM,1,3,1,1)
+       call bl_allocate ( Ip_gc, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,3,1,1,1,AMREX_SPACEDIM)
+       call bl_allocate ( Im_gc, glo(1),ghi(1),glo(2),ghi(2),glo(3),ghi(3),1,3,1,1,1,AMREX_SPACEDIM)
     else
        call bl_allocate ( dqx, glo, ghi, NQ)
 #if AMREX_SPACEDIM >= 2
@@ -469,8 +469,8 @@ contains
                                   Ip_src, Im_src, glo, ghi, QVAR, n, &
                                   lo, hi, dx, dt)
           else
-             Ip_src(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),:,:,n) = ZERO
-             Im_src(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),:,:,n) = ZERO
+             Ip_src(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),:,n,:) = ZERO
+             Im_src(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),:,n,:) = ZERO
           endif
 
        enddo
