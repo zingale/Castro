@@ -5,12 +5,12 @@ PROFILE    = FALSE
 
 DEBUG      = FALSE
 
-DIM        = 2
+DIM        = 3
 
 COMP	   = gnu
 
 USE_MPI    = TRUE
-USE_OMP    = TRUE
+USE_OMP = TRUE
 
 USE_GRAV   = TRUE
 USE_REACT  = FALSE
@@ -23,8 +23,8 @@ EOS_DIR     := helmholtz
 
 # This sets the network directory in $(MICROPHYSICS_HOME)/networks
 NETWORK_DIR := general_null
-#GENERAL_NET_INPUTS = $(MICROPHYSICS_HOME)/networks/$(NETWORK_DIR)/ignition_wdconvect.net
-GENERAL_NET_INPUTS = $(MICROPHYSICS_HOME)/networks/$(NETWORK_DIR)/aprox21.net
+GENERAL_NET_INPUTS = $(MICROPHYSICS_HOME)/networks/$(NETWORK_DIR)/ignition_wdconvect.net
+#GENERAL_NET_INPUTS = $(MICROPHYSICS_HOME)/networks/$(NETWORK_DIR)/aprox21.net
 
 else
 
