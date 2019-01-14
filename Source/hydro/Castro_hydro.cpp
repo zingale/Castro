@@ -461,6 +461,9 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
   MultiFab qp;
   qp.define(grids, dmap, 3*NQ, 2);
 
+  MultiFab shk;
+  shk.define(grids, dmap, 1, 1);
+
   MultiFab flux[3];
   MultiFab qe[3];
 
@@ -510,6 +513,14 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
            BL_TO_FORTRAN_ANYD(qm[mfi]),
            BL_TO_FORTRAN_ANYD(qp[mfi]), NQ, 1, NQ);
 
+#pragma gpu
+      ca_shock
+          (AMREX_INT_ANYD(obx.loVect()), AMREX_INT_ANYD(obx.hiVect()),
+           BL_TO_FORTRAN_ANYD(q[mfi]),
+           BL_TO_FORTRAN_ANYD(shk[mfi]),
+           AMREX_REAL_ANYD(dx));
+
+
   } // MFIter loop
 
 
@@ -534,6 +545,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt)
                BL_TO_FORTRAN_ANYD(Sborder[mfi]),
                BL_TO_FORTRAN_ANYD(div[mfi]),
                BL_TO_FORTRAN_ANYD(qaux[mfi]),
+               BL_TO_FORTRAN_ANYD(shk[mfi]),
                BL_TO_FORTRAN_ANYD(qm[mfi]),
                BL_TO_FORTRAN_ANYD(qp[mfi]),
                BL_TO_FORTRAN_ANYD(qe[idir][mfi]),
