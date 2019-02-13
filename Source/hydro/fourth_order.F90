@@ -78,7 +78,7 @@ contains
                    ! these live on cell-centers
                    dafm(i,j,k) = a(i,j,k,n) - a_int(i,j,k)
                    dafp(i,j,k) = a_int(i+1,j,k) - a(i,j,k,n)
-                   
+
                    ! these live on cell-centers
                    d2af(i,j,k) = 6.0d0*(a_int(i,j,k) - 2.0d0*a(i,j,k,n) + a_int(i+1,j,k))
                 enddo
@@ -92,7 +92,7 @@ contains
                 enddo
              enddo
           enddo
-          
+
           do k = lo(3)-dg(3), hi(3)+dg(3)
              do j = lo(2)-dg(2), hi(2)+dg(2)
                 do i = lo(1)-2, hi(1)+3
@@ -107,13 +107,13 @@ contains
           do k = lo(3)-dg(3), hi(3)+dg(3)
              do j = lo(2)-dg(2), hi(2)+dg(2)
                 do i = lo(1)-1, hi(1)+1
-                   
+
                    ! limit? MC Eq. 24 and 25
                    if (dafm(i,j,k) * dafp(i,j,k) <= 0.0d0 .or. &
                         (a(i,j,k,n) - a(i-2,j,k,n))*(a(i+2,j,k,n) - a(i,j,k,n)) <= 0.0d0) then
-                      
+
                       ! we are at an extrema
-                      
+
                       s = sign(1.0d0, d2ac(i,j,k))
                       if ( s == sign(1.0d0, d2ac(i-1,j,k)) .and. &
                            s == sign(1.0d0, d2ac(i+1,j,k)) .and. &
@@ -124,7 +124,7 @@ contains
                       else
                          d2a_lim = 0.0d0
                       endif
-                      
+
                       if (abs(d2af(i,j,k)) <= 1.e-12*max(abs(a(i-2,j,k,n)), abs(a(i-1,j,k,n)), &
                            abs(a(i,j,k,n)), abs(a(i+1,j,k,n)), abs(a(i+2,j,k,n)))) then
                          rho = 0.0d0
@@ -132,12 +132,12 @@ contains
                          ! MC Eq. 27
                          rho = d2a_lim/d2af(i,j,k)
                       endif
-                      
+
                       if (rho < 1.0d0 - 1.d-12) then
                          ! we may need to limit -- these quantities are at cell-centers
                          d3a_min = min(d3a(i-1,j,k), d3a(i,j,k), d3a(i+1,j,k), d3a(i+2,j,k))
                          d3a_max = max(d3a(i-1,j,k), d3a(i,j,k), d3a(i+1,j,k), d3a(i+2,j,k))
-                         
+
                          if (C3*max(abs(d3a_min), abs(d3a_max)) <= (d3a_max - d3a_min)) then
                             ! limit
                             if (dafm(i,j,k)*dafp(i,j,k) < 0.0d0) then
@@ -151,7 +151,7 @@ contains
                                ! Eq. 32
                                al(i+1,j,k,n) = a(i,j,k,n) + 2.0d0*(1.0d0 - rho)*dafm(i,j,k) + rho*dafp(i,j,k)
                             endif
-                            
+
                          endif
                       endif
 
@@ -164,7 +164,7 @@ contains
                          al(i+1,j,k,n) = a(i,j,k,n) + 2.0d0*dafm(i,j,k)
                       endif
                    endif
-                   
+
                    ! apply flattening
                    al(i+1,j,k,n) = flatn(i,j,k)*al(i+1,j,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
                    ar(i,j,k,n) = flatn(i,j,k)*ar(i,j,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
@@ -193,107 +193,107 @@ contains
        enddo
 
        if (limit_fourth_order == 1) then
-           do k = lo(3)-dg(3), hi(3)+dg(3)
-              do j = lo(2)-2, hi(2)+3
-                 do i = lo(1)-1, hi(1)+1
-                    ! these live on cell-centers
-                    dafm(i,j,k) = a(i,j,k,n) - a_int(i,j,k)
-                    dafp(i,j,k) = a_int(i,j+1,k) - a(i,j,k,n)
+          do k = lo(3)-dg(3), hi(3)+dg(3)
+             do j = lo(2)-2, hi(2)+3
+                do i = lo(1)-1, hi(1)+1
+                   ! these live on cell-centers
+                   dafm(i,j,k) = a(i,j,k,n) - a_int(i,j,k)
+                   dafp(i,j,k) = a_int(i,j+1,k) - a(i,j,k,n)
 
-                    ! these live on cell-centers
-                    d2af(i,j,k) = 6.0d0*(a_int(i,j,k) - 2.0d0*a(i,j,k,n) + a_int(i,j+1,k))
-                 enddo
-              enddo
-           enddo
+                   ! these live on cell-centers
+                   d2af(i,j,k) = 6.0d0*(a_int(i,j,k) - 2.0d0*a(i,j,k,n) + a_int(i,j+1,k))
+                enddo
+             enddo
+          enddo
 
-           do k = lo(3)-dg(3), hi(3)+dg(3)
-              do j = lo(2)-3, hi(2)+3
-                 do i = lo(1)-1, hi(1)+1
-                    d2ac(i,j,k) = a(i,j-1,k,n) - 2.0d0*a(i,j,k,n) + a(i,j+1,k,n)
-                 enddo
-              enddo
-           enddo
+          do k = lo(3)-dg(3), hi(3)+dg(3)
+             do j = lo(2)-3, hi(2)+3
+                do i = lo(1)-1, hi(1)+1
+                   d2ac(i,j,k) = a(i,j-1,k,n) - 2.0d0*a(i,j,k,n) + a(i,j+1,k,n)
+                enddo
+             enddo
+          enddo
 
-           do k = lo(3)-dg(3), hi(3)+dg(3)
-              do j = lo(2)-2, hi(2)+3
-                 do i = lo(1)-1, hi(1)+1
-                    ! this lives on the interface
-                    d3a(i,j,k) = d2ac(i,j,k) - d2ac(i,j-1,k)
-                 enddo
-              enddo
-           enddo
+          do k = lo(3)-dg(3), hi(3)+dg(3)
+             do j = lo(2)-2, hi(2)+3
+                do i = lo(1)-1, hi(1)+1
+                   ! this lives on the interface
+                   d3a(i,j,k) = d2ac(i,j,k) - d2ac(i,j-1,k)
+                enddo
+             enddo
+          enddo
 
-           ! this is a look over cell centers, affecting
-           ! j-1/2,R and j+1/2,L
-           do k = lo(3)-dg(3), hi(3)+dg(3)
-              do j = lo(2)-1, hi(2)+1
-                 do i = lo(1)-1, hi(1)+1
+          ! this is a look over cell centers, affecting
+          ! j-1/2,R and j+1/2,L
+          do k = lo(3)-dg(3), hi(3)+dg(3)
+             do j = lo(2)-1, hi(2)+1
+                do i = lo(1)-1, hi(1)+1
 
-                    ! limit? MC Eq. 24 and 25
-                    if (dafm(i,j,k) * dafp(i,j,k) <= 0.0d0 .or. &
-                         (a(i,j,k,n) - a(i,j-2,k,n))*(a(i,j+2,k,n) - a(i,j,k,n)) <= 0.0d0) then
+                   ! limit? MC Eq. 24 and 25
+                   if (dafm(i,j,k) * dafp(i,j,k) <= 0.0d0 .or. &
+                        (a(i,j,k,n) - a(i,j-2,k,n))*(a(i,j+2,k,n) - a(i,j,k,n)) <= 0.0d0) then
 
-                       ! we are at an extrema
+                      ! we are at an extrema
 
-                       s = sign(1.0d0, d2ac(i,j,k))
-                       if ( s == sign(1.0d0, d2ac(i,j-1,k)) .and. &
-                            s == sign(1.0d0, d2ac(i,j+1,k)) .and. &
-                            s == sign(1.0d0, d2af(i,j,k))) then
-                          ! MC Eq. 26
-                          d2a_lim = s*min(abs(d2af(i,j,k)), C2*abs(d2ac(i,j-1,k)), &
-                               C2*abs(d2ac(i,j,k)), C2*abs(d2ac(i,j+1,k)))
-                       else
-                          d2a_lim = 0.0d0
-                       endif
+                      s = sign(1.0d0, d2ac(i,j,k))
+                      if ( s == sign(1.0d0, d2ac(i,j-1,k)) .and. &
+                           s == sign(1.0d0, d2ac(i,j+1,k)) .and. &
+                           s == sign(1.0d0, d2af(i,j,k))) then
+                         ! MC Eq. 26
+                         d2a_lim = s*min(abs(d2af(i,j,k)), C2*abs(d2ac(i,j-1,k)), &
+                              C2*abs(d2ac(i,j,k)), C2*abs(d2ac(i,j+1,k)))
+                      else
+                         d2a_lim = 0.0d0
+                      endif
 
-                       if (abs(d2af(i,j,k)) <= 1.e-12*max(abs(a(i,j-2,k,n)), abs(a(i,j-1,k,n)), &
-                            abs(a(i,j,k,n)), abs(a(i,j+1,k,n)), abs(a(i,j+2,k,n)))) then
-                          rho = 0.0d0
-                       else
-                          ! MC Eq. 27
-                          rho = d2a_lim/d2af(i,j,k)
-                       endif
+                      if (abs(d2af(i,j,k)) <= 1.e-12*max(abs(a(i,j-2,k,n)), abs(a(i,j-1,k,n)), &
+                           abs(a(i,j,k,n)), abs(a(i,j+1,k,n)), abs(a(i,j+2,k,n)))) then
+                         rho = 0.0d0
+                      else
+                         ! MC Eq. 27
+                         rho = d2a_lim/d2af(i,j,k)
+                      endif
 
-                       if (rho < 1.0d0 - 1.d-12) then
-                          ! we may need to limit -- these quantities are at cell-centers
-                          d3a_min = min(d3a(i,j-1,k), d3a(i,j,k), d3a(i,j+1,k), d3a(i,j+2,k))
-                          d3a_max = max(d3a(i,j-1,k), d3a(i,j,k), d3a(i,j+1,k), d3a(i,j+2,k))
+                      if (rho < 1.0d0 - 1.d-12) then
+                         ! we may need to limit -- these quantities are at cell-centers
+                         d3a_min = min(d3a(i,j-1,k), d3a(i,j,k), d3a(i,j+1,k), d3a(i,j+2,k))
+                         d3a_max = max(d3a(i,j-1,k), d3a(i,j,k), d3a(i,j+1,k), d3a(i,j+2,k))
 
-                          if (C3*max(abs(d3a_min), abs(d3a_max)) <= (d3a_max - d3a_min)) then
-                             ! limit
-                             if (dafm(i,j,k)*dafp(i,j,k) < 0.0d0) then
-                                ! Eqs. 29, 30
-                                ar(i,j,k,n) = a(i,j,k,n) - rho*dafm(i,j,k)  ! note: typo in Eq 29
-                                al(i,j+1,k,n) = a(i,j,k,n) + rho*dafp(i,j,k)
-                             else if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
-                                ! Eq. 31
-                                ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*(1.0d0 - rho)*dafp(i,j,k) - rho*dafm(i,j,k)
-                             else if (abs(dafp(i,j,k)) >= 2.0*abs(dafm(i,j,k))) then
-                                ! Eq. 32
-                                al(i,j+1,k,n) = a(i,j,k,n) + 2.0d0*(1.0d0 - rho)*dafm(i,j,k) + rho*dafp(i,j,k)
-                             endif
+                         if (C3*max(abs(d3a_min), abs(d3a_max)) <= (d3a_max - d3a_min)) then
+                            ! limit
+                            if (dafm(i,j,k)*dafp(i,j,k) < 0.0d0) then
+                               ! Eqs. 29, 30
+                               ar(i,j,k,n) = a(i,j,k,n) - rho*dafm(i,j,k)  ! note: typo in Eq 29
+                               al(i,j+1,k,n) = a(i,j,k,n) + rho*dafp(i,j,k)
+                            else if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
+                               ! Eq. 31
+                               ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*(1.0d0 - rho)*dafp(i,j,k) - rho*dafm(i,j,k)
+                            else if (abs(dafp(i,j,k)) >= 2.0*abs(dafm(i,j,k))) then
+                               ! Eq. 32
+                               al(i,j+1,k,n) = a(i,j,k,n) + 2.0d0*(1.0d0 - rho)*dafm(i,j,k) + rho*dafp(i,j,k)
+                            endif
 
-                          endif
-                       endif
+                         endif
+                      endif
 
-                    else
-                       ! if Eqs. 24 or 25 didn't hold we still may need to limit
-                       if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
-                          ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*dafp(i,j,k)
-                       endif
-                       if (abs(dafp(i,j,k)) >= 2.0d0*abs(dafm(i,j,k))) then
-                          al(i,j+1,k,n) = a(i,j,k,n) + 2.0d0*dafm(i,j,k)
-                       endif
-                    endif
+                   else
+                      ! if Eqs. 24 or 25 didn't hold we still may need to limit
+                      if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
+                         ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*dafp(i,j,k)
+                      endif
+                      if (abs(dafp(i,j,k)) >= 2.0d0*abs(dafm(i,j,k))) then
+                         al(i,j+1,k,n) = a(i,j,k,n) + 2.0d0*dafm(i,j,k)
+                      endif
+                   endif
 
-                    ! apply flattening
-                    al(i,j+1,k,n) = flatn(i,j,k)*al(i,j+1,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
-                    ar(i,j,k,n) = flatn(i,j,k)*ar(i,j,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
+                   ! apply flattening
+                   al(i,j+1,k,n) = flatn(i,j,k)*al(i,j+1,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
+                   ar(i,j,k,n) = flatn(i,j,k)*ar(i,j,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
 
-                 enddo
-              enddo
-           enddo
-        endif
+                enddo
+             enddo
+          enddo
+       endif
 
     else if (idir == 3) then
 
@@ -314,107 +314,107 @@ contains
 
        if (limit_fourth_order == 1) then
 
-           do k = lo(3)-2, hi(3)+3
-              do j = lo(2)-1, hi(2)+1
-                 do i = lo(1)-1, hi(1)+1
-                    ! these live on cell-centers
-                    dafm(i,j,k) = a(i,j,k,n) - a_int(i,j,k)
-                    dafp(i,j,k) = a_int(i,j,k+1) - a(i,j,k,n)
+          do k = lo(3)-2, hi(3)+3
+             do j = lo(2)-1, hi(2)+1
+                do i = lo(1)-1, hi(1)+1
+                   ! these live on cell-centers
+                   dafm(i,j,k) = a(i,j,k,n) - a_int(i,j,k)
+                   dafp(i,j,k) = a_int(i,j,k+1) - a(i,j,k,n)
 
-                    ! these live on cell-centers
-                    d2af(i,j,k) = 6.0d0*(a_int(i,j,k) - 2.0d0*a(i,j,k,n) + a_int(i,j,k+1))
-                 enddo
-              enddo
-           enddo
+                   ! these live on cell-centers
+                   d2af(i,j,k) = 6.0d0*(a_int(i,j,k) - 2.0d0*a(i,j,k,n) + a_int(i,j,k+1))
+                enddo
+             enddo
+          enddo
 
-           do k = lo(3)-3, hi(3)+3
-              do j = lo(2)-1, hi(2)+1
-                 do i = lo(1)-1, hi(1)+1
-                    d2ac(i,j,k) = a(i,j,k-1,n) - 2.0d0*a(i,j,k,n) + a(i,j,k+1,n)
-                 enddo
-              enddo
-           enddo
+          do k = lo(3)-3, hi(3)+3
+             do j = lo(2)-1, hi(2)+1
+                do i = lo(1)-1, hi(1)+1
+                   d2ac(i,j,k) = a(i,j,k-1,n) - 2.0d0*a(i,j,k,n) + a(i,j,k+1,n)
+                enddo
+             enddo
+          enddo
 
-           do k = lo(3)-2, hi(3)+3
-              do j = lo(2)-1, hi(2)+1
-                 do i = lo(1)-1, hi(1)+1
-                    ! this lives on the interface
-                    d3a(i,j,k) = d2ac(i,j,k) - d2ac(i,j,k-1)
-                 enddo
-              enddo
-           enddo
+          do k = lo(3)-2, hi(3)+3
+             do j = lo(2)-1, hi(2)+1
+                do i = lo(1)-1, hi(1)+1
+                   ! this lives on the interface
+                   d3a(i,j,k) = d2ac(i,j,k) - d2ac(i,j,k-1)
+                enddo
+             enddo
+          enddo
 
-           ! this is a look over cell centers, affecting
-           ! j-1/2,R and j+1/2,L
-           do k = lo(3)-1, hi(3)+1
-              do j = lo(2)-1, hi(2)+1
-                 do i = lo(1)-1, hi(1)+1
+          ! this is a look over cell centers, affecting
+          ! j-1/2,R and j+1/2,L
+          do k = lo(3)-1, hi(3)+1
+             do j = lo(2)-1, hi(2)+1
+                do i = lo(1)-1, hi(1)+1
 
-                    ! limit? MC Eq. 24 and 25
-                    if (dafm(i,j,k) * dafp(i,j,k) <= 0.0d0 .or. &
-                         (a(i,j,k,n) - a(i,j,k-2,n))*(a(i,j,k+2,n) - a(i,j,k,n)) <= 0.0d0) then
+                   ! limit? MC Eq. 24 and 25
+                   if (dafm(i,j,k) * dafp(i,j,k) <= 0.0d0 .or. &
+                        (a(i,j,k,n) - a(i,j,k-2,n))*(a(i,j,k+2,n) - a(i,j,k,n)) <= 0.0d0) then
 
-                       ! we are at an extrema
+                      ! we are at an extrema
 
-                       s = sign(1.0d0, d2ac(i,j,k))
-                       if ( s == sign(1.0d0, d2ac(i,j,k-1)) .and. &
-                            s == sign(1.0d0, d2ac(i,j,k+1)) .and. &
-                            s == sign(1.0d0, d2af(i,j,k))) then
-                          ! MC Eq. 26
-                          d2a_lim = s*min(abs(d2af(i,j,k)), C2*abs(d2ac(i,j,k-1)), &
-                               C2*abs(d2ac(i,j,k)), C2*abs(d2ac(i,j,k+1)))
-                       else
-                          d2a_lim = 0.0d0
-                       endif
+                      s = sign(1.0d0, d2ac(i,j,k))
+                      if ( s == sign(1.0d0, d2ac(i,j,k-1)) .and. &
+                           s == sign(1.0d0, d2ac(i,j,k+1)) .and. &
+                           s == sign(1.0d0, d2af(i,j,k))) then
+                         ! MC Eq. 26
+                         d2a_lim = s*min(abs(d2af(i,j,k)), C2*abs(d2ac(i,j,k-1)), &
+                              C2*abs(d2ac(i,j,k)), C2*abs(d2ac(i,j,k+1)))
+                      else
+                         d2a_lim = 0.0d0
+                      endif
 
-                       if (abs(d2af(i,j,k)) <= 1.e-12*max(abs(a(i,j,k-2,n)), abs(a(i,j,k-1,n)), &
-                            abs(a(i,j,k,n)), abs(a(i,j,k+1,n)), abs(a(i,j,k+2,n)))) then
-                          rho = 0.0d0
-                       else
-                          ! MC Eq. 27
-                          rho = d2a_lim/d2af(i,j,k)
-                       endif
+                      if (abs(d2af(i,j,k)) <= 1.e-12*max(abs(a(i,j,k-2,n)), abs(a(i,j,k-1,n)), &
+                           abs(a(i,j,k,n)), abs(a(i,j,k+1,n)), abs(a(i,j,k+2,n)))) then
+                         rho = 0.0d0
+                      else
+                         ! MC Eq. 27
+                         rho = d2a_lim/d2af(i,j,k)
+                      endif
 
-                       if (rho < 1.0d0 - 1.d-12) then
-                          ! we may need to limit -- these quantities are at cell-centers
-                          d3a_min = min(d3a(i,j,k-1), d3a(i,j,k), d3a(i,j,k+1), d3a(i,j,k+2))
-                          d3a_max = max(d3a(i,j,k-1), d3a(i,j,k), d3a(i,j,k+1), d3a(i,j,k+2))
+                      if (rho < 1.0d0 - 1.d-12) then
+                         ! we may need to limit -- these quantities are at cell-centers
+                         d3a_min = min(d3a(i,j,k-1), d3a(i,j,k), d3a(i,j,k+1), d3a(i,j,k+2))
+                         d3a_max = max(d3a(i,j,k-1), d3a(i,j,k), d3a(i,j,k+1), d3a(i,j,k+2))
 
-                          if (C3*max(abs(d3a_min), abs(d3a_max)) <= (d3a_max - d3a_min)) then
-                             ! limit
-                             if (dafm(i,j,k)*dafp(i,j,k) < 0.0d0) then
-                                ! Eqs. 29, 30
-                                ar(i,j,k,n) = a(i,j,k,n) - rho*dafm(i,j,k)  ! note: typo in Eq 29
-                                al(i,j,k+1,n) = a(i,j,k,n) + rho*dafp(i,j,k)
-                             else if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
-                                ! Eq. 31
-                                ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*(1.0d0 - rho)*dafp(i,j,k) - rho*dafm(i,j,k)
-                             else if (abs(dafp(i,j,k)) >= 2.0*abs(dafm(i,j,k))) then
-                                ! Eq. 32
-                                al(i,j,k+1,n) = a(i,j,k,n) + 2.0d0*(1.0d0 - rho)*dafm(i,j,k) + rho*dafp(i,j,k)
-                             endif
+                         if (C3*max(abs(d3a_min), abs(d3a_max)) <= (d3a_max - d3a_min)) then
+                            ! limit
+                            if (dafm(i,j,k)*dafp(i,j,k) < 0.0d0) then
+                               ! Eqs. 29, 30
+                               ar(i,j,k,n) = a(i,j,k,n) - rho*dafm(i,j,k)  ! note: typo in Eq 29
+                               al(i,j,k+1,n) = a(i,j,k,n) + rho*dafp(i,j,k)
+                            else if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
+                               ! Eq. 31
+                               ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*(1.0d0 - rho)*dafp(i,j,k) - rho*dafm(i,j,k)
+                            else if (abs(dafp(i,j,k)) >= 2.0*abs(dafm(i,j,k))) then
+                               ! Eq. 32
+                               al(i,j,k+1,n) = a(i,j,k,n) + 2.0d0*(1.0d0 - rho)*dafm(i,j,k) + rho*dafp(i,j,k)
+                            endif
 
-                          endif
-                       endif
+                         endif
+                      endif
 
-                    else
-                       ! if Eqs. 24 or 25 didn't hold we still may need to limit
-                       if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
-                          ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*dafp(i,j,k)
-                       endif
-                       if (abs(dafp(i,j,k)) >= 2.0d0*abs(dafm(i,j,k))) then
-                          al(i,j,k+1,n) = a(i,j,k,n) + 2.0d0*dafm(i,j,k)
-                       endif
-                    endif
+                   else
+                      ! if Eqs. 24 or 25 didn't hold we still may need to limit
+                      if (abs(dafm(i,j,k)) >= 2.0d0*abs(dafp(i,j,k))) then
+                         ar(i,j,k,n) = a(i,j,k,n) - 2.0d0*dafp(i,j,k)
+                      endif
+                      if (abs(dafp(i,j,k)) >= 2.0d0*abs(dafm(i,j,k))) then
+                         al(i,j,k+1,n) = a(i,j,k,n) + 2.0d0*dafm(i,j,k)
+                      endif
+                   endif
 
-                    ! apply flattening
-                    al(i,j,k+1,n) = flatn(i,j,k)*al(i,j,k+1,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
-                    ar(i,j,k,n) = flatn(i,j,k)*ar(i,j,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
+                   ! apply flattening
+                   al(i,j,k+1,n) = flatn(i,j,k)*al(i,j,k+1,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
+                   ar(i,j,k,n) = flatn(i,j,k)*ar(i,j,k,n) + (ONE - flatn(i,j,k))*a(i,j,k,n)
 
-                 enddo
-              enddo
-           enddo
-        endif
+                enddo
+             enddo
+          enddo
+       endif
     endif
 
   end subroutine states
@@ -440,8 +440,8 @@ contains
     real(rt) :: lap
 
     if (U_lo(1) > lo(1)-1 .or. U_hi(1) < hi(1)+1 .or. &
-        (BL_SPACEDIM >= 2 .and. (U_lo(2) > lo(2)-1 .or. U_hi(2) < hi(2)+1)) .or. &
-        (BL_SPACEDIM == 3 .and. (U_lo(3) > lo(3)-1 .or. U_hi(3) < hi(3)+1))) then
+        (AMREX_SPACEDIM >= 2 .and. (U_lo(2) > lo(2)-1 .or. U_hi(2) < hi(2)+1)) .or. &
+        (AMREX_SPACEDIM == 3 .and. (U_lo(3) > lo(3)-1 .or. U_hi(3) < hi(3)+1))) then
        call bl_error("insufficient ghostcells in ca_make_cell_center")
     endif
 
@@ -451,10 +451,10 @@ contains
              do i = lo(1), hi(1)
 
                 lap = U(i+1,j,k,n) - TWO*U(i,j,k,n) + U(i-1,j,k,n)
-#if BL_SPACEDIM >= 2
+#if AMREX_SPACEDIM >= 2
                 lap = lap + U(i,j+1,k,n) - TWO*U(i,j,k,n) + U(i,j-1,k,n)
 #endif
-#if BL_SPACEDIM == 3
+#if AMREX_SPACEDIM == 3
                 lap = lap + U(i,j,k+1,n) - TWO*U(i,j,k,n) + U(i,j,k-1,n)
 #endif
 
@@ -491,10 +491,10 @@ contains
           do j = lo(2), hi(2)
              do i = lo(1), hi(1)
                 lap(i,j,k,n) = U(i+1,j,k,n) - TWO*U(i,j,k,n) + U(i-1,j,k,n)
-#if BL_SPACEDIM >= 2
+#if AMREX_SPACEDIM >= 2
                 lap(i,j,k,n) = lap(i,j,k,n) + U(i,j+1,k,n) - TWO*U(i,j,k,n) + U(i,j-1,k,n)
 #endif
-#if BL_SPACEDIM == 3
+#if AMREX_SPACEDIM == 3
                 lap(i,j,k,n) = lap(i,j,k,n) + U(i,j,k+1,n) - TWO*U(i,j,k,n) + U(i,j,k-1,n)
 #endif
              enddo
@@ -622,10 +622,10 @@ contains
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
              lap = q_bar(i+1,j,k,ncomp+1) - TWO*q_bar(i,j,k,ncomp+1) + q_bar(i-1,j,k,ncomp+1)
-#if BL_SPACEDIM >= 2
+#if AMREX_SPACEDIM >= 2
              lap = lap + q_bar(i,j+1,k,ncomp+1) - TWO*q_bar(i,j,k,ncomp+1) + q_bar(i,j-1,k,ncomp+1)
 #endif
-#if BL_SPACEDIM == 3
+#if AMREX_SPACEDIM == 3
              lap = lap + q_bar(i,j,k+1,ncomp+1) - TWO*q_bar(i,j,k,ncomp+1) + q_bar(i,j,k-1,ncomp+1)
 #endif
 
@@ -714,10 +714,10 @@ contains
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
              lap(i,j,k) = q(i+1,j,k,ncomp+1) - TWO*q(i,j,k,ncomp+1) + q(i-1,j,k,ncomp+1)
-#if BL_SPACEDIM >= 2
+#if AMREX_SPACEDIM >= 2
              lap(i,j,k) = lap(i,j,k) + q(i,j+1,k,ncomp+1) - TWO*q(i,j,k,ncomp+1) + q(i,j-1,k,ncomp+1)
 #endif
-#if BL_SPACEDIM == 3
+#if AMREX_SPACEDIM == 3
              lap(i,j,k) = lap(i,j,k) + q(i,j,k+1,ncomp+1) - TWO*q(i,j,k,ncomp+1) + q(i,j,k-1,ncomp+1)
 #endif
           enddo

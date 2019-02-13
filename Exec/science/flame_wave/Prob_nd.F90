@@ -4,13 +4,8 @@ subroutine amrex_probinit (init, name, namlen, problo, probhi) bind(c)
   use amrex_error_module
   use initial_model_module
   use model_parser_module, only : model_r, model_state, npts_model, model_initialized
-
   use probdata_module
-
   use amrex_fort_module, only : rt => amrex_real
-
-  use eos_type_module, only : eos_t, eos_input_rt, eos_input_tp
-  use eos_module, only : eos
   use network
 
   implicit none
@@ -19,20 +14,18 @@ subroutine amrex_probinit (init, name, namlen, problo, probhi) bind(c)
   integer :: name(namlen)
   real(rt) :: problo(3), probhi(3)
 
-  type (eos_t) :: eos_state
-
   integer :: untin, i
 
-  namelist /fortin/ nx_model, interp_BC, zero_vels, &
+  namelist /fortin/ nx_model, &
                     dtemp, x_half_max, x_half_width, &
-                    X_min, cutoff_density, hot_ash, &
+                    X_min, cutoff_density, &
                     dens_base, T_star, T_hi, T_lo, H_star, atm_delta, &
                     fuel1_name, fuel2_name, fuel3_name, &
                     ash1_name, ash2_name, ash3_name, &
                     fuel1_frac, fuel2_frac, fuel3_frac, &
                     ash1_frac, ash2_frac, ash3_frac, &
-                    low_density_cutoff, index_base_from_temp, smallx, &
-                    max_hse_tagging_level, max_base_tagging_level
+                    low_density_cutoff, smallx, &
+                    max_hse_tagging_level, max_base_tagging_level, x_refine_distance
 
   ! Build "probin" filename -- the name of file containing fortin namelist.
   integer, parameter :: maxlen = 256
@@ -60,9 +53,6 @@ subroutine amrex_probinit (init, name, namlen, problo, probhi) bind(c)
   x_half_max = 1.2e5_rt
   x_half_width = 3.6e4_rt
 
-  interp_BC = .false.
-  zero_vels = .false.
-
   dens_base = 2.d6
 
   T_star = 1.d8
@@ -88,14 +78,14 @@ subroutine amrex_probinit (init, name, namlen, problo, probhi) bind(c)
   ash2_frac = ZERO
   ash3_frac = ZERO
 
-  index_base_from_temp = .false.
-
   low_density_cutoff = 1.d-4
 
   smallx = 1.d-10
 
   max_hse_tagging_level = 2
   max_base_tagging_level = 1
+
+  x_refine_distance = probhi(1)
 
   open(newunit=untin,file=probin(1:namlen),form='formatted',status='old')
   read(untin,fortin)
@@ -177,8 +167,6 @@ subroutine amrex_probinit (init, name, namlen, problo, probhi) bind(c)
 
   model_params % low_density_cutoff = low_density_cutoff
 
-  model_params % index_base_from_temp = index_base_from_temp
-
   call init_1d_tanh(nx_model+ng, &
                     problo(AMREX_SPACEDIM)-ng*dx_model, probhi(AMREX_SPACEDIM), &
                     model_params, 1)
@@ -225,12 +213,15 @@ end subroutine amrex_probinit
 ! ::: state     <=  Scalar array
 ! ::: delta     => cell size
 ! ::: xlo,xhi   => physical locations of lower left and upper
+! :::              right hand corner of grid.  (does not include
+! :::		   ghost region).
 ! ::: -----------------------------------------------------------
 subroutine ca_initdata(level, time, lo, hi, nscal, &
                        state, state_lo, state_hi, &
                        delta, xlo, xhi)
 
   use amrex_constants_module
+  use amrex_error_module
   use probdata_module
   use interpolate_module
   use eos_module, only : eos
@@ -249,13 +240,13 @@ subroutine ca_initdata(level, time, lo, hi, nscal, &
   real(rt), intent(in) :: xlo(3), xhi(3), time, delta(3)
   real(rt), intent(inout) :: state(state_lo(1):state_hi(1),state_lo(2):state_hi(2),state_lo(3):state_hi(3),NVAR)
 
-  real(rt) :: dist, x, y, z, r, height
+  real(rt) :: x, y, z, r, height
   integer :: i, j, k, n
 
   real(rt) :: temppres(state_lo(1):state_hi(1),state_lo(2):state_hi(2),state_lo(3):state_hi(3))
 
   type (eos_t) :: eos_state
-  real(rt) :: sum_excess, sum_excess2, current_fuel, f
+  real(rt) :: f
 
   do k = lo(3), hi(3)
      z = problo(3) + (dble(k)+HALF)*delta(3)
