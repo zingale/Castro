@@ -119,7 +119,7 @@ int          Castro::FirstAdv      = -1;
 int          Castro::Shock         = -1;
 #endif
 
-int          Castro::QVAR          = -1;
+int          Castro::NQSRC         = -1;
 int          Castro::NQAUX         = -1;
 int          Castro::NQ            = -1;
 
@@ -171,14 +171,14 @@ IntVect      Castro::no_tile_size(1024);
 #ifndef AMREX_USE_CUDA
 IntVect      Castro::hydro_tile_size(1024,16);
 #else
-IntVect      Castro::hydro_tile_size(1024,1024);
+IntVect      Castro::hydro_tile_size(1024,64);
 #endif
 IntVect      Castro::no_tile_size(1024,1024);
 #else
 #ifndef AMREX_USE_CUDA
 IntVect      Castro::hydro_tile_size(1024,16,16);
 #else
-IntVect      Castro::hydro_tile_size(1024,1024,1024);
+IntVect      Castro::hydro_tile_size(1024,64,64);
 #endif
 IntVect      Castro::no_tile_size(1024,1024,1024);
 #endif
@@ -385,6 +385,13 @@ Castro::read_params ()
 	    amrex::Error("WARNING: fourth_order requires a different time_integration_method");
       }
 
+    // The CUDA MOL implementation is only supported in 3D right now.
+#if defined(AMREX_USE_CUDA) && (AMREX_SPACEDIM < 3)
+    if (time_integration_method != CornerTransportUpwind) {
+        amrex::Error("Only the CTU advance is supported for 1D/2D when using CUDA.");
+    }
+#endif
+
     if (hybrid_riemann == 1 && BL_SPACEDIM == 1)
       {
         std::cerr << "hybrid_riemann only implemented in 2- and 3-d\n";
@@ -422,6 +429,13 @@ Castro::read_params ()
     if (do_radiation) {
       Radiation::read_static_params();
     }
+
+    // The CUDA MOL implementation doesn't currently do radiation.
+#ifdef AMREX_USE_CUDA
+    if (do_radiation && time_integration_method != CornerTransportUpwind) {
+        amrex::Error("Radiation is currently unsupported for MOL when using CUDA.");
+    }
+#endif
 #endif
 
 #ifdef ROTATION
@@ -3294,12 +3308,12 @@ Castro::computeTemp(int is_new, int ng)
         if (fourth_order) {
           // note, this is working on a growntilebox, but we will not have
           // valid cell-centers in the very last ghost cell
-          ca_compute_temp(AMREX_ARLIM_ARG(bx.loVect()), AMREX_ARLIM_ARG(bx.hiVect()),
-                          BL_TO_FORTRAN_3D(Stemp[mfi]));
+          ca_compute_temp(AMREX_ARLIM_ANYD(bx.loVect()), AMREX_ARLIM_ANYD(bx.hiVect()),
+                          BL_TO_FORTRAN_ANYD(Stemp[mfi]));
         } else {
 #pragma gpu
-          ca_compute_temp(AMREX_ARLIM_ARG(bx.loVect()), AMREX_ARLIM_ARG(bx.hiVect()),
-                          BL_TO_FORTRAN_3D(State[mfi]));
+          ca_compute_temp(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
+                          BL_TO_FORTRAN_ANYD(State[mfi]));
         }
 
 #ifdef RADIATION
@@ -3820,7 +3834,7 @@ Castro::cons_to_prim(MultiFab& u, MultiFab& q, MultiFab& qaux)
     BL_PROFILE("Castro::cons_to_prim()");
 
     BL_ASSERT(u.nComp() == NUM_STATE);
-    BL_ASSERT(q.nComp() == QVAR);
+    BL_ASSERT(q.nComp() == NQ);
     BL_ASSERT(u.nGrow() >= q.nGrow());
 
     int ng = q.nGrow();
