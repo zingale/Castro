@@ -98,13 +98,11 @@ Castro::advance (Real time,
 #else
     // we are either CTU, MOL, or the new SDC
 
-#ifndef AMREX_USE_CUDA
     if (time_integration_method == CornerTransportUpwind) {
 
         dt_new = std::min(dt_new, subcycle_advance(time, dt, amr_iteration, amr_ncycle));
 
     } else if (time_integration_method == MethodOfLines) {
-#endif
 
       for (int iter = 0; iter < MOL_STAGES; ++iter) {
 	mol_iteration = iter;
@@ -194,7 +192,6 @@ Castro::advance (Real time,
 
 
 
-#ifndef AMREX_USE_CUDA
 Real
 Castro::do_advance (Real time,
                     Real dt,
@@ -219,9 +216,11 @@ Castro::do_advance (Real time,
 
     initialize_do_advance(time, dt, amr_iteration, amr_ncycle);
 
+#ifndef AMREX_USE_CUDA
     // Check for NaN's.
 
     check_for_nan(S_old);
+#endif
 
     // Since we are Strang splitting the reactions, do them now
 
@@ -320,9 +319,11 @@ Castro::do_advance (Real time,
       expand_state(S_new, cur_time, 1, S_new.nGrow());
     }
 
+#ifndef AMREX_USE_CUDA
     // Check for NaN's.
 
     check_for_nan(S_new);
+#endif
 
     // if we are done with the update do the source correction and
     // then the second half of the reactions
@@ -384,7 +385,7 @@ Castro::do_advance (Real time,
 
     return dt;
 }
-#endif
+
 
 
 Real
@@ -806,6 +807,7 @@ Castro::do_advance_sdc (Real time,
 void
 Castro::initialize_do_advance(Real time, Real dt, int amr_iteration, int amr_ncycle)
 {
+    BL_PROFILE("Castro::initialize_do_advance()");
 
     // Reset the change from density resets
 
@@ -927,6 +929,7 @@ Castro::initialize_do_advance(Real time, Real dt, int amr_iteration, int amr_ncy
 void
 Castro::finalize_do_advance(Real time, Real dt, int amr_iteration, int amr_ncycle)
 {
+    BL_PROFILE("Castro::finalize_do_advance()");
 
 #ifdef RADIATION
     if (!do_hydro && Radiation::rad_hydro_combined) {
@@ -945,6 +948,8 @@ Castro::finalize_do_advance(Real time, Real dt, int amr_iteration, int amr_ncycl
 void
 Castro::initialize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle)
 {
+    BL_PROFILE("Castro::initialize_advance()");
+
     // Save the current iteration.
 
     iteration = amr_iteration;
@@ -1204,6 +1209,7 @@ Castro::initialize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle
 void
 Castro::finalize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle)
 {
+    BL_PROFILE("Castro::finalize_advance()");
 
     // Add the material lost in this timestep to the cumulative losses.
 
@@ -1257,10 +1263,10 @@ Castro::finalize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle)
 
 
 
-#ifndef AMREX_USE_CUDA
 bool
 Castro::retry_advance(Real& time, Real dt, int amr_iteration, int amr_ncycle)
 {
+    BL_PROFILE("Castro::retry_advance()");
 
     Real dt_sub = 1.e200;
 
@@ -1416,6 +1422,7 @@ Castro::retry_advance(Real& time, Real dt, int amr_iteration, int amr_ncycle)
 Real
 Castro::subcycle_advance(const Real time, const Real dt, int amr_iteration, int amr_ncycle)
 {
+    BL_PROFILE("Castro::subcycle_advance()");
 
     // Start the subcycle time off with the main dt,
     // unless we already came in here with an estimate
@@ -1594,4 +1601,3 @@ Castro::subcycle_advance(const Real time, const Real dt, int amr_iteration, int 
     return dt_new;
 
 }
-#endif
