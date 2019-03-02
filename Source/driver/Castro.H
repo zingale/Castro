@@ -39,10 +39,8 @@ enum StateType { State_Type = 0,
 #ifdef REACTIONS
                  Reactions_Type,
 #endif
-#ifdef SDC
 #ifdef REACTIONS
-		 SDC_React_Type
-#endif
+		 Simplified_SDC_React_Type
 #endif
 };
 
@@ -72,7 +70,9 @@ enum sources { ext_src = 0,
 
 enum int_method { CornerTransportUpwind = 0,
                   MethodOfLines,
-                  SpectralDeferredCorrections };
+                  SpectralDeferredCorrections,
+                  SimplifiedSpectralDeferredCorrections
+                };
 
 ///
 /// @class Castro
@@ -357,15 +357,17 @@ public:
 /// @param ncycle   the number of subcycles at this level
 ///
     virtual amrex::Real advance (amrex::Real time,
-                          amrex::Real dt,
-                          int  iteration,
-                          int  ncycle) override;
+                                 amrex::Real dt,
+                                 int  iteration,
+                                 int  ncycle) override;
 
 ///
-/// this routine will advance the old state data (called ``S_old`` here)
+/// This routine will advance the old state data (called ``S_old`` here)
 /// to the new time, for a single level.  The new data is called
 /// ``S_new`` here.  The update includes reactions (if we are not doing
-/// SDC), hydro, and the source terms.
+/// SDC), hydro, and the source terms. The advance is doing using the CTU
+/// (corner transport upwind) approach. We also use this interface for the
+/// simplified SDC update.
 ///
 /// @param time     the current simulation time
 /// @param dt       the timestep to advance (e.g., go from time to
@@ -376,17 +378,17 @@ public:
 ///                    counter starts at 1
 /// @param amr_ncycle   the number of subcycles at this level
 ///
-    amrex::Real do_advance (amrex::Real time,
-                     amrex::Real dt,
-                     int  amr_iteration,
-                     int  amr_ncycle);
-
+    amrex::Real do_advance_ctu(amrex::Real time,
+                               amrex::Real dt,
+                               int  amr_iteration,
+                               int  amr_ncycle);
 
 ///
 /// This routine will advance the old state data (called ``S_old`` here)
 /// to the new time, for a single level.  The new data is called
 /// ``S_new`` here.  The update includes reactions (if we are not doing
-/// SDC), hydro, and the source terms.
+/// SDC), hydro, and the source terms. The advance is doing using the MOL
+/// (method of lines) approach.
 ///
 /// @note the time that passes through here is the time for the
 /// current stage
@@ -401,19 +403,19 @@ public:
 /// @param amr_ncycle   the number of subcycles at this level
 ///
     amrex::Real do_advance_mol (amrex::Real time,
-                     amrex::Real dt,
-                     int  amr_iteration,
-                     int  amr_ncycle);
+                                amrex::Real dt,
+                                int  amr_iteration,
+                                int  amr_ncycle);
 
     amrex::Real do_advance_sdc (amrex::Real time,
-                     amrex::Real dt,
-                     int  amr_iteration,
-                     int  amr_ncycle);
-
+                                amrex::Real dt,
+                                int  amr_iteration,
+                                int  amr_ncycle);
 
 ///
 /// Should we retry advancing the simulation? By default, we
-/// don't do a retry unless the criteria are violated.
+/// don't do a retry unless the criteria are violated. This is
+/// used only for the CTU advance.
 ///
 /// @param time     the current simulation time
 /// @param dt       the timestep to advance (e.g., go from time to
@@ -424,13 +426,13 @@ public:
 ///                    counter starts at 1
 /// @param amr_ncycle   the number of subcycles at this level
 ///
-    bool retry_advance (amrex::Real& time, amrex::Real dt, int amr_iteration, int amr_ncycle);
-
+    bool retry_advance_ctu(amrex::Real& time, amrex::Real dt, int amr_iteration, int amr_ncycle);
 
 ///
 /// Subcyles until we've reached the target time, ``time`` + ``dt``.
 /// The last timestep will be shortened if needed so that
-/// it does not overshoot the ending time.
+/// it does not overshoot the ending time. This is used only for
+/// the CTU advance.
 ///
 /// @param time     the current simulation time
 /// @param dt       the timestep to advance (e.g., go from time to
@@ -441,8 +443,7 @@ public:
 ///                    counter starts at 1
 /// @param amr_ncycle   the number of subcycles at this level
 ///
-    amrex::Real subcycle_advance (amrex::Real time, amrex::Real dt, int amr_iteration, int amr_ncycle);
-
+    amrex::Real subcycle_advance_ctu(amrex::Real time, amrex::Real dt, int amr_iteration, int amr_ncycle);
 
 ///
 /// This is run at the start of an ::advance on a single level.
@@ -461,7 +462,6 @@ public:
 ///
     void initialize_advance(amrex::Real time, amrex::Real dt, int amr_iteration, int amr_ncycle);
 
-
 ///
 /// If required, adds material lost in timestep to cumulative
 /// losses, does refluxing, and clears arrays/data containers
@@ -478,7 +478,6 @@ public:
 ///
     void finalize_advance(amrex::Real time, amrex::Real dt, int amr_iteration, int amr_ncycle);
 
-
 ///
 /// Performed at the start of ::do_advance, resets flags and
 /// ensures required ghost zones are filled.
@@ -493,7 +492,6 @@ public:
 /// @param amr_ncycle   the number of subcycles at this level
 ///
     void initialize_do_advance(amrex::Real time, amrex::Real dt, int amr_iteration, int amr_ncycle);
-
 
 ///
 /// Performed at the end of ::do_advance, cleans up temporary data
@@ -510,58 +508,6 @@ public:
 ///
     void finalize_do_advance(amrex::Real time, amrex::Real dt, int amr_iteration, int amr_ncycle);
 
-
-///
-/// Convert the conservative state cell averages to primitive cell
-/// averages
-///
-/// @param time     current time
-///
-    void cons_to_prim(const amrex::Real time);
-
-#ifndef AMREX_USE_CUDA
-
-///
-/// convert the conservative state cell averages to primitive cell
-/// averages with 4th order accuracy
-///
-/// @param time     current time
-///
-    void cons_to_prim_fourth(const amrex::Real time);
-#endif
-
-
-///
-/// Check to see if the CFL condition has been violated
-///
-/// @param dt timestep
-///
-    void check_for_cfl_violation(const amrex::Real dt);
-
-///
-/// this constructs the hydrodynamic source (essentially the flux
-/// divergence) using the CTU framework for unsplit hydrodynamics
-///
-/// @param time     current time
-/// @param dt       timestep
-///
-    void construct_hydro_source(amrex::Real time, amrex::Real dt);
-
-
-
-
-
-///
-/// this constructs the hydrodynamic source (essentially the flux
-/// divergence) using method of lines integration.  The output, is the
-/// divergence of the fluxes, A = -div{F(U)}
-///
-/// @param time     current time
-/// @param dt   timestep
-/// @param A_update   divergence of the fluxes
-///
-    void construct_mol_hydro_source(amrex::Real time, amrex::Real dt, amrex::MultiFab& A_update);
-
 ///
 /// Check for NaNs in the given MultiFab
 ///
@@ -569,19 +515,6 @@ public:
 /// @param check_ghost  do we check the ghost cells?
 ///
     void check_for_nan(amrex::MultiFab& state, int check_ghost=0);
-
-#ifdef SDC
-
-///
-/// Calculate primitive variables from given conserved variables
-///
-/// @param u        MultiFab of conserved variables
-/// @param q        MultiFab to save primitive variables to
-/// @param qaux     MultiFab of auxiliary variables
-///
-    void cons_to_prim(amrex::MultiFab& u, amrex::MultiFab& q, amrex::MultiFab& qaux);
-#endif
-
 
 ///
 /// Returns true if flag corresponding to source type ``src`` is set.
@@ -1113,10 +1046,8 @@ public:
     static int numGrow();
 
 #ifdef REACTIONS
-#ifndef SDC
-
 ///
-/// React state through a single reaction timestep, saving reaction source terms to ``reactions`` MultiFab. This is the non-SDC version.
+/// React state through a single reaction timestep, saving reaction source terms to ``reactions`` MultiFab. This is the CTU version.
 ///
 /// @param state        Current state
 /// @param reactions    MultiFab to save reaction sources to
@@ -1135,6 +1066,13 @@ public:
 		     amrex::Real dt_react,
 		     int strang_half, int  ngrow = 0);
 
+///
+/// Simplified SDC version of react_state. Reacts the current state through a single timestep.
+///
+/// @param time     current time
+/// @param dt       timestep
+///
+    void react_state(amrex::Real time, amrex::Real dt);
 
 ///
 /// React through first half timestep
@@ -1152,15 +1090,6 @@ public:
 /// @param dt       timestep
 ///
     void strang_react_second_half(amrex::Real time, amrex::Real dt);
-#else
-
-///
-/// SDC version of react state. Reacts the current state through a single timestep.
-///
-/// @param time     current time
-/// @param dt       timestep
-///
-    void react_state(amrex::Real time, amrex::Real dt);
 
 ///
 /// Obtain the effective source term due to reactions on the primitive variables
@@ -1168,9 +1097,7 @@ public:
 /// @param source   MultiFab to save source term to
 /// @param dt       timestep
 ///
-    void get_react_source_prim(amrex::MultiFab& source, amrex::Real dt);
-#endif
-
+    void get_react_source_prim(amrex::MultiFab& source, amrex::Real time, amrex::Real dt);
 
 ///
 /// @param state
@@ -1182,7 +1109,6 @@ public:
                       amrex::MultiFab&  react_mf,
                       amrex::Real       time,
                       amrex::Real       dt);
-
 
 ///
 /// Are there any zones in ``State`` that can burn?
@@ -2117,6 +2043,11 @@ protected:
 /// Keep track of which AMR iteration we're on.
 ///
     int iteration;
+
+    //
+    // Hydrodynamics
+    //
+#include <Castro_hydro.H>
 
     //
     // Static data members.
