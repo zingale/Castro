@@ -53,6 +53,11 @@ module meth_params_module
   integer, save, allocatable :: GDLAMS, GDERADS
 #endif
 
+  ! Numerical values corresponding to the gravity types
+#ifdef GRAVITY
+  integer, save, allocatable :: gravity_type_int
+#endif
+
   integer         , save :: numpts_1d
 
   real(rt)        , save, allocatable :: outflow_data_old(:,:)
@@ -86,6 +91,9 @@ module meth_params_module
   attributes(managed) :: GDRHO, GDU, GDV, GDW, GDPRES, GDGAME
 #ifdef RADIATION
   attributes(managed) :: GDLAMS, GDERADS
+#endif
+#ifdef GRAVITY
+  attributes(managed) :: gravity_type_int
 #endif
   attributes(managed) :: xl_ext, yl_ext, zl_ext, xr_ext, yr_ext, zr_ext
 #endif
@@ -294,13 +302,13 @@ attributes(managed) :: implicit_rotation_update
 #ifdef ROTATION
 attributes(managed) :: rot_axis
 #endif
-#ifdef POINTMASS
+#ifdef GRAVITY
 attributes(managed) :: use_point_mass
 #endif
-#ifdef POINTMASS
+#ifdef GRAVITY
 attributes(managed) :: point_mass
 #endif
-#ifdef POINTMASS
+#ifdef GRAVITY
 attributes(managed) :: point_mass_fix_solution
 #endif
 attributes(managed) :: do_acc
@@ -407,13 +415,13 @@ attributes(managed) :: get_g_from_phi
 #ifdef ROTATION
   !$acc create(rot_axis) &
 #endif
-#ifdef POINTMASS
+#ifdef GRAVITY
   !$acc create(use_point_mass) &
 #endif
-#ifdef POINTMASS
+#ifdef GRAVITY
   !$acc create(point_mass) &
 #endif
-#ifdef POINTMASS
+#ifdef GRAVITY
   !$acc create(point_mass_fix_solution) &
 #endif
   !$acc create(do_acc) &
@@ -494,14 +502,6 @@ contains
     implicit_rotation_update = 1;
     allocate(rot_axis)
     rot_axis = 3;
-#endif
-#ifdef POINTMASS
-    allocate(use_point_mass)
-    use_point_mass = 1;
-    allocate(point_mass)
-    point_mass = 0.0d0;
-    allocate(point_mass_fix_solution)
-    point_mass_fix_solution = 0;
 #endif
     allocate(difmag)
     difmag = 0.1d0;
@@ -639,6 +639,14 @@ contains
     grown_factor = 1;
     allocate(track_grid_losses)
     track_grid_losses = 0;
+#ifdef GRAVITY
+    allocate(use_point_mass)
+    use_point_mass = 0;
+    allocate(point_mass)
+    point_mass = 0.0d0;
+    allocate(point_mass_fix_solution)
+    point_mass_fix_solution = 0;
+#endif
 
     call amrex_parmparse_build(pp, "castro")
 #ifdef DIFFUSION
@@ -656,11 +664,6 @@ contains
     call pp%query("rot_source_type", rot_source_type)
     call pp%query("implicit_rotation_update", implicit_rotation_update)
     call pp%query("rot_axis", rot_axis)
-#endif
-#ifdef POINTMASS
-    call pp%query("use_point_mass", use_point_mass)
-    call pp%query("point_mass", point_mass)
-    call pp%query("point_mass_fix_solution", point_mass_fix_solution)
 #endif
     call pp%query("difmag", difmag)
     call pp%query("small_dens", small_dens)
@@ -730,6 +733,11 @@ contains
     call pp%query("do_acc", do_acc)
     call pp%query("grown_factor", grown_factor)
     call pp%query("track_grid_losses", track_grid_losses)
+#ifdef GRAVITY
+    call pp%query("use_point_mass", use_point_mass)
+    call pp%query("point_mass", point_mass)
+    call pp%query("point_mass_fix_solution", point_mass_fix_solution)
+#endif
     call amrex_parmparse_destroy(pp)
 
 
@@ -762,6 +770,22 @@ contains
     !$acc device(point_mass, point_mass_fix_solution, do_acc) &
     !$acc device(grown_factor, track_grid_losses, const_grav, get_g_from_phi)
 
+
+#ifdef GRAVITY
+    ! Set the gravity type integer
+
+    allocate(gravity_type_int)
+
+    if (gravity_type == "ConstantGrav") then
+       gravity_type_int = 0
+    else if (gravity_type == "MonopoleGrav") then
+       gravity_type_int = 1
+    else if (gravity_type == "PoissonGrav") then
+       gravity_type_int = 2
+    else
+       call amrex_error("Unknown gravity type")
+    end if
+#endif
 
     ! now set the external BC flags
     select case (xl_ext_bc_type)

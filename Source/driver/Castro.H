@@ -1045,6 +1045,8 @@ public:
 
     static int numGrow();
 
+    static int numState();
+
 #ifdef REACTIONS
 ///
 /// React state through a single reaction timestep, saving reaction source terms to ``reactions`` MultiFab. This is the CTU version.
@@ -1497,8 +1499,15 @@ public:
 ///
     amrex::Real locSquaredSum (const std::string& name, amrex::Real time, int idir, bool local=false);
 
-#ifdef POINTMASS
+#ifdef GRAVITY
+///
+/// Are we using point mass gravity?
+///
     int using_point_mass ();
+
+///
+/// Return the value of the point mass.
+///
     amrex::Real get_point_mass ();
 #endif
 
@@ -1557,13 +1566,12 @@ public:
 ///
 /// Add source terms to ``state``
 ///
-/// @param is_new   do we use new (0) or old (1) data?
 /// @param state    State
 /// @param source   Source terms
 /// @param dt       timestep
 /// @param ng       number of ghost cells
 ///
-    void apply_source_to_state (int is_new, amrex::MultiFab& state, amrex::MultiFab& source, amrex::Real dt, int ng);
+    void apply_source_to_state (amrex::MultiFab& state, amrex::MultiFab& source, amrex::Real dt, int ng);
 
 
 ///
@@ -1613,6 +1621,9 @@ public:
 #ifdef REACTIONS
     void construct_old_react_source(amrex::MultiFab& U_state, amrex::MultiFab& R_source);
 #endif
+
+// Hydrodynamics
+#include <Castro_hydro.H>
 
 #ifdef AMREX_PARTICLES
     static amrex::AmrTracerParticleContainer* theTracerPC () { return TracerPC; }
@@ -2018,8 +2029,7 @@ protected:
     void write_center ();
 #endif
 
-#ifdef POINTMASS
-
+#ifdef GRAVITY
 ///
 /// @param time     current time
 /// @param dt       timestep
@@ -2043,11 +2053,6 @@ protected:
 /// Keep track of which AMR iteration we're on.
 ///
     int iteration;
-
-    //
-    // Hydrodynamics
-    //
-#include <Castro_hydro.H>
 
     //
     // Static data members.
@@ -2190,6 +2195,13 @@ Castro::numGrow()
 }
 
 inline
+int
+Castro::numState()
+{
+    return NUM_STATE;
+}
+
+inline
 amrex::MultiFab*
 Castro::Area ()
 {
@@ -2241,7 +2253,7 @@ Castro::get_output_at_completion()
     return output_at_completion;
 }
 
-#ifdef POINTMASS
+#ifdef GRAVITY
 inline
 amrex::Real
 Castro::get_point_mass ()
@@ -2256,6 +2268,5 @@ Castro::using_point_mass ()
     return use_point_mass;
 }
 #endif
-
 
 #endif /*_Castro_H_*/

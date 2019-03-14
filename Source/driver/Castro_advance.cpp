@@ -133,8 +133,8 @@ Castro::advance (Real time,
 
         }
 
-    }
 #endif // AMREX_USE_CUDA
+    }
 
     // Optionally kill the job at this point, if we've detected a violation.
 
@@ -162,7 +162,7 @@ Castro::advance (Real time,
 #endif
 #endif
 
-#ifdef POINTMASS
+#ifdef GRAVITY
     // Update the point mass.
     if (use_point_mass)
         pointmass_update(time, dt);
