@@ -101,27 +101,21 @@ Castro::do_advance_mol (Real time,
 
       }
 
-      // now that we redid these, redo the ghost fill
-      AmrLevel::FillPatch(*this, old_source, old_source.nGrow(), time, Source_Type, 0, NUM_STATE);
-
     } else {
       do_old_sources(old_source, Sborder, time, dt, amr_iteration, amr_ncycle);
     }
 #endif
 
-    // hack: copy the source to the new data too, so fillpatch doesn't have to
-    // worry about time
-    MultiFab::Copy(new_source, old_source, 0, 0, NUM_STATE, 0);
-
     // Apply the old sources to the sources for the hydro.  Note that
-    // we are doing an fill here, not an add (like we do for CTU --
+    // we are doing a copy here, not an add (like we do for CTU --
     // this is because the source term predictor doesn't make sense
     // here).
 
-    // we only need a fill here if sources_for_hydro has more ghost
-    // cells than Source_Type, because otherwise, do_old_sources
-    // already did the fill for us
-    AmrLevel::FillPatch(*this, sources_for_hydro, NUM_GROW, time, Source_Type, 0, NUM_STATE);
+    // note: we don't need to do a FillPatch, since we only need the
+    // sources in the valid box for the conservative update
+
+    MultiFab::Copy(sources_for_hydro, old_source, 0, 0, NUM_STATE, 0);
+
 
   } else {
     old_source.setVal(0.0, old_source.nGrow());
