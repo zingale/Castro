@@ -202,12 +202,18 @@ Castro::cons_to_prim_fourth(const Real time)
                              BL_TO_FORTRAN_FAB(q_bar[mfi]));
 
       // not sure if we need to convert qaux this way, or if we can
-      // just evaluate it (we may not need qaux at all actually)
+      // just evaluate it
       ca_make_fourth_average(BL_TO_FORTRAN_BOX(qbxm1),
                              BL_TO_FORTRAN_FAB(qaux[mfi]),
                              BL_TO_FORTRAN_FAB(qaux_bar[mfi]));
 
     }
+
+    // density is special -- it is the same in the conserved state and
+    // in the primitive state, so we can reduce numerical noise by
+    // just copying it directly
+    MultiFab::Copy(q, Sborder, Density, QRHO, 1, Sborder.nGrow());
+
 
 #endif // RADIATION
 }
