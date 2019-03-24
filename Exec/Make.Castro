@@ -41,24 +41,6 @@ ifeq ($(USE_CUDA),TRUE)
   DEFINES += -DEXTRA_THERMO
 endif
 
-# backwards compatibility
-ifdef Network_dir
-  ifndef NETWORK_DIR
-    NETWORK_DIR := $(Network_dir)
-  endif
-endif
-
-ifdef EOS_dir
-  ifndef EOS_DIR
-    EOS_DIR := $(EOS_dir)
-  endif
-endif
-
-ifdef Conductivity_dir
-  ifndef CONDUCTIVITY_DIR
-    CONDUCTIVITY_DIR := $(Conductivity_dir)
-  endif
-endif
 
 EBASE = Castro
 
@@ -85,6 +67,20 @@ endif
 ifeq ($(USE_CUDA),TRUE)
   USE_GPU_PRAGMA = TRUE
   DEFINES += -DCUDA
+endif
+
+# Allow a problem to specify that we want to initialize
+# on the GPU if we're using CUDA. This is a subset of
+# dimension agnostic problems, and it requires a different
+# interface to initdata, so we want to define this even
+# if we're not using CUDA.
+
+ifeq ($(GPU_COMPATIBLE_INITIALIZATION),TRUE)
+  ifeq ($(DIMENSION_AGNOSTIC),TRUE)
+    DEFINES += -DGPU_COMPATIBLE_INITIALIZATION
+  else
+    $(error GPU compatible initialization is only supported if DIMENSION_AGNOSTIC=TRUE)
+  endif
 endif
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
@@ -117,7 +113,7 @@ USE_MLMG = FALSE
 ifeq ($(USE_ALL_CASTRO), TRUE)
   Bdirs := Source/driver Source/driver/param_includes \
            Source/hydro Source/problems Source/sources \
-           constants Util/model_parser
+           Source/scf constants Util/model_parser
 else
   Bdirs := constants
 endif
@@ -352,6 +348,14 @@ ifeq ($(USE_EXTRA_THERMO), TRUE)
    DEFINES += -DEXTRA_THERMO
 endif
 
+
+ifeq ($(USE_REACT), TRUE)
+  ifeq ($(USE_CUDA), TRUE)
+    ifneq ($(INTEGRATOR_DIR), VODE90)
+      $(error Only the VODE90 integrator supports GPUs currently, please change INTEGRATOR_DIR)
+    endif
+  endif
+endif
 
 #------------------------------------------------------------------------------
 # external libraries

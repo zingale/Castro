@@ -407,10 +407,12 @@ public:
                                 int  amr_iteration,
                                 int  amr_ncycle);
 
+#ifndef AMREX_USE_CUDA
     amrex::Real do_advance_sdc (amrex::Real time,
                                 amrex::Real dt,
                                 int  amr_iteration,
                                 int  amr_ncycle);
+#endif
 
 ///
 /// Should we retry advancing the simulation? By default, we
@@ -943,6 +945,20 @@ public:
 ///
     virtual void post_init (amrex::Real stop_time) override;
 
+#ifdef GRAVITY
+#ifdef ROTATION
+///
+/// Initialize a model using the self-consistent field method.
+///
+    void scf_relaxation();
+
+///
+/// Perform the Hachisu SCF method.
+///
+    void do_hscf_solve();
+#endif
+#endif
+
 ///
 /// Do work after restart with ``grown_factor`` > 1
 ///
@@ -1173,8 +1189,9 @@ public:
 /// Reset the internal energy
 ///
 /// @param State    Current state
+/// @param ng       number of ghost cells
 ///
-    void reset_internal_energy (amrex::MultiFab& State);
+    void reset_internal_energy (amrex::MultiFab& State, int ng);
 
 
 
@@ -1616,7 +1633,9 @@ public:
     void advance_aux(amrex::Real time, amrex::Real dt);
 #endif
 
+#ifndef AMREX_USE_CUDA
     void do_sdc_update(int m1, int m2, amrex::Real dt);
+#endif
 
 #ifdef REACTIONS
     void construct_old_react_source(amrex::MultiFab& U_state, amrex::MultiFab& R_source);
@@ -1692,6 +1711,15 @@ public:
 ///     non-integer number.
 ///
     static amrex::Real num_zones_advanced;
+
+#ifdef AMREX_USE_CUDA
+///
+/// Minimum CUDA threadblock size for BC fills.
+///
+    static int numBCThreadsMin[3];
+
+    static int minBCThreads(int dir) { return numBCThreadsMin[dir]; }
+#endif
 
 protected:
 
@@ -2136,7 +2164,6 @@ protected:
 #ifdef AMREX_PARTICLES
     static amrex::AmrTracerParticleContainer* TracerPC;
 #endif
-
 
 ///
 /// Name of the probin file and its length.

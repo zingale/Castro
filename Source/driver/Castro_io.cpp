@@ -421,6 +421,8 @@ Castro::restart (Amr&     papa,
 
        for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
        {
+           RealBox gridloc = RealBox(grids[mfi.index()],geom.CellSize(),geom.ProbLo());
+           const Real* prob_lo = geom.ProbLo();
            const Box& bx      = mfi.validbox();
            const int* lo      = bx.loVect();
            const int* hi      = bx.hiVect();
@@ -428,15 +430,30 @@ Castro::restart (Amr&     papa,
            if (! orig_domain.contains(bx)) {
 
 #ifdef AMREX_DIMENSION_AGNOSTIC
+
+#ifdef GPU_COMPATIBLE_INITIALIZATION
+
+#pragma gpu
+              ca_initdata(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
+                          BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                          AMREX_REAL_ANYD(dx), AMREX_REAL_ANYD(prob_lo));
+
+#else
+
               BL_FORT_PROC_CALL(CA_INITDATA,ca_initdata)
                 (level, cur_time, ARLIM_3D(lo), ARLIM_3D(hi), ns,
 		 BL_TO_FORTRAN_ANYD(S_new[mfi]), ZFILL(dx),
-		 ZFILL(geom.ProbLo()), ZFILL(geom.ProbHi()));
+		 ZFILL(gridloc.lo()), ZFILL(gridloc.hi()));
+
+#endif
+
 #else
+
 	      BL_FORT_PROC_CALL(CA_INITDATA,ca_initdata)
 		(level, cur_time, lo, hi, ns,
 		 BL_TO_FORTRAN(S_new[mfi]), dx,
-		 geom.ProbLo(), geom.ProbHi());
+		 gridloc.lo(), gridloc.hi());
+
 #endif
 
            }
@@ -556,7 +573,38 @@ Castro::checkPoint(const std::string& dir,
                    VisMF::How     how,
                    bool dump_old_default)
 {
+    
+#ifdef AMREX_USE_CUDA
+    for (int s = 0; s < num_state_type; ++s) {
+        if (dump_old && state[s].hasOldData()) {
+            MultiFab& old_MF = get_old_data(s);
+            for (MFIter mfi(old_MF); mfi.isValid(); ++mfi) {
+                old_MF.prefetchToHost(mfi);
+            }
+        }
+	MultiFab& new_MF = get_new_data(s);
+        for (MFIter mfi(new_MF); mfi.isValid(); ++mfi) {
+            new_MF.prefetchToHost(mfi);
+        }
+    }
+#endif
+
   AmrLevel::checkPoint(dir, os, how, dump_old);
+
+#ifdef AMREX_USE_CUDA
+    for (int s = 0; s < num_state_type; ++s) {
+        if (dump_old && state[s].hasOldData()) {
+            MultiFab& old_MF = get_old_data(s);
+            for (MFIter mfi(old_MF); mfi.isValid(); ++mfi) {
+                old_MF.prefetchToDevice(mfi);
+            }
+        }
+	MultiFab& new_MF = get_new_data(s);
+        for (MFIter mfi(new_MF); mfi.isValid(); ++mfi) {
+            new_MF.prefetchToDevice(mfi);
+        }
+    }
+#endif
 
 #ifdef RADIATION
   if (do_radiation) {
@@ -1282,6 +1330,12 @@ Castro::plotFileOutput(const std::string& dir,
     if (Radiation::nplotvar > 0) {
 	MultiFab::Copy(plotMF,*(radiation->plotvar[level]),0,cnt,Radiation::nplotvar,0);
 	cnt += Radiation::nplotvar;
+    }
+#endif
+
+#ifdef AMREX_USE_CUDA
+    for (MFIter mfi(plotMF); mfi.isValid(); ++mfi) {
+        plotMF.prefetchToHost(mfi);
     }
 #endif
 

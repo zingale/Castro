@@ -64,7 +64,7 @@ module initial_model_module
   integer, parameter :: ispec_model = 4
 
   ! number of points in the model file
-  integer, save :: gen_npts_model, num_models
+  integer, allocatable :: gen_npts_model, num_models
 
   ! arrays for storing the model data -- we have an extra index here
   ! which is the model number
@@ -89,6 +89,11 @@ module initial_model_module
 
   end type model_t
 
+#ifdef AMREX_USE_CUDA
+  attributes(managed) :: gen_npts_model, num_models
+  attributes(managed) :: gen_model_state, gen_model_r
+#endif
+
 contains
 
   subroutine init_model_data(nx, num_models_in)
@@ -96,6 +101,9 @@ contains
     implicit none
 
     integer, intent(in) :: nx, num_models_in
+
+    allocate(gen_npts_model)
+    allocate(num_models)
 
     ! allocate storage for the model data
     allocate (gen_model_state(nx, nvars_model, num_models_in))
@@ -214,7 +222,7 @@ contains
        ! hyperbolic tangent transition:
        gen_model_state(i,ispec_model:ispec_model-1+nspec,model_num) = model_params % xn_star(1:nspec) + &
             HALF*(model_params % xn_base(1:nspec) - model_params % xn_star(1:nspec))* &
-            (ONE + tanh(xc/(HALF*model_params % atm_delta)))
+            (ONE + evaluate_tanh(xc/(HALF*model_params % atm_delta)))
 
        ! force them to sum to 1
        sumX = sum(gen_model_state(i,ispec_model:ispec_model-1+nspec,model_num))
@@ -222,7 +230,7 @@ contains
 
        gen_model_state(i,itemp_model,model_num) = model_params % T_star + &
             HALF*(model_params % T_hi - model_params % T_star)* &
-            (ONE + tanh(xc/(HALF*model_params % atm_delta)))
+            (ONE + evaluate_tanh(xc/(HALF*model_params % atm_delta)))
 
        gen_model_state(1:index_base,itemp_model,model_num) = model_params % T_star
 
@@ -567,5 +575,18 @@ contains
     !enddo
 
   end subroutine init_1d_tanh
+
+
+  ! Evaluate tanh using the exponential form to workaround a PGI bug on Power9
+  function evaluate_tanh(z) result(t)
+    use amrex_fort_module, only: rt=>amrex_real
+
+    implicit none
+
+    real(rt), intent(in) :: z
+    real(rt) :: t
+
+    t = (exp(z) - exp(-z))/(exp(z) + exp(-z))
+  end function evaluate_tanh
 
 end module initial_model_module

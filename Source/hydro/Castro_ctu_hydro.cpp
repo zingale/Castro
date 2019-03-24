@@ -336,8 +336,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 #if AMREX_SPACEDIM <= 2
       if (!Geometry::IsCartesian()) {
           pradial.resize(xbx, 1);
-          Elixir elix_pradial = pradial.elixir();
       }
+      Elixir elix_pradial = pradial.elixir();
 #endif
 
 #if AMREX_SPACEDIM == 1
@@ -822,7 +822,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
               hdt, hdtdy, hdtdz);
 
 #pragma gpu
-      cmpflx_plus_godunov(AMREX_INT_ANYD(cxbx.loVect()), AMREX_INT_ANYD(cxbx.hiVect()),
+      cmpflx_plus_godunov(AMREX_INT_ANYD(xbx.loVect()), AMREX_INT_ANYD(xbx.hiVect()),
                           BL_TO_FORTRAN_ANYD(ql),
                           BL_TO_FORTRAN_ANYD(qr), 1, 1,
                           BL_TO_FORTRAN_ANYD(flux[0]),
@@ -1282,9 +1282,6 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
     } // MFIter loop
 
   } // OMP loop
-
-
-  BL_PROFILE_VAR_STOP(CA_UMDRV);
 
 #ifdef RADIATION
   if (radiation->verbose>=1) {
