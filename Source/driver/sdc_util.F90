@@ -112,6 +112,10 @@ contains
     U_new(UFS+nspec_evolve:UFS-1+nspec) = U_old(UFS+nspec_evolve:UFS-1+nspec) + &
          dt_m * C(UFS+nspec_evolve:UFS-1+nspec)
 
+    ! hack: update everything and bypass reactions
+    U_new(:) = U_old(:) + dt_m * C(:)
+
+#if 0
     ! now only save the subset that participates in the nonlinear
     ! solve -- note: we include the old state in f_source
 
@@ -265,6 +269,7 @@ contains
        U_new(UEDEN) = U_react(nspec_evolve+1)
        U_new(UEINT) = U_new(UEDEN) - HALF*sum(U_new(UMX:UMZ)**2)/U_new(URHO)
     endif
+#endif
 
   end subroutine sdc_solve
 
@@ -741,7 +746,7 @@ contains
     ! note: this 'C' is cell-averages
 
     use meth_params_module, only : NVAR
-    use amrex_constants_module, only : HALF, TWO, FIVE, EIGHT, TWELFTH
+    use amrex_constants_module, only : ONE, HALF, TWO, FIVE, EIGHT, TWELFTH
 
     implicit none
 
@@ -774,16 +779,16 @@ contains
 
              ! compute the integral (without the dt)
              if (m_start == 0) then
-                integral(:) = TWELFTH * (FIVE*(A_0_old(i,j,k,:) + R_0_old(i,j,k,:)) + &
-                                         EIGHT*(A_1_old(i,j,k,:) + R_1_old(i,j,k,:)) - &
-                                         (A_2_old(i,j,k,:) + R_2_old(i,j,k,:)))
+                integral(:) = ONE/24.0_rt * (FIVE*(A_0_old(i,j,k,:) + R_0_old(i,j,k,:)) + &
+                                             EIGHT*(A_1_old(i,j,k,:) + R_1_old(i,j,k,:)) - &
+                                             (A_2_old(i,j,k,:) + R_2_old(i,j,k,:)))
 
                 C(i,j,k,:) = (A_m(i,j,k,:) - A_0_old(i,j,k,:)) - R_1_old(i,j,k,:) + integral
 
              else if (m_start == 1) then
-                integral(:) = TWELFTH * (-(A_0_old(i,j,k,:) + R_0_old(i,j,k,:)) + &
-                                         EIGHT*(A_1_old(i,j,k,:) + R_1_old(i,j,k,:)) + &
-                                         FIVE*(A_2_old(i,j,k,:) + R_2_old(i,j,k,:)))
+                integral(:) = ONE/24.0_rt * (-(A_0_old(i,j,k,:) + R_0_old(i,j,k,:)) + &
+                                             EIGHT*(A_1_old(i,j,k,:) + R_1_old(i,j,k,:)) + &
+                                             FIVE*(A_2_old(i,j,k,:) + R_2_old(i,j,k,:)))
 
                 C(i,j,k,:) = (A_m(i,j,k,:) - A_1_old(i,j,k,:)) - R_2_old(i,j,k,:) + integral
 
