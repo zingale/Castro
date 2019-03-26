@@ -66,11 +66,11 @@ contains
     R(:) = ZERO
 
     ! species rates come back in terms of molar fractions
-    R(UFS:UFS-1+nspec_evolve) = &
-         state(URHO) * aion(1:nspec_evolve) * burn_state % ydot(1:nspec_evolve)
+    !R(UFS:UFS-1+nspec_evolve) = &
+    !     state(URHO) * aion(1:nspec_evolve) * burn_state % ydot(1:nspec_evolve)
 
-    R(UEDEN) = state(URHO) * burn_state % ydot(net_ienuc)
-    R(UEINT) = state(URHO) * burn_state % ydot(net_ienuc)
+    !R(UEDEN) = state(URHO) * burn_state % ydot(net_ienuc)
+    !R(UEINT) = state(URHO) * burn_state % ydot(net_ienuc)
 
   end subroutine single_zone_react_source
 
@@ -106,6 +106,8 @@ contains
        burn_state % jac(n,:) = burn_state % jac(n,:) * aion(n)
        burn_state % jac(:,n) = burn_state % jac(:,n) * aion_inv(n)
     enddo
+
+    burn_state % jac(:, :) = ZERO
 
     ! Our jacobian, dR/dw has the form:
     !
