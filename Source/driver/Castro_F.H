@@ -133,7 +133,7 @@ extern "C"
 #endif
 
 #ifdef AMREX_DIMENSION_AGNOSTIC
-#ifdef GPU_COMPATIBLE_INITIALIZATION
+#ifdef GPU_COMPATIBLE_PROBLEM
   void ca_initdata(const int* lo, const int* hi,
                    BL_FORT_FAB_ARG_3D(state),
                    const amrex::Real* dx, const amrex::Real* problo);
@@ -255,10 +255,6 @@ extern "C"
   void ca_make_fourth_average(const int lo[], const int hi[],
                               BL_FORT_FAB_ARG_3D(q), const int* nc,
                               const BL_FORT_FAB_ARG_3D(q_bar), const int* nc_bar);
-
-  void ca_make_fourth_average_n(const int lo[], const int hi[],
-                                BL_FORT_FAB_ARG_3D(q), const int* nc,
-                                const BL_FORT_FAB_ARG_3D(q_bar), const int* nc_bar, const int* ncomp);
 
   void ca_make_fourth_in_place(const int lo[], const int hi[],
                                BL_FORT_FAB_ARG_3D(q), const int* nc);
@@ -507,7 +503,7 @@ extern "C"
 
 #ifdef AMREX_DIMENSION_AGNOSTIC
 
-#ifndef GPU_COMPATIBLE_INITIALIZATION
+#ifndef GPU_COMPATIBLE_PROBLEM
 BL_FORT_PROC_DECL(CA_INITDATA,ca_initdata)
     (const int& level, const amrex::Real& time,
      const int* lo, const int* hi,

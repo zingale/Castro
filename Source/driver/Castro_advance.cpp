@@ -547,6 +547,7 @@ Castro::initialize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle
         A_state_new.setVal(0.0);
 
 #ifdef REACTIONS
+
         MultiFab& R_state_old = get_old_data(SDC_R_state_start+m);
         R_state_old.setVal(0.0);
 

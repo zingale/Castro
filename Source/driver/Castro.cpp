@@ -1003,7 +1003,7 @@ Castro::initData ()
 #ifdef AMREX_USE_CUDA
        for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
        {
-#ifdef GPU_COMPATIBLE_INITIALIZATION
+#ifdef GPU_COMPATIBLE_PROBLEM
            // Prefetch data to the device to avoid page faults while we're initializing.
            S_new.prefetchToDevice(mfi);
 #else
@@ -1024,7 +1024,7 @@ Castro::initData ()
 
 #ifdef AMREX_DIMENSION_AGNOSTIC
 
-#ifdef GPU_COMPATIBLE_INITIALIZATION
+#ifdef GPU_COMPATIBLE_PROBLEM
 
 #pragma gpu
           ca_initdata(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
@@ -1058,7 +1058,7 @@ Castro::initData ()
        }
 
 #ifdef AMREX_USE_CUDA
-#ifndef GPU_COMPATIBLE_INITIALIZATION
+#ifndef GPU_COMPATIBLE_PROBLEM
        for (MFIter mfi(S_new); mfi.isValid(); ++mfi) {
            S_new.prefetchToDevice(mfi);
        }
