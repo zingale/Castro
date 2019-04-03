@@ -596,7 +596,7 @@ subroutine ca_mol_single_stage(lo, hi, time, &
 #endif
 
               ! HACK: zero out the hydro part so we only test diffusion here
-              update(i,j,k,:) = ZERO
+              update(i,j,k,n) = ZERO
 
               ! for storage
               update_flux(i,j,k,n) = update_flux(i,j,k,n) + &
