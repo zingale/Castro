@@ -1339,6 +1339,7 @@ Castro::estTimeStep (Real dt_old)
       {
 #endif
 
+#if 0
 	  // Compute hydro-limited timestep.
 	if (do_hydro)
 	  {
@@ -1362,6 +1363,7 @@ Castro::estTimeStep (Real dt_old)
               estdt_hydro = std::min(estdt_hydro, dt);
             }
 	  }
+#endif
 
 #ifdef DIFFUSION
 	// Diffusion-limited timestep
