@@ -115,7 +115,7 @@ Castro::do_advance_sdc (Real time,
         }
 
       } else {
-        do_old_sources(old_source, Sborder, node_time, dt, amr_iteration, amr_ncycle);
+        do_old_sources(old_source, Sborder, cur_time, dt, amr_iteration, amr_ncycle);
       }
 
       // note: we don't need a FillPatch on the sources, since they
