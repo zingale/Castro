@@ -35,8 +35,8 @@ contains
     eos_state%T     = 10.d0
     eos_state%rho   = 1.d-3
     eos_state%p     = 1.d6
-    eos_state%xn(:) = 1.d0
-    ! eos_state%xn(1) = 1.d0
+    eos_state%xn(:) = 0.d0
+    eos_state%xn(1) = 1.d0
 
     call eos(eos_input_rp, eos_state)
 
@@ -45,8 +45,8 @@ contains
     eos_state%T     = 10.d0
     eos_state%rho   = 5.d-4
     eos_state%p     = 1.d6
-    eos_state%xn(:) = 1.d0
-    ! eos_state%xn(1) = 1.d0
+    eos_state%xn(:) = 0.d0
+    eos_state%xn(1) = 1.d0
 
     call eos(eos_input_rp, eos_state)
 

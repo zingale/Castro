@@ -78,7 +78,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
   use network, only: nspec
   use probdata_module
   use prob_params_module, only: center
-  use meth_params_module, only : NVAR, URHO, UMX, UMY, UEDEN, UEINT, UTEMP, &
+  use meth_params_module, only : NVAR, URHO, UMX, UMY, UMZ, UEDEN, UEINT, UTEMP, &
                                  UFS, const_grav
 
   use amrex_constants_module, only : ZERO, HALF, ONE
@@ -170,7 +170,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
         if (do_stratified) then
 
             state(i,j,URHO   ) = density(j)
-            state(i,j,UMX:UMY) = ZERO
+            state(i,j,UMX:UMZ) = ZERO
             state(i,j,UEDEN  ) = density(j) * eint(j)
             state(i,j,UEINT  ) = density(j) * eint(j)
             state(i,j,UTEMP  ) = temp(j)
@@ -187,7 +187,7 @@ subroutine ca_initdata(level,time,lo,hi,nscal, &
             call eos(eos_input_rp, eos_state)
 
             state(i,j,URHO   ) = eos_state%rho
-            state(i,j,UMX:UMY) = ZERO
+            state(i,j,UMX:UMZ) = ZERO
             state(i,j,UEDEN  ) = eos_state%rho * eos_state%e
             state(i,j,UEINT  ) = eos_state%rho * eos_state%e
             state(i,j,UTEMP  ) = eos_state%T
