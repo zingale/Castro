@@ -1,4 +1,3 @@
-
 #ifndef WIN32
 #include <unistd.h>
 #endif
@@ -44,13 +43,14 @@
 #include <omp.h>
 #endif
 
+#ifdef AMREX_USE_CUDA
+#include <cuda_profiler_api.h>
+#endif
+
 using namespace amrex;
 
 bool         Castro::signalStopJob = false;
 
-bool         Castro::dump_old      = false;
-
-int          Castro::verbose       = 0;
 ErrorList    Castro::err_list;
 int          Castro::num_err_list_default = 0;
 int          Castro::radius_grow   = 1;
@@ -76,6 +76,40 @@ int          Castro::Lmom          = -1;
 int          Castro::Pmom          = -1;
 #endif
 
+int          Castro::QRHO = -1;
+int          Castro::QU = -1;
+int          Castro::QV = -1;
+int          Castro::QW = -1;
+int          Castro::QGAME = -1;
+int          Castro::QGC = -1;
+int          Castro::QPRES = -1;
+int          Castro::QREINT = -1;
+int          Castro::QTEMP = -1;
+int          Castro::QFA = -1;
+int          Castro::QFS = -1;
+int          Castro::QFX = -1;
+#ifdef MHD
+int          Castro::QMAGX = -1;
+int          Castro::QMAGY = -1;
+int          Castro::QMAGZ = -1;
+#endif
+#ifdef RADIATION
+int          Castro::QPTOT = -1;
+int          Castro::QREITOT = -1;
+int          Castro::QRAD = -1;
+#endif
+
+int          Castro::GDRHO = -1;
+int          Castro::GDU = -1;
+int          Castro::GDV = -1;
+int          Castro::GDW = -1;
+int          Castro::GDPRES = -1;
+int          Castro::GDGAME = -1;
+#ifdef RADIATION
+int          Castro::GDLAMS = -1;
+int          Castro::GDERADS = -1;
+#endif
+
 int          Castro::NumSpec       = 0;
 int          Castro::FirstSpec     = -1;
 
@@ -89,7 +123,7 @@ int          Castro::FirstAdv      = -1;
 int          Castro::Shock         = -1;
 #endif
 
-int          Castro::QVAR          = -1;
+int          Castro::NQSRC         = -1;
 int          Castro::NQAUX         = -1;
 int          Castro::NQ            = -1;
 
@@ -104,6 +138,12 @@ Vector< Vector<Real> > Castro::a_mol;
 Vector<Real> Castro::b_mol;
 Vector<Real> Castro::c_mol;
 
+int          Castro::SDC_NODES;
+Vector<Real> Castro::dt_sdc;
+
+#ifdef AMREX_USE_CUDA
+int          Castro::numBCThreadsMin[3] = {1, 1, 1};
+#endif
 
 #include <castro_defaults.H>
 
@@ -139,14 +179,14 @@ IntVect      Castro::no_tile_size(1024);
 #ifndef AMREX_USE_CUDA
 IntVect      Castro::hydro_tile_size(1024,16);
 #else
-IntVect      Castro::hydro_tile_size(1024,1024);
+IntVect      Castro::hydro_tile_size(1024,64);
 #endif
 IntVect      Castro::no_tile_size(1024,1024);
 #else
 #ifndef AMREX_USE_CUDA
 IntVect      Castro::hydro_tile_size(1024,16,16);
 #else
-IntVect      Castro::hydro_tile_size(1024,1024,1024);
+IntVect      Castro::hydro_tile_size(1024,64,64);
 #endif
 IntVect      Castro::no_tile_size(1024,1024,1024);
 #endif
@@ -157,9 +197,10 @@ Real         Castro::previousCPUTimeUsed = 0.0;
 Real         Castro::startCPUTime = 0.0;
 
 int          Castro::Knapsack_Weight_Type = -1;
+int          Castro::SDC_Source_Type = -1;
 int          Castro::num_state_type = 0;
 
-// Note: Castro::variableSetUp is in Castro_setup.cpp
+// Castro::variableSetUp is in Castro_setup.cpp
 // variableCleanUp is called once at the end of a simulation
 void
 Castro::variableCleanUp ()
@@ -226,11 +267,6 @@ Castro::read_params ()
     ParmParse pp("castro");
 
 #include <castro_queries.H>
-
-    pp.query("v",verbose);
-    pp.query("sum_interval",sum_interval);
-
-    pp.query("dump_old",dump_old);
 
     // Get boundary conditions
     Vector<int> lo_bc(BL_SPACEDIM), hi_bc(BL_SPACEDIM);
@@ -345,25 +381,37 @@ Castro::read_params ()
 
     // The timestep retry mechanism is currently incompatible with MOL.
 
-    if (!do_ctu && use_retry)
+    if (time_integration_method != CornerTransportUpwind && use_retry)
         amrex::Error("Method of lines integration is incompatible with the timestep retry mechanism.");
 
-#ifdef AMREX_USE_CUDA
-    // not use ctu if using gpu
-    if (do_ctu == 1)
-      {
-	 amrex::Error("Running with CUDA requires do_ctu = 0");
-      }
+    // The CUDA MOL implementation is only supported in 3D right now.
+#if defined(AMREX_USE_CUDA) && (AMREX_SPACEDIM < 3)
+    if (time_integration_method != CornerTransportUpwind) {
+        amrex::Error("Only the CTU advance is supported for 1D/2D when using CUDA.");
+    }
 #endif
 
-    // fourth order implies do_ctu=0
-    if (fourth_order == 1 && do_ctu == 1)
-      {
-	if (ParallelDescriptor::IOProcessor())
-	    std::cout << "WARNING: fourth_order requires do_ctu = 0.  Resetting do_ctu = 0" << std::endl;
-	do_ctu = 0;
-	pp.add("do_ctu", do_ctu);
-      }
+    // CUDA MOL has a bug that is currently not understood. It is disabled
+    // until this issue can be resolved.
+#ifdef AMREX_USE_CUDA
+    if (time_integration_method == MethodOfLines) {
+        amrex::Error("CUDA MOL is currently disabled.");
+    }
+#endif
+
+    // Simplified SDC currently requires USE_SDC to be defined.
+    // Also, if we have USE_SDC defined, we can't use the other
+    // time integration_methods, because only the SDC burner
+    // interface is available in Microphysics in this case.
+#ifndef SDC
+    if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+        amrex::Error("Simplified SDC currently requires USE_SDC=TRUE when compiling.");
+    }
+#else
+    if (time_integration_method != SimplifiedSpectralDeferredCorrections) {
+        amrex::Error("When building with USE_SDC=TRUE, only simplified SDC can be used.");
+    }
+#endif
 
     if (hybrid_riemann == 1 && BL_SPACEDIM == 1)
       {
@@ -402,6 +450,13 @@ Castro::read_params ()
     if (do_radiation) {
       Radiation::read_static_params();
     }
+
+    // The CUDA MOL implementation doesn't currently do radiation.
+#ifdef AMREX_USE_CUDA
+    if (do_radiation && time_integration_method != CornerTransportUpwind) {
+        amrex::Error("Radiation is currently unsupported for MOL when using CUDA.");
+    }
+#endif
 #endif
 
 #ifdef ROTATION
@@ -419,6 +474,15 @@ Castro::read_params ()
 	amrex::Error();
       }
 #endif
+#endif
+
+   // SCF initial model construction can only be done if both
+   // rotation and gravity have been compiled in.
+
+#if (!defined(GRAVITY) || !defined(ROTATION))
+   if (do_scf_initial_model) {
+       amrex::Error("SCF initial model construction is only permitted if USE_GRAV=TRUE and USE_ROTATION=TRUE at compile time.");
+   }
 #endif
 
    StateDescriptor::setBndryFuncThreadSafety(bndry_func_thread_safe);
@@ -458,6 +522,27 @@ Castro::Castro (Amr&            papa,
       material_lost_through_boundary_cumulative[i] = 0.0;
       material_lost_through_boundary_temp[i] = 0.0;
     }
+
+    // Coterminous AMR boundaries are not supported in Castro if we're doing refluxing.
+
+    if (do_hydro && do_reflux) {
+        for (int lev = 0; lev <= parent->maxLevel(); ++lev) {
+            if (parent->nErrorBuf(lev) == 0) {
+                amrex::Error("n_error_buf = 0 is unsupported when using hydro.");
+            }
+        }
+    }
+
+#ifdef AMREX_USE_CUDA
+    // Enforce our requirement on the blocking factor for CUDA. See Castro::variableSetUp() for details.
+    for (int dim = 0; dim < AMREX_SPACEDIM; ++dim) {
+        for (int lev = 0; lev <= parent->maxLevel(); ++lev) {
+            if (parent->blockingFactor(lev)[dim] % numBCThreadsMin[dim] != 0) {
+                amrex::Error("Using CUDA requires a blocking factor that is a multiple of 8.");
+            }
+        }
+    }
+#endif
 
 #ifdef SELF_GRAVITY
 
@@ -536,13 +621,13 @@ Castro::Castro (Amr&            papa,
 
 #endif
 
-#ifdef SDC
 #ifdef REACTIONS
    // Initialize reactions source term to zero.
 
-   MultiFab& react_src_new = get_new_data(SDC_React_Type);
-   react_src_new.setVal(0.0, NUM_GROW);
-#endif
+   if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+       MultiFab& react_src_new = get_new_data(Simplified_SDC_React_Type);
+       react_src_new.setVal(0.0, NUM_GROW);
+   }
 #endif
 
    if (Knapsack_Weight_Type > 0) {
@@ -671,6 +756,26 @@ Castro::initMFs()
     if (!Geometry::IsCartesian())
 	P_radial.define(getEdgeBoxArray(0), dmap, 1, 0);
 #endif
+
+    // Keep track of which components of the momentum flux have pressure
+    if (AMREX_SPACEDIM == 1 || (AMREX_SPACEDIM == 2 && Geometry::IsRZ())) {
+        mom_flux_has_p[0][0] = false;
+    }
+    else {
+        mom_flux_has_p[0][0] = true;
+    }
+
+    mom_flux_has_p[0][1] = false;
+    mom_flux_has_p[0][2] = false;
+
+    mom_flux_has_p[1][0] = false;
+    mom_flux_has_p[1][1] = true;
+    mom_flux_has_p[1][2] = false;
+
+    mom_flux_has_p[2][0] = false;
+    mom_flux_has_p[2][1] = false;
+    mom_flux_has_p[2][2] = true;
+
 
 #ifdef RADIATION
     if (Radiation::rad_hydro_combined) {
@@ -868,6 +973,12 @@ Castro::initData ()
     if (verbose && ParallelDescriptor::IOProcessor())
        std::cout << "Initializing the data at level " << level << std::endl;
 
+    // Don't profile for this code, since there will be a lot of host
+    // activity and GPU page faults that we're uninterested in.
+#ifdef AMREX_USE_CUDA
+    AMREX_GPU_SAFE_CALL(cudaProfilerStop());
+#endif
+
 #ifdef RADIATION
     // rad quantities are in the state even if (do_radiation == 0)
     MultiFab &Rad_new = get_new_data(Rad_Type);
@@ -879,11 +990,11 @@ Castro::initData ()
     React_new.setVal(0.);
 #endif
 
-#ifdef SDC
 #ifdef REACTIONS
-   MultiFab& react_src_new = get_new_data(SDC_React_Type);
-   react_src_new.setVal(0.0, NUM_GROW);
-#endif
+   if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+       MultiFab& react_src_new = get_new_data(Simplified_SDC_React_Type);
+       react_src_new.setVal(0.0, NUM_GROW);
+   }
 #endif
 
    if (Knapsack_Weight_Type > 0) {
@@ -894,26 +1005,54 @@ Castro::initData ()
     MAESTRO_init();
 #else
     {
-#ifdef _OPENMP
-#pragma omp parallel
+
+#ifdef AMREX_USE_CUDA
+       for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+       {
+#ifdef GPU_COMPATIBLE_PROBLEM
+           // Prefetch data to the device to avoid page faults while we're initializing.
+           S_new.prefetchToDevice(mfi);
+#else
+           // Prefetch data to the host (and then back to the device at the end)
+           // to avoid expensive page faults while the initialization is done.
+           S_new.prefetchToHost(mfi);
 #endif
-       for (MFIter mfi(S_new, true); mfi.isValid(); ++mfi)
+       }
+#endif
+
+       for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
        {
 	  RealBox gridloc = RealBox(grids[mfi.index()],geom.CellSize(),geom.ProbLo());
-          const Box& box     = mfi.tilebox();
+          const Real* prob_lo = geom.ProbLo();
+          const Box& box     = mfi.validbox();
           const int* lo      = box.loVect();
           const int* hi      = box.hiVect();
 
 #ifdef AMREX_DIMENSION_AGNOSTIC
+
+#ifdef GPU_COMPATIBLE_PROBLEM
+
+#pragma gpu
+          ca_initdata(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
+                      BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                      AMREX_REAL_ANYD(dx), AMREX_REAL_ANYD(prob_lo));
+
+#else
+
           BL_FORT_PROC_CALL(CA_INITDATA,ca_initdata)
           (level, cur_time, ARLIM_3D(lo), ARLIM_3D(hi), ns,
   	   BL_TO_FORTRAN_ANYD(S_new[mfi]), ZFILL(dx),
   	   ZFILL(gridloc.lo()), ZFILL(gridloc.hi()));
+
+#endif
+
 #else
+
           BL_FORT_PROC_CALL(CA_INITDATA,ca_initdata)
   	  (level, cur_time, lo, hi, ns,
   	   BL_TO_FORTRAN(S_new[mfi]), dx,
   	   gridloc.lo(), gridloc.hi());
+
 #endif
 
 	  // Generate the initial hybrid momenta based on this user data.
@@ -922,18 +1061,34 @@ Castro::initData ()
 	  ca_init_hybrid_momentum(lo, hi, BL_TO_FORTRAN_ANYD(S_new[mfi]));
 #endif
 
-          // Verify that the sum of (rho X)_i = rho at every cell
-
-          ca_check_initial_species(AMREX_ARLIM_3D(lo), AMREX_ARLIM_3D(hi),
-				   BL_TO_FORTRAN_ANYD(S_new[mfi]));
        }
+
+#ifdef AMREX_USE_CUDA
+#ifndef GPU_COMPATIBLE_PROBLEM
+       for (MFIter mfi(S_new); mfi.isValid(); ++mfi) {
+           S_new.prefetchToDevice(mfi);
+       }
+#endif
+#endif
+
+       // Verify that the sum of (rho X)_i = rho at every cell
+
+       for (MFIter mfi(S_new); mfi.isValid(); ++mfi) {
+           const Box& bx = mfi.validbox();
+#pragma gpu
+           ca_check_initial_species(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
+                                    BL_TO_FORTRAN_ANYD(S_new[mfi]));
+       }
+
+       // Enforce that the total and internal energies are consistent.
+
        enforce_consistent_e(S_new);
 
        // thus far, we assume that all initialization has worked on cell-centers
        // (to second-order, these are cell-averages, so we're done in that case).
        // For fourth-order, we need to convert to cell-averages now.
 #ifndef AMREX_USE_CUDA
-       if (fourth_order) {
+       if (mol_order == 4 || sdc_order == 4) {
          Sborder.define(grids, dmap, NUM_STATE, NUM_GROW);
          AmrLevel::FillPatch(*this, Sborder, NUM_GROW, cur_time, State_Type, 0, NUM_STATE);
 
@@ -961,8 +1116,7 @@ Castro::initData ()
 	   AmrLevel::FillPatch(*this, S_new, ng, cur_time, State_Type, 0, S_new.nComp());
     }
 
-    int is_new = 1;
-    clean_state(is_new, S_new.nGrow());
+    clean_state(S_new, cur_time, S_new.nGrow());
 
 #ifdef RADIATION
     if (do_radiation) {
@@ -982,10 +1136,17 @@ Castro::initData ()
 
 	  Rad_new[mfi].setVal(0.0);
 
+#ifdef AMREX_DIMENSION_AGNOSTIC
+	  BL_FORT_PROC_CALL(CA_INITRAD,ca_initrad)
+	      (level, cur_time, ARLIM_3D(lo), ARLIM_3D(hi), Radiation::nGroups,
+	       BL_TO_FORTRAN_ANYD(Rad_new[mfi]), ZFILL(dx),
+	       ZFILL(gridloc.lo()), ZFILL(gridloc.hi()));
+#else
 	  BL_FORT_PROC_CALL(CA_INITRAD,ca_initrad)
 	      (level, cur_time, lo, hi, Radiation::nGroups,
 	       BL_TO_FORTRAN(Rad_new[mfi]),dx,
 	       gridloc.lo(),gridloc.hi());
+#endif
 
 	  if (Radiation::nNeutrinoSpecies > 0 && Radiation::nNeutrinoGroups[0] == 0) {
 	      // Hack: running photon radiation through neutrino solver
@@ -1037,6 +1198,10 @@ Castro::initData ()
 #ifdef AMREX_PARTICLES
     if (level == 0)
 	init_particles();
+#endif
+
+#ifdef AMREX_USE_CUDA
+    AMREX_GPU_SAFE_CALL(cudaProfilerStart());
 #endif
 
     if (verbose && ParallelDescriptor::IOProcessor())
@@ -1140,130 +1305,123 @@ Castro::estTimeStep (Real dt_old)
 
     Real estdt_hydro = max_dt / cfl;
 
-#ifdef DIFFUSION
-    if (do_hydro or diffuse_temp or diffuse_enth)
-#else
     if (do_hydro)
-#endif
     {
 
 #ifdef RADIATION
-      if (Radiation::rad_hydro_combined) {
+        if (Radiation::rad_hydro_combined) {
 
-	  // Compute radiation + hydro limited timestep.
+            // Compute radiation + hydro limited timestep.
 
 #ifdef _OPENMP
 #pragma omp parallel reduction(min:estdt_hydro)
 #endif
-        {
-          Real dt = max_dt / cfl;
-
-          const MultiFab& radMF = get_new_data(Rad_Type);
-          FArrayBox gPr;
-
-          for (MFIter mfi(stateMF, true); mfi.isValid(); ++mfi)
             {
-              const Box& tbox = mfi.tilebox();
-              const Box& vbox = mfi.validbox();
+                Real dt = max_dt / cfl;
 
-              gPr.resize(tbox);
-              radiation->estimate_gamrPr(stateMF[mfi], radMF[mfi], gPr, dx, vbox);
+                const MultiFab& radMF = get_new_data(Rad_Type);
+                FArrayBox gPr;
 
-              ca_estdt_rad(tbox.loVect(),tbox.hiVect(),
-                           BL_TO_FORTRAN(stateMF[mfi]),
-                           BL_TO_FORTRAN(gPr),
-                           dx,&dt);
+                for (MFIter mfi(stateMF, true); mfi.isValid(); ++mfi)
+                {
+                    const Box& tbox = mfi.tilebox();
+                    const Box& vbox = mfi.validbox();
+
+                    gPr.resize(tbox);
+                    radiation->estimate_gamrPr(stateMF[mfi], radMF[mfi], gPr, dx, vbox);
+
+                    ca_estdt_rad(tbox.loVect(),tbox.hiVect(),
+                                 BL_TO_FORTRAN(stateMF[mfi]),
+                                 BL_TO_FORTRAN(gPr),
+                                 dx,&dt);
+                }
+                estdt_hydro = std::min(estdt_hydro, dt);
             }
-          estdt_hydro = std::min(estdt_hydro, dt);
+
         }
-
-      }
-      else
-      {
+        else
+        {
 #endif
-
-	  // Compute hydro-limited timestep.
-	if (do_hydro)
-	  {
 
 #ifdef _OPENMP
 #pragma omp parallel reduction(min:estdt_hydro)
 #endif
-	    {
-	      Real dt = max_dt / cfl;
+            {
+                Real dt = max_dt / cfl;
 
-	      for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
-		{
-		  const Box& box = mfi.tilebox();
+                for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
+                {
+                    const Box& box = mfi.tilebox();
 
 #pragma gpu
-		  ca_estdt(AMREX_INT_ANYD(box.loVect()), AMREX_INT_ANYD(box.hiVect()),
-			   BL_TO_FORTRAN_ANYD(stateMF[mfi]),
-			   AMREX_REAL_ANYD(dx),
-                           AMREX_MFITER_REDUCE_MIN(&dt));
-		}
-              estdt_hydro = std::min(estdt_hydro, dt);
+                    ca_estdt(AMREX_INT_ANYD(box.loVect()), AMREX_INT_ANYD(box.hiVect()),
+                             BL_TO_FORTRAN_ANYD(stateMF[mfi]),
+                             AMREX_REAL_ANYD(dx),
+                             AMREX_MFITER_REDUCE_MIN(&dt));
+                }
+                estdt_hydro = std::min(estdt_hydro, dt);
             }
-	  }
-
-#ifdef DIFFUSION
-	// Diffusion-limited timestep
-	// Note that the diffusion uses the same CFL safety factor
-	// as the main hydrodynamics timestep limiter.
-	if (diffuse_temp)
-	{
-#ifdef _OPENMP
-#pragma omp parallel reduction(min:estdt_hydro)
-#endif
-          {
-            Real dt = max_dt / cfl;
-
-            for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
-              {
-                const Box& box = mfi.tilebox();
-                ca_estdt_temp_diffusion(ARLIM_3D(box.loVect()), ARLIM_3D(box.hiVect()),
-                                        BL_TO_FORTRAN_ANYD(stateMF[mfi]),
-                                        ZFILL(dx),&dt);
-              }
-            estdt_hydro = std::min(estdt_hydro, dt);
-          }
-	}
-	if (diffuse_enth)
-	{
-#ifdef _OPENMP
-#pragma omp parallel reduction(min:estdt_hydro)
-#endif
-          {
-            Real dt = max_dt / cfl;
-
-            for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
-              {
-                const Box& box = mfi.tilebox();
-                ca_estdt_enth_diffusion(ARLIM_3D(box.loVect()), ARLIM_3D(box.hiVect()),
-                                        BL_TO_FORTRAN_ANYD(stateMF[mfi]),
-                                        ZFILL(dx),&dt);
-              }
-            estdt_hydro = std::min(estdt_hydro, dt);
-          }
-	}
-#endif  // diffusion
 
 #ifdef RADIATION
-      }
+        }
 #endif
 
-       ParallelDescriptor::ReduceRealMin(estdt_hydro);
-       estdt_hydro *= cfl;
-       if (verbose && ParallelDescriptor::IOProcessor())
-           std::cout << "...estimated hydro-limited timestep at level " << level << ": " << estdt_hydro << std::endl;
+        ParallelDescriptor::ReduceRealMin(estdt_hydro);
+        estdt_hydro *= cfl;
+        if (verbose) {
+            amrex::Print() << "...estimated hydro-limited timestep at level " << level << ": " << estdt_hydro << std::endl;
+        }
 
-       // Determine if this is more restrictive than the maximum timestep limiting
+        // Determine if this is more restrictive than the maximum timestep limiting
 
-       if (estdt_hydro < estdt) {
-	 limiter = "hydro";
-	 estdt = estdt_hydro;
-       }
+        if (estdt_hydro < estdt) {
+            limiter = "hydro";
+            estdt = estdt_hydro;
+        }
+
     }
+
+#ifdef DIFFUSION
+    // Diffusion-limited timestep
+    // Note that the diffusion uses the same CFL safety factor
+    // as the main hydrodynamics timestep limiter.
+
+    Real estdt_diffusion = max_dt / cfl;
+
+    if (diffuse_temp)
+    {
+#ifdef _OPENMP
+#pragma omp parallel reduction(min:estdt_diffusion)
+#endif
+        {
+            Real dt = max_dt / cfl;
+
+            for (MFIter mfi(stateMF,true); mfi.isValid(); ++mfi)
+            {
+                const Box& box = mfi.tilebox();
+
+#pragma gpu
+                ca_estdt_temp_diffusion(AMREX_INT_ANYD(box.loVect()), AMREX_INT_ANYD(box.hiVect()),
+                                        BL_TO_FORTRAN_ANYD(stateMF[mfi]),
+                                        AMREX_REAL_ANYD(dx), AMREX_MFITER_REDUCE_MIN(&dt));
+            }
+            estdt_diffusion = std::min(estdt_diffusion, dt);
+        }
+    }
+
+    ParallelDescriptor::ReduceRealMin(estdt_diffusion);
+    estdt_diffusion *= cfl;
+    if (verbose) {
+        amrex::Print() << "...estimated diffusion-limited timestep at level " << level << ": " << estdt_diffusion << std::endl;
+    }
+
+    // Determine if this is more restrictive than the hydro limiting
+
+    if (estdt_diffusion < estdt) {
+        limiter = "diffusion";
+        estdt = estdt_diffusion;
+    }
+#endif  // diffusion
 
 #ifdef REACTIONS
     MultiFab& S_new = get_new_data(State_Type);
@@ -1279,51 +1437,52 @@ Castro::estTimeStep (Real dt_old)
 #ifdef _OPENMP
 #pragma omp parallel reduction(min:estdt_burn)
 #endif
-      {
-        Real dt = max_dt;
+        {
+            Real dt = max_dt;
 
-        for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
-          {
-            const Box& box = mfi.validbox();
+            for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+            {
+                const Box& box = mfi.validbox();
 
-            if (state[State_Type].hasOldData() && state[Reactions_Type].hasOldData()) {
+                if (state[State_Type].hasOldData() && state[Reactions_Type].hasOldData()) {
 
-              MultiFab& S_old = get_old_data(State_Type);
-              MultiFab& R_old = get_old_data(Reactions_Type);
+                    MultiFab& S_old = get_old_data(State_Type);
+                    MultiFab& R_old = get_old_data(Reactions_Type);
 
-              ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
-                               BL_TO_FORTRAN_ANYD(S_old[mfi]),
-                               BL_TO_FORTRAN_ANYD(S_new[mfi]),
-                               BL_TO_FORTRAN_ANYD(R_old[mfi]),
-                               BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                               ZFILL(dx),&dt_old,&dt);
+                    ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
+                                     BL_TO_FORTRAN_ANYD(S_old[mfi]),
+                                     BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                                     BL_TO_FORTRAN_ANYD(R_old[mfi]),
+                                     BL_TO_FORTRAN_ANYD(R_new[mfi]),
+                                     ZFILL(dx),&dt_old,&dt);
 
-            } else {
+                } else {
 
-              ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
-                               BL_TO_FORTRAN_ANYD(S_new[mfi]),
-                               BL_TO_FORTRAN_ANYD(S_new[mfi]),
-                               BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                               BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                               ZFILL(dx),&dt_old,&dt);
+                    ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
+                                     BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                                     BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                                     BL_TO_FORTRAN_ANYD(R_new[mfi]),
+                                     BL_TO_FORTRAN_ANYD(R_new[mfi]),
+                                     ZFILL(dx),&dt_old,&dt);
+
+                }
 
             }
+            estdt_burn = std::min(estdt_burn,dt);
+        }
 
-          }
-        estdt_burn = std::min(estdt_burn,dt);
-      }
+        ParallelDescriptor::ReduceRealMin(estdt_burn);
 
-      ParallelDescriptor::ReduceRealMin(estdt_burn);
+        if (verbose && estdt_burn < max_dt) {
+            amrex::Print() << "...estimated burning-limited timestep at level " << level << ": " << estdt_burn << std::endl;
+        }
 
-      if (verbose && ParallelDescriptor::IOProcessor() && estdt_burn < max_dt)
-        std::cout << "...estimated burning-limited timestep at level " << level << ": " << estdt_burn << std::endl;
+        // Determine if this is more restrictive than the hydro limiting
 
-      // Determine if this is more restrictive than the hydro limiting
-
-      if (estdt_burn < estdt) {
-        limiter = "burning";
-        estdt = estdt_burn;
-      }
+        if (estdt_burn < estdt) {
+            limiter = "burning";
+            estdt = estdt_burn;
+        }
     }
 #endif
 
@@ -1331,8 +1490,9 @@ Castro::estTimeStep (Real dt_old)
     if (do_radiation) radiation->EstTimeStep(estdt, level);
 #endif
 
-    if (verbose && ParallelDescriptor::IOProcessor())
-      std::cout << "Castro::estTimeStep (" << limiter << "-limited) at level " << level << ":  estdt = " << estdt << '\n';
+    if (verbose) {
+        amrex::Print() << "Castro::estTimeStep (" << limiter << "-limited) at level " << level << ":  estdt = " << estdt << '\n';
+    }
 
     return estdt;
 }
@@ -1356,11 +1516,9 @@ Castro::computeNewDt (int                   finest_level,
     if (level > 0)
         return;
 
-    int i;
-
     Real dt_0 = 1.0e+100;
     int n_factor = 1;
-    for (i = 0; i <= finest_level; i++)
+    for (int i = 0; i <= finest_level; i++)
     {
         Castro& adv_level = getLevel(i);
         dt_min[i] = adv_level.estTimeStep(dt_level[i]);
@@ -1373,7 +1531,7 @@ Castro::computeNewDt (int                   finest_level,
           //
           // Limit dt's by pre-regrid dt
           //
-          for (i = 0; i <= finest_level; i++)
+          for (int i = 0; i <= finest_level; i++)
           {
               dt_min[i] = std::min(dt_min[i],dt_level[i]);
           }
@@ -1395,7 +1553,7 @@ Castro::computeNewDt (int                   finest_level,
           }
           else {
 
-              for (i = 0; i <= finest_level; i++)
+              for (int i = 0; i <= finest_level; i++)
               {
                   if (verbose && ParallelDescriptor::IOProcessor())
                       if (dt_min[i] > change_max*dt_level[i])
@@ -1435,7 +1593,7 @@ Castro::computeNewDt (int                   finest_level,
     //
     // Find the minimum over all levels
     //
-    for (i = 0; i <= finest_level; i++)
+    for (int i = 0; i <= finest_level; i++)
     {
         n_factor *= n_cycle[i];
         dt_0 = std::min(dt_0,n_factor*dt_min[i]);
@@ -1451,7 +1609,6 @@ Castro::computeNewDt (int                   finest_level,
 
         if (plot_per > 0.0) {
 
-            const Real epsDt = 1.e-4*dt_0;
             const Real cur_time = state[State_Type].curTime();
 
             // Calculate the new dt by comparing to the dt needed to get
@@ -1464,7 +1621,7 @@ Castro::computeNewDt (int                   finest_level,
             // Note that if we are just about exactly on a multiple of plot_per,
             // then we need to be careful to avoid floating point issues.
 
-            if (dtMod > plot_per * (1.0e0 - std::numeric_limits<float>::epsilon())) {
+            if (std::abs(dtMod - plot_per) <= std::numeric_limits<Real>::epsilon()) {
                 newPlotDt = plot_per + (plot_per - dtMod);
             }
             else {
@@ -1474,8 +1631,16 @@ Castro::computeNewDt (int                   finest_level,
             if (newPlotDt < dt_0) {
                 lastDtPlotLimited = 1;
                 lastDtBeforePlotLimiting = dt_0;
-                dt_0 = std::max(epsDt, newPlotDt);
-                amrex::Print() << " ... limiting dt to " << dt_0 << " to hit the next plot interval.\n";
+                dt_0 = newPlotDt;
+
+                // Avoid taking timesteps that are so small that
+                // they may cause problems in the hydrodynamics.
+
+                const Real epsDt = 1.e-4 * lastDtBeforePlotLimiting;
+                dt_0 = std::max(dt_0, epsDt);
+
+                if (verbose)
+                    amrex::Print() << " ... limiting dt to " << dt_0 << " to hit the next plot interval.\n";
             }
 
         }
@@ -1488,14 +1653,15 @@ Castro::computeNewDt (int                   finest_level,
 
         if (small_plot_per > 0.0) {
 
-            const Real epsDt = 1.e-4*dt_0;
             const Real cur_time = state[State_Type].curTime();
+
+            // Same logic as for plot_per_is_exact.
 
             const Real dtMod = std::fmod(cur_time, small_plot_per);
 
             Real newSmallPlotDt;
 
-            if (dtMod > small_plot_per * (1.0e0 - std::numeric_limits<float>::epsilon())) {
+            if (std::abs(dtMod - small_plot_per) <= std::numeric_limits<Real>::epsilon()) {
                 newSmallPlotDt = small_plot_per + (small_plot_per - dtMod);
             }
             else {
@@ -1505,8 +1671,13 @@ Castro::computeNewDt (int                   finest_level,
             if (newSmallPlotDt < dt_0) {
                 lastDtPlotLimited = 1;
                 lastDtBeforePlotLimiting = dt_0;
-                dt_0 = std::max(epsDt, newSmallPlotDt);
-                amrex::Print() << " ... limiting dt to " << dt_0 << " to hit the next smallplot interval.\n";
+                dt_0 = newSmallPlotDt;
+
+                const Real epsDt = 1.e-4 * lastDtBeforePlotLimiting;
+                dt_0 = std::max(dt_0, epsDt);
+
+                if (verbose)
+                    amrex::Print() << " ... limiting dt to " << dt_0 << " to hit the next smallplot interval.\n";
             }
 
         }
@@ -1516,17 +1687,18 @@ Castro::computeNewDt (int                   finest_level,
     //
     // Limit dt's by the value of stop_time.
     //
-    const Real eps = 0.001*dt_0;
+    const Real eps = std::numeric_limits<Real>::epsilon();
     Real cur_time = state[State_Type].curTime();
     if (stop_time >= 0.0) {
-        if ((cur_time + dt_0) > (stop_time - eps)) {
+        if ((cur_time + dt_0) >= (stop_time - eps)) {
             dt_0 = stop_time - cur_time;
-            amrex::Print() << " ... limiting dt to " << dt_0 << " to hit the stop_time.\n";
+            if (verbose)
+                amrex::Print() << " ... limiting dt to " << dt_0 << " to hit the stop_time.\n";
         }
     }
 
     n_factor = 1;
-    for (i = 0; i <= finest_level; i++)
+    for (int i = 0; i <= finest_level; i++)
     {
         n_factor *= n_cycle[i];
         dt_level[i] = dt_0/n_factor;
@@ -1553,7 +1725,7 @@ Castro::computeInitialDt (int                   finest_level,
 
     Real dt_0 = 1.0e+100;
     int n_factor = 1;
-    ///TODO/DEBUG: This will need to change for optimal subcycling.
+    // TODO/DEBUG: This will need to change for optimal subcycling.
     for (i = 0; i <= finest_level; i++)
     {
         dt_level[i] = getLevel(i).initialTimeStep();
@@ -1622,9 +1794,8 @@ Castro::post_timestep (int iteration)
 
     // Clean up any aberrant state data generated by the reflux and average-down,
     // and then update quantities like temperature to be consistent.
-    int is_new=1;
     MultiFab& S_new = get_new_data(State_Type);
-    clean_state(is_new, S_new.nGrow());
+    clean_state(S_new, state[State_Type].curTime(), S_new.nGrow());
 
     // Flush Fortran output
 
@@ -1903,6 +2074,9 @@ void
 Castro::post_regrid (int lbase,
                      int new_finest)
 {
+
+    BL_PROFILE("Castro::post_regrid()");
+
     fine_mask.clear();
 
 #ifdef AMREX_PARTICLES
@@ -2068,6 +2242,16 @@ Castro::post_init (Real stop_time)
 
 #endif
 
+    // If we're doing SCF initialization, do it here.
+
+#ifdef GRAVITY
+#ifdef ROTATION
+    if (do_scf_initial_model) {
+        scf_relaxation();
+    }
+#endif
+#endif
+
         int nstep = parent->levelSteps(0);
 	Real dtlev = parent->dtLevel(0);
 	Real cumtime = parent->cumTime();
@@ -2106,6 +2290,9 @@ Castro::post_init (Real stop_time)
 void
 Castro::post_grown_restart ()
 {
+
+    BL_PROFILE("Castro::post_grown_restart()");
+
     if (level > 0)
         return;
 
@@ -2202,6 +2389,8 @@ Castro::okToContinue ()
 void
 Castro::advance_aux(Real time, Real dt)
 {
+    BL_PROFILE("Castro::advance_aux()");
+
     if (verbose && ParallelDescriptor::IOProcessor())
         std::cout << "... special update for auxiliary variables \n";
 
@@ -2251,6 +2440,8 @@ Castro::FluxRegCrseInit() {
 
 void
 Castro::FluxRegFineAdd() {
+
+    BL_PROFILE("Castro::FluxRegFineAdd()");
 
     if (level == 0) return;
 
@@ -2314,7 +2505,7 @@ Castro::reflux(int crse_level, int fine_level)
 	Castro& crse_lev = getLevel(lev-1);
 	Castro& fine_lev = getLevel(lev);
 
-	MultiFab& state = crse_lev.get_new_data(State_Type);
+	MultiFab& crse_state = crse_lev.get_new_data(State_Type);
 
 	// Clear out the data that's not on coarse-fine boundaries so that this register only
 	// modifies the fluxes on coarse-fine interfaces.
@@ -2323,7 +2514,7 @@ Castro::reflux(int crse_level, int fine_level)
 
 	// Trigger the actual reflux on the coarse level now.
 
-	reg->Reflux(state, crse_lev.volume, 1.0, 0, 0, NUM_STATE, crse_lev.geom);
+	reg->Reflux(crse_state, crse_lev.volume, 1.0, 0, 0, NUM_STATE, crse_lev.geom);
 
 	// Store the density change, for the gravity sync.
 
@@ -2376,7 +2567,7 @@ Castro::reflux(int crse_level, int fine_level)
 
 	    reg->ClearInternalBorders(crse_lev.geom);
 
-	    reg->Reflux(state, dr, 1.0, 0, Xmom, 1, crse_lev.geom);
+	    reg->Reflux(crse_state, dr, 1.0, 0, Xmom, 1, crse_lev.geom);
 
 	    if (update_sources_after_reflux) {
 
@@ -2487,7 +2678,9 @@ Castro::reflux(int crse_level, int fine_level)
     // ghost zone fills like diffusion depend on the data in the
     // coarser levels.
 
-    if (update_sources_after_reflux) {
+    if (update_sources_after_reflux &&
+        (time_integration_method == CornerTransportUpwind ||
+         time_integration_method == SimplifiedSpectralDeferredCorrections)) {
 
 	for (int lev = fine_level; lev >= crse_level; --lev) {
 
@@ -2498,10 +2691,13 @@ Castro::reflux(int crse_level, int fine_level)
 	    Real dt_advance = getLevel(lev).dt_advance; // Note that this may be shorter than the full timestep due to subcycling.
             Real dt_amr = parent->dtLevel(lev); // The full timestep expected by the Amr class.
 
+            ca_set_amr_info(lev, -1, -1, time, dt_advance);
+
             if (getLevel(lev).apply_sources()) {
 
-                int is_new=1;
-                getLevel(lev).apply_source_to_state(is_new, S_new, source, -dt_advance);
+                getLevel(lev).apply_source_to_state(S_new, source, -dt_advance, 0);
+                getLevel(lev).clean_state(S_new, time, 0);
+
             }
 
             // Temporarily restore the last iteration's old data for the purposes of recalculating the corrector.
@@ -2535,8 +2731,8 @@ Castro::reflux(int crse_level, int fine_level)
 
                 getLevel(lev).do_new_sources(source, S_old, S_new, time, dt_advance);
 
-                int is_new=1;
-                getLevel(lev).apply_source_to_state(is_new, S_new, source, dt_advance);
+                getLevel(lev).apply_source_to_state(S_new, source, dt_advance, 0);
+                getLevel(lev).clean_state(S_new, time, 0);
 
             }
 
@@ -2613,10 +2809,10 @@ Castro::avgDown ()
   avgDown(Reactions_Type);
 #endif
 
-#ifdef SDC
 #ifdef REACTIONS
-  avgDown(SDC_React_Type);
-#endif
+  if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+      avgDown(Simplified_SDC_React_Type);
+  }
 #endif
 
 #ifdef RADIATION
@@ -2661,24 +2857,19 @@ Castro::enforce_consistent_e (MultiFab& S)
         const int* lo      = box.loVect();
         const int* hi      = box.hiVect();
 
-        ca_enforce_consistent_e(ARLIM_3D(lo), ARLIM_3D(hi), BL_TO_FORTRAN_ANYD(S[mfi]));
+#pragma gpu
+        ca_enforce_consistent_e(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi), BL_TO_FORTRAN_ANYD(S[mfi]));
     }
 }
 
 Real
-Castro::enforce_min_density (MultiFab& S_old, MultiFab& S_new, int ng)
+Castro::enforce_min_density (MultiFab& state, int ng)
 {
 
     BL_PROFILE("Castro::enforce_min_density()");
 
     // This routine sets the density in S_new to be larger than the density floor.
     // Note that it will operate everywhere on S_new, including ghost zones.
-    // S_old is present so that, after the hydro call, we know what the old density
-    // was so that we have a reference for comparison. If you are calling it elsewhere
-    // and there's no meaningful reference state, just pass in the same MultiFab twice.
-
-    // The return value is the the negative fractional change in the state that has the
-    // largest magnitude. If there is no reference state, this is meaningless.
 
     Real dens_change = 1.e0;
 
@@ -2689,30 +2880,23 @@ Castro::enforce_min_density (MultiFab& S_old, MultiFab& S_new, int ng)
 
 	// Before we do anything, make a copy of the state.
 
-	reset_source.define(S_new.boxArray(), S_new.DistributionMap(), S_new.nComp(), 0);
+	reset_source.define(state.boxArray(), state.DistributionMap(), state.nComp(), 0);
 
-	MultiFab::Copy(reset_source, S_new, 0, 0, S_new.nComp(), 0);
+	MultiFab::Copy(reset_source, state, 0, 0, state.nComp(), 0);
 
     }
 
 #ifdef _OPENMP
 #pragma omp parallel reduction(min:dens_change)
 #endif
-    for (MFIter mfi(S_new, true); mfi.isValid(); ++mfi) {
+    for (MFIter mfi(state, true); mfi.isValid(); ++mfi) {
 
 	const Box& bx = mfi.growntilebox(ng);
 
-	const FArrayBox& stateold = S_old[mfi];
-	FArrayBox& statenew = S_new[mfi];
-	const FArrayBox& vol      = volume[mfi];
-
 	ca_enforce_minimum_density
             (AMREX_ARLIM_ANYD(bx.loVect()), AMREX_ARLIM_ANYD(bx.hiVect()),
-             BL_TO_FORTRAN_ANYD(stateold),
-             BL_TO_FORTRAN_ANYD(statenew),
-             BL_TO_FORTRAN_ANYD(vol),
-             &dens_change,
-             verbose);
+             BL_TO_FORTRAN_ANYD(state[mfi]),
+             &dens_change, verbose);
 
     }
 
@@ -2721,7 +2905,7 @@ Castro::enforce_min_density (MultiFab& S_old, MultiFab& S_new, int ng)
 
 	// Evaluate what the effective reset source was.
 
-	MultiFab::Subtract(reset_source, S_new, 0, 0, S_old.nComp(), 0);
+	MultiFab::Subtract(reset_source, state, 0, 0, state.nComp(), 0);
 
 	bool local = true;
 	Vector<Real> reset_update = evaluate_source_change(reset_source, 1.0, local);
@@ -2961,6 +3145,9 @@ Castro::derive (const std::string& name,
                 Real           time,
                 int            ngrow)
 {
+
+    BL_PROFILE("Castro::derive()");
+
 #ifdef NEUTRINO
   if (name.substr(0,4) == "Neut") {
     // Extract neutrino energy group number from name string and
@@ -2990,6 +3177,9 @@ Castro::derive (const std::string& name,
                 MultiFab&      mf,
                 int            dcomp)
 {
+
+    BL_PROFILE("Castro::derive()");
+
 #ifdef NEUTRINO
   if (name.substr(0,4) == "Neut") {
     // Extract neutrino energy group number from name string and
@@ -3059,7 +3249,7 @@ Castro::extern_init ()
 }
 
 void
-Castro::reset_internal_energy(MultiFab& S_new)
+Castro::reset_internal_energy(MultiFab& S_new, int ng)
 {
 
     BL_PROFILE("Castro::reset_internal_energy()");
@@ -3073,8 +3263,6 @@ Castro::reset_internal_energy(MultiFab& S_new)
 	old_state.define(S_new.boxArray(), S_new.DistributionMap(), S_new.nComp(), 0);
         MultiFab::Copy(old_state, S_new, 0, 0, S_new.nComp(), 0);
     }
-
-    int ng = S_new.nGrow();
 
     // Ensure (rho e) isn't too small or negative
 #ifdef _OPENMP
@@ -3128,23 +3316,82 @@ Castro::reset_internal_energy(MultiFab& S_new)
 }
 
 void
-Castro::computeTemp(MultiFab& State, int ng)
+Castro::computeTemp(MultiFab& State, Real time, int ng)
 {
 
   BL_PROFILE("Castro::computeTemp()");
 
-  reset_internal_energy(State);
-
 #ifdef RADIATION
   FArrayBox temp;
 #endif
+
+  MultiFab Stemp;
+
+  // for 4th order, the only variables that may change here are Temp
+  // and Eint.  To ensure that we don't modify values unless there is
+  // a reset for Eint, we want to store the Laplacian that we use for
+  // the cell-average -> cell-center conversion so we can use the same
+  // Laplacian to convert back, resulting only in roundoff changes if
+  // Eint is not modified.  We have to store it here, since we
+  // overwrite the grown state as we work.
+  MultiFab Eint_lap;
+
+  if (mol_order == 4 || sdc_order == 4) {
+
+    // we need to make the data live at cell-centers first
+
+    // fill Stemp with S_new.
+    // we only need 2 ghost cells here, then the make_cell_center
+    // makes 1 ghost cell a valid center, we compute its temp, and
+    // then the final average results only in interior temps valid
+    Stemp.define(State.boxArray(), State.DistributionMap(), NUM_STATE, 2);
+    expand_state(Stemp, time, Stemp.nGrow());
+
+    // store the Laplacian term for the internal energy
+    Eint_lap.define(State.boxArray(), State.DistributionMap(), 1, 0);
+
+    // convert to cell centers -- this will result in Stemp being
+    // cell centered only on 1 ghost cells
+    for (MFIter mfi(Stemp); mfi.isValid(); ++mfi) {
+      const Box& bx = mfi.growntilebox(1);
+      const Box& bx0 = mfi.tilebox();
+      const int idx = mfi.tileIndex();
+
+      ca_compute_lap_term(BL_TO_FORTRAN_BOX(bx0),
+                          BL_TO_FORTRAN_FAB(Stemp[mfi]),
+                          BL_TO_FORTRAN_ANYD(Eint_lap[mfi]), &Eint);
+
+      ca_make_cell_center_in_place(BL_TO_FORTRAN_BOX(bx),
+                                   BL_TO_FORTRAN_FAB(Stemp[mfi]));
+
+    }
+
+  }
+
+  if (mol_order == 4 || sdc_order == 4) {
+    // we need to enforce minimum density here, since the conversion
+    // from cell-average to centers could have made rho < 0 near steep
+    // gradients
+    enforce_min_density(Stemp, Stemp.nGrow());
+    reset_internal_energy(Stemp, Stemp.nGrow());
+  } else {
+    reset_internal_energy(State, ng);
+  }
+
 
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
   for (MFIter mfi(State,true); mfi.isValid(); ++mfi)
     {
-      const Box& bx = mfi.growntilebox(ng);
+
+      int num_ghost = ng;
+      if (mol_order == 4 || sdc_order == 4) {
+        // only one ghost cell is at cell-centers
+        num_ghost = 1;
+      }
+
+      const Box& bx = mfi.growntilebox(num_ghost);
 
 #ifdef RADIATION
       if (Radiation::do_real_eos == 0) {
@@ -3160,13 +3407,65 @@ Castro::computeTemp(MultiFab& State, int ng)
 	State[mfi].copy(temp,bx,0,bx,Temp,1);
       } else {
 #endif
+
+        // general EOS version
+
+        if (mol_order == 4 || sdc_order == 4) {
+          // note, this is working on a growntilebox, but we will not have
+          // valid cell-centers in the very last ghost cell
+          ca_compute_temp(AMREX_ARLIM_ANYD(bx.loVect()), AMREX_ARLIM_ANYD(bx.hiVect()),
+                          BL_TO_FORTRAN_ANYD(Stemp[mfi]));
+        } else {
 #pragma gpu
-	ca_compute_temp(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
-			BL_TO_FORTRAN_ANYD(State[mfi]));
+          ca_compute_temp(AMREX_INT_ANYD(bx.loVect()), AMREX_INT_ANYD(bx.hiVect()),
+                          BL_TO_FORTRAN_ANYD(State[mfi]));
+        }
+
 #ifdef RADIATION
       }
 #endif
     }
+
+  if (mol_order == 4 || sdc_order == 4) {
+
+    // we need to copy back from Stemp into S_new, making it
+    // cell-average in the process.  For temperature, we will
+    // construct the Laplacian from the new state and use for the
+    // correction, since the temperature was just updated.  For the
+    // internal energy, most zones will not have been reset, so we
+    // don't want to modify them from what they were before, therefore
+    // we use the stored Laplacian computed above to convert back to
+    // cell-averages -- this is 4th-order and will be a no-op for
+    // those zones where e wasn't changed.
+
+    for (MFIter mfi(Stemp); mfi.isValid(); ++mfi) {
+
+      const Box& bx = mfi.tilebox();
+      const int idx = mfi.tileIndex();
+
+      // only temperature
+      ca_make_fourth_in_place_n(BL_TO_FORTRAN_BOX(bx),
+                                BL_TO_FORTRAN_FAB(Stemp[mfi]), &Temp);
+
+    }
+
+    // correct UEINT
+    MultiFab::Add(Stemp, Eint_lap, 0, Eint, 1, 0);
+
+    // copy back UTEMP and UEINT -- those are the only things that
+    // should have changed.
+    MultiFab::Copy(State, Stemp, Temp, Temp, 1, 0);
+    MultiFab::Copy(State, Stemp, Eint, Eint, 1, 0);
+
+    // now that we redid these, redo the ghost fill -- technically,
+    // only need this for UTEMP and UEINT, and only if ng > 0
+    if (ng > 0) {
+      AmrLevel::FillPatch(*this, State, State.nGrow(), time, State_Type, 0, NUM_STATE);
+    }
+
+    Stemp.clear();
+  }
+
 }
 
 
@@ -3216,6 +3515,8 @@ void
 Castro::swap_state_time_levels(const Real dt)
 {
 
+    BL_PROFILE("Castro::swap_state_time_levels()");
+
     for (int k = 0; k < num_state_type; k++) {
 
 	// The following is a hack to make sure that we only
@@ -3225,13 +3526,19 @@ Castro::swap_state_time_levels(const Real dt)
 	// this because we never need the old data, so we
 	// don't want to allocate memory for it.
 
-#ifdef SDC
 #ifdef REACTIONS
-        if (k == SDC_React_Type)
-            state[k].swapTimeLevels(0.0);
-#endif
+        if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+            if (k == Simplified_SDC_React_Type) {
+                state[k].swapTimeLevels(0.0);
+            }
+        }
 #endif
 
+#ifdef REACTIONS
+        if (time_integration_method == SpectralDeferredCorrections &&
+            (mol_order == 4 || sdc_order == 4) && k == SDC_Source_Type)
+            state[k].swapTimeLevels(0.0);
+#endif
         state[k].allocOldData();
 
         state[k].swapTimeLevels(dt);
@@ -3525,29 +3832,9 @@ Castro::build_interior_boundary_mask (int ng)
 // Fill a version of the state with ng ghost zones from the state data.
 
 void
-Castro::expand_state(MultiFab& S, Real time, int iclean, int ng)
+Castro::expand_state(MultiFab& S, Real time, int ng)
 {
   BL_PROFILE("Castro::expand_state()");
-
-  // S is the multifab we are filling with State_Type StateData,
-  // including a ghost cell fill at the end.  Before we do the fill,
-  // we do a clean_state on the State_Type data.  iclean = 0 means
-  // clean the "old" time data, iclean = 1 means clean the "new time
-  // data", and iclean = 2 means clean both the old and new time data
-  // (in case we are interpolating in time).  For any other value, no
-  // cleaning is done
-
-  // note: we don't clean ghost cells here, since we are doing a fill
-  // right afterwards
-
-  if (iclean == 0) {
-    clean_state(iclean, 0);
-  } else if (iclean == 1) {
-    clean_state(iclean, 0);
-  } else if (iclean == 2) {
-    clean_state(0, 0);
-    clean_state(1, 0);
-  }
 
   BL_ASSERT(S.nGrow() >= ng);
 
@@ -3578,130 +3865,38 @@ Castro::check_for_nan(MultiFab& state, int check_ghost)
     }
 }
 
-// Convert a MultiFab with conservative state data u to a primitive MultiFab q.
-#ifdef SDC
-void
-Castro::cons_to_prim(MultiFab& u, MultiFab& q, MultiFab& qaux)
-{
-
-    BL_PROFILE("Castro::cons_to_prim()");
-
-    BL_ASSERT(u.nComp() == NUM_STATE);
-    BL_ASSERT(q.nComp() == QVAR);
-    BL_ASSERT(u.nGrow() >= q.nGrow());
-
-    int ng = q.nGrow();
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-    for (MFIter mfi(u, true); mfi.isValid(); ++mfi) {
-
-        const Box& bx = mfi.growntilebox(ng);
-
-	ca_ctoprim(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		   u[mfi].dataPtr(), ARLIM_3D(u[mfi].loVect()), ARLIM_3D(u[mfi].hiVect()),
-		   q[mfi].dataPtr(), ARLIM_3D(q[mfi].loVect()), ARLIM_3D(q[mfi].hiVect()),
-		   qaux[mfi].dataPtr(), ARLIM_3D(qaux[mfi].loVect()), ARLIM_3D(qaux[mfi].hiVect()));
-
-    }
-
-}
-#endif
-
-
 // Given State_Type state data, perform a number of cleaning steps to make
 // sure the data is sensible. The return value is the same as the return
 // value of enforce_min_density.
 
 Real
-Castro::clean_state(MultiFab& state) {
+Castro::clean_state(MultiFab& state, Real time, int ng) {
 
-    BL_PROFILE("Castro::clean_state(state)");
+    BL_PROFILE("Castro::clean_state()");
 
     // Enforce a minimum density.
 
-    MultiFab temp_state(state.boxArray(), state.DistributionMap(), state.nComp(), state.nGrow());
-
-    MultiFab::Copy(temp_state, state, 0, 0, state.nComp(), state.nGrow());
-
-
 #ifndef AMREX_USE_CUDA
-    Real frac_change = enforce_min_density(temp_state, state, state.nGrow());
+    Real frac_change = enforce_min_density(state, ng);
 #else
     Real frac_change = 1.e200;
 #endif
 
     // Ensure all species are normalized.
 
-    normalize_species(state, state.nGrow());
+    normalize_species(state, ng);
 
     // Sync the linear and hybrid momenta.
 
 #ifdef HYBRID_MOMENTUM
-    hybrid_sync(state);
+    hybrid_sync(state, ng);
 #endif
 
     // Compute the temperature (note that this will also reset
     // the internal energy for consistency with the total energy).
 
-    computeTemp(state, state.nGrow());
+    computeTemp(state, time, ng);
 
     return frac_change;
-
-}
-
-
-Real
-Castro::clean_state(int is_new, int ng) {
-
-  BL_PROFILE("Castro::clean_state(is_new, ng)");
-
-  // this is the "preferred" clean_state interface -- it will work
-  // directly on the StateData.  is_new=0 means the old data is used,
-  // is_new=1 means the new data is used.
-
-
-  MultiFab& state = is_new == 1 ? get_new_data(State_Type) : get_old_data(State_Type);
-
-  MultiFab temp_state(state.boxArray(), state.DistributionMap(), state.nComp(), ng);
-
-  MultiFab::Copy(temp_state, state, 0, 0, state.nComp(), ng);
-
-  Real frac_change = clean_state(is_new, temp_state, ng);
-
-  return frac_change;
-
-}
-
-
-Real
-Castro::clean_state(int is_new, MultiFab& state_old, int ng) {
-
-    BL_PROFILE("Castro::clean_state(is_new, state_old, ng)");
-
-  MultiFab& state = is_new == 1 ? get_new_data(State_Type) : get_old_data(State_Type);
-
-  // Enforce a minimum density.
-#ifndef AMREX_USE_CUDA
-    Real frac_change = enforce_min_density(state_old, state, ng);
-#else
-    Real frac_change = 1.e200;
-#endif
-
-
-  // Ensure all species are normalized.
-  normalize_species(state, ng);
-
-  // Sync the linear and hybrid momenta.
-#ifdef HYBRID_MOMENTUM
-  hybrid_sync(state);
-#endif
-
-  // Compute the temperature (note that this will also reset
-  // the internal energy for consistency with the total energy).
-  computeTemp(state, ng);
-
-  return frac_change;
 
 }

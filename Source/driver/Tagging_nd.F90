@@ -3,47 +3,42 @@ module tagging_module
   use amrex_fort_module, only : rt => amrex_real
   implicit none
 
-  real(rt)        , save ::    denerr,   dengrad, dengrad_rel
-  real(rt)        , save ::    enterr,   entgrad, entgrad_rel
-  real(rt)        , save ::    velerr,   velgrad, velgrad_rel
-  real(rt)        , save ::   temperr,  tempgrad, tempgrad_rel
-  real(rt)        , save ::  presserr, pressgrad, pressgrad_rel
-  real(rt)        , save ::    raderr,   radgrad, radgrad_rel
-  integer         , save ::  max_denerr_lev,   max_dengrad_lev, max_dengrad_rel_lev
-  integer         , save ::  max_enterr_lev,   max_entgrad_lev, max_entgrad_rel_lev
-  integer         , save ::  max_velerr_lev,   max_velgrad_lev, max_velgrad_rel_lev
-  integer         , save ::  max_temperr_lev,  max_tempgrad_lev, max_tempgrad_rel_lev
-  integer         , save ::  max_presserr_lev, max_pressgrad_lev, max_pressgrad_rel_lev
-  integer         , save ::  max_raderr_lev,   max_radgrad_lev, max_radgrad_rel_lev
+  real(rt), save ::    denerr,   dengrad, dengrad_rel
+  real(rt), save ::    enterr,   entgrad, entgrad_rel
+  real(rt), save ::    velerr,   velgrad, velgrad_rel
+  real(rt), save ::   temperr,  tempgrad, tempgrad_rel
+  real(rt), save ::  presserr, pressgrad, pressgrad_rel
+  real(rt), save ::    raderr,   radgrad, radgrad_rel
+  real(rt), save ::   enucerr
+
+  integer, save ::  max_denerr_lev,   max_dengrad_lev, max_dengrad_rel_lev
+  integer, save ::  max_enterr_lev,   max_entgrad_lev, max_entgrad_rel_lev
+  integer, save ::  max_velerr_lev,   max_velgrad_lev, max_velgrad_rel_lev
+  integer, save ::  max_temperr_lev,  max_tempgrad_lev, max_tempgrad_rel_lev
+  integer, save ::  max_presserr_lev, max_pressgrad_lev, max_pressgrad_rel_lev
+  integer, save ::  max_raderr_lev,   max_radgrad_lev, max_radgrad_rel_lev
+  integer, save ::  max_enucerr_lev
+
+  ! limit the zone size based on how much the burning can change the
+  ! internal energy of a zone. The zone size on the finest level must
+  ! be smaller than dxnuc * c_s * (e/ \dot{e}) where c_s is the sound
+  ! speed.  This ensures that the sound-crossing time is smaller than
+  ! the nuclear energy injection timescale.
+  real(rt), save :: dxnuc_min
+
+  ! Disable limiting based on dxnuc above this threshold. This allows
+  !  zones that have already ignited or are about to ignite to be
+  !  de-refined.
+  real(rt), save :: dxnuc_max
+
+  ! Disable limiting based on dxnuc above this AMR level.
+  integer, save :: max_dxnuc_lev
 
   public
 
 contains
 
-  ! All tagging subroutines in this file must be threadsafe because
-  ! they are called inside OpenMP parallel regions.
 
-  ! ::: -----------------------------------------------------------
-  ! ::: INPUTS/OUTPUTS:
-  ! ::: 
-  ! ::: tag      <=  integer tag array
-  ! ::: lo,hi     => index extent of work region
-  ! ::: set       => integer value to tag cell for refinement
-  ! ::: clear     => integer value to untag cell
-  ! ::: temp      => temperature array
-  ! ::: np        => number of components in temp array (should be 1)
-  ! ::: domlo,hi  => index extent of problem domain
-  ! ::: delta     => cell spacing
-  ! ::: xlo       => physical location of lower left hand
-  ! :::              corner of work region
-  ! ::: problo    => phys loc of lower left corner of prob domain
-  ! ::: time      => problem evolution time
-  ! ::: level     => refinement level of this array
-  ! ::: -----------------------------------------------------------
-
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag high error cells based on the Laplacian.
-  ! ::: -----------------------------------------------------------
 
   subroutine ca_laplac_error(tag,taglo,taghi, &
                              set,clear, &
@@ -51,6 +46,30 @@ contains
                              lo,hi,nd,domlo,domhi, &
                              delta,xlo,problo,time,level) &
                              bind(C, name="ca_laplac_error")
+     ! All tagging subroutines in this file must be threadsafe because
+     ! they are called inside OpenMP parallel regions.
+
+     !
+     ! INPUTS/OUTPUTS:
+     !
+     ! tag      <=  integer tag array
+     ! lo,hi     => index extent of work region
+     ! set       => integer value to tag cell for refinement
+     ! clear     => integer value to untag cell
+     ! temp      => temperature array
+     ! np        => number of components in temp array (should be 1)
+     ! domlo,hi  => index extent of problem domain
+     ! delta     => cell spacing
+     ! xlo       => physical location of lower left hand
+     !              corner of work region
+     ! problo    => phys loc of lower left corner of prob domain
+     ! time      => problem evolution time
+     ! level     => refinement level of this array
+     !
+
+     !
+     ! This routine will tag high error cells based on the Laplacian.
+     !
 
     use prob_params_module, only: dg, dim
     use amrex_fort_module, only : rt => amrex_real
@@ -95,7 +114,7 @@ contains
        do k=lo(3)-1*dg(3),hi(3)+1*dg(3)
           do j=lo(2)-1*dg(2),hi(2)+1*dg(2)
              do i=lo(1)-1*dg(1),hi(1)+1*dg(1)
-                delu(i,j,k,2)  =     var(i,j+1*dg(2),k)  -     var(i,j-1*dg(2),k) 
+                delu(i,j,k,2)  =     var(i,j+1*dg(2),k)  -     var(i,j-1*dg(2),k)
                 delua(i,j,k,2) = abs(var(i,j+1*dg(2),k)) + abs(var(i,j-1*dg(2),k))
              end do
           end do
@@ -178,9 +197,6 @@ contains
 
   end subroutine ca_laplac_error
 
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag high error cells based on the density
-  ! ::: -----------------------------------------------------------
 
   subroutine ca_denerror(tag,taglo,taghi, &
                          set,clear, &
@@ -188,6 +204,9 @@ contains
                          lo,hi,nd,domlo,domhi, &
                          delta,xlo,problo,time,level) &
                          bind(C, name="ca_denerror")
+     !
+     ! This routine will tag high error cells based on the density
+     !
 
     use prob_params_module, only: dg
     use amrex_fort_module, only : rt => amrex_real
@@ -239,9 +258,6 @@ contains
 
   end subroutine ca_denerror
 
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag high error cells based on the temperature
-  ! ::: -----------------------------------------------------------
 
   subroutine ca_temperror(tag,taglo,taghi, &
                           set,clear, &
@@ -249,6 +265,9 @@ contains
                           lo,hi,np,domlo,domhi, &
                           delta,xlo,problo,time,level) &
                           bind(C, name="ca_temperror")
+  !
+  ! This routine will tag high error cells based on the temperature
+  !
 
     use prob_params_module, only: dg
     use amrex_fort_module, only : rt => amrex_real
@@ -300,9 +319,6 @@ contains
 
   end subroutine ca_temperror
 
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag high error cells based on the pressure
-  ! ::: -----------------------------------------------------------
 
   subroutine ca_presserror(tag,taglo,taghi, &
                            set,clear, &
@@ -310,6 +326,9 @@ contains
                            lo,hi,np,domlo,domhi, &
                            delta,xlo,problo,time,level) &
                            bind(C, name="ca_presserror")
+   !
+   ! This routine will tag high error cells based on the pressure
+   !
 
     use prob_params_module, only: dg
     use amrex_fort_module, only : rt => amrex_real
@@ -361,9 +380,6 @@ contains
 
   end subroutine ca_presserror
 
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag high error cells based on the velocity
-  ! ::: -----------------------------------------------------------
 
   subroutine ca_velerror(tag,taglo,taghi, &
                          set,clear, &
@@ -371,6 +387,9 @@ contains
                          lo,hi,nv,domlo,domhi, &
                          delta,xlo,problo,time,level) &
                          bind(C, name="ca_velerror")
+    !
+    ! This routine will tag high error cells based on the velocity
+    !
 
     use prob_params_module, only: dg
     use amrex_fort_module, only : rt => amrex_real
@@ -422,9 +441,6 @@ contains
 
   end subroutine ca_velerror
 
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag high error cells based on the radiation
-  ! ::: -----------------------------------------------------------
 
   subroutine ca_raderror(tag,taglo,taghi, &
                          set,clear, &
@@ -432,6 +448,9 @@ contains
                          lo,hi,nr,domlo,domhi, &
                          delta,xlo,problo,time,level) &
                          bind(C, name="ca_raderror")
+    !
+    ! This routine will tag high error cells based on the radiation
+    !
 
     use prob_params_module, only: dg
     use amrex_fort_module, only : rt => amrex_real
@@ -483,9 +502,6 @@ contains
 
   end subroutine ca_raderror
 
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag high error cells based on the entropy
-  ! ::: -----------------------------------------------------------
 
   subroutine ca_enterror(tag,taglo,taghi, &
                          set,clear, &
@@ -493,6 +509,9 @@ contains
                          lo,hi,nr,domlo,domhi, &
                          delta,xlo,problo,time,level) &
                          bind(C, name="ca_enterror")
+    !
+    ! This routine will tag high error cells based on the entropy
+    !
 
     use prob_params_module, only: dg
     use amrex_fort_module, only : rt => amrex_real
@@ -544,12 +563,7 @@ contains
 
   end subroutine ca_enterror
 
-  ! ::: -----------------------------------------------------------
-  ! ::: This routine will tag cells based on the sound crossing time
-  ! ::: relative to the nuclear energy injection timescale.
-  ! ::: At present we tag for maximal refinement since this
-  ! ::: criterion is necessary for numerical burning stability.
-  ! ::: -----------------------------------------------------------
+#ifdef REACTIONS
 
   subroutine ca_nucerror(tag,taglo,taghi, &
                          set,clear, &
@@ -557,8 +571,13 @@ contains
                          lo,hi,nr,domlo,domhi, &
                          delta,xlo,problo,time,level) &
                          bind(C, name="ca_nucerror")
+    !
+    ! This routine will tag cells based on the sound crossing time
+    ! relative to the nuclear energy injection timescale.
+    ! At present we tag for maximal refinement since this
+    ! criterion is necessary for numerical burning stability.
+    !
 
-    use meth_params_module, only: dxnuc, dxnuc_max, max_dxnuc_lev
     use amrex_fort_module, only : rt => amrex_real
 
     implicit none
@@ -575,7 +594,7 @@ contains
 
     ! Disable if we're not utilizing this tagging
 
-    if (dxnuc > 1.e199_rt) return
+    if (dxnuc_min > 1.e199_rt) return
 
     if (level .lt. max_dxnuc_lev) then
 
@@ -583,7 +602,7 @@ contains
           do j = lo(2), hi(2)
              do i = lo(1), hi(1)
 
-                if (t(i,j,k,1) > dxnuc .and. t(i,j,k,1) < dxnuc_max) then
+                if (t(i,j,k,1) > dxnuc_min .and. t(i,j,k,1) < dxnuc_max) then
 
                    tag(i,j,k) = set
 
@@ -598,7 +617,47 @@ contains
   end subroutine ca_nucerror
 
 
+  subroutine ca_enucerror(tag,taglo,taghi, &
+                          set,clear, &
+                          enuc,enuclo,enuchi, &
+                          lo,hi,nd,domlo,domhi, &
+                          delta,xlo,problo,time,level) &
+                          bind(C, name="ca_enucerror")
+    !
+    ! This routine will tag high error cells based on the nuclear
+    ! energy generation rate
+    !
 
+    use prob_params_module, only: dg
+    use amrex_fort_module, only : rt => amrex_real
+
+    implicit none
+
+    integer, intent(in) :: set, clear, nd, level
+    integer, intent(in) :: taglo(3), taghi(3)
+    integer, intent(in) :: enuclo(3), enuchi(3)
+    integer, intent(in) :: lo(3), hi(3), domlo(3), domhi(3)
+    integer, intent(inout) :: tag(taglo(1):taghi(1),taglo(2):taghi(2),taglo(3):taghi(3))
+    real(rt), intent(in) :: enuc(enuclo(1):enuchi(1),enuclo(2):enuchi(2),enuclo(3):enuchi(3),nd)
+    real(rt), intent(in) :: delta(3), xlo(3), problo(3), time
+
+    integer          :: i, j, k
+
+    ! Tag on regions of high nuclear energy generation rate
+    if (level .lt. max_enucerr_lev) then
+       do k = lo(3), hi(3)
+          do j = lo(2), hi(2)
+             do i = lo(1), hi(1)
+                if (enuc(i,j,k,1) .ge. enucerr) then
+                   tag(i,j,k) = set
+                endif
+             enddo
+          enddo
+       enddo
+    endif
+
+  end subroutine ca_enucerror
+#endif
 
   ! Routines for retrieving the maximum tagging level.
 

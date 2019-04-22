@@ -5,10 +5,10 @@ module hybrid_advection_module
 
 contains
 
-  ! Takes the initial linear momentum data in a state and converts it
-  ! to the hybrid momenta.
 
   subroutine ca_init_hybrid_momentum(lo, hi, state, s_lo, s_hi) bind(C, name='ca_init_hybrid_momentum')
+    !  Takes the initial linear momentum data in a state and converts it
+    ! to the hybrid momenta.
 
     use meth_params_module, only: NVAR, UMR, UMP, UMX, UMZ
     use castro_util_module, only: position
@@ -40,9 +40,9 @@ contains
 
 
 
-  ! Fill a sources array with the source terms in the hybrid momentum equations.
-
   subroutine ca_hybrid_hydro_source(lo, hi, state, s_lo, s_hi, ext_src, e_lo, e_hi, mult_factor) bind(C,name='ca_hybrid_hydro_source')
+    ! Fill a sources array with the source terms in the hybrid momentum
+    ! equations.
 
     use amrex_constants_module, only: ONE
     use meth_params_module, only: NVAR, URHO, UMR, UML
@@ -83,20 +83,21 @@ contains
 
 
 
-  ! Convert a linear momentum into the "hybrid" scheme
-  ! that has radial and angular components.
-
   function linear_to_hybrid(loc, mom_in) result(mom_out)
+    ! Convert a linear momentum into the "hybrid" scheme
+    ! that has radial and angular components.
 
     use amrex_constants_module, only: ZERO
-
     use amrex_fort_module, only : rt => amrex_real
+
     implicit none
 
-    real(rt)        , intent(in) :: loc(3), mom_in(3)
-    real(rt)         :: mom_out(3)
+    real(rt), intent(in) :: loc(3), mom_in(3)
+    real(rt) :: mom_out(3)
 
-    real(rt)         :: R
+    real(rt) :: R
+
+    !$gpu
 
     R = sqrt( loc(1)**2 + loc(2)**2 )
 
@@ -117,10 +118,8 @@ contains
   end function linear_to_hybrid
 
 
-
-  ! Convert a "hybrid" momentum into a linear one.
-
   function hybrid_to_linear(loc, mom_in) result(mom_out)
+    ! Convert a "hybrid" momentum into a linear one.
 
     use amrex_constants_module, only: ZERO
 
@@ -144,9 +143,9 @@ contains
 
 
 
-  ! Update hybrid momenta to account for source term to linear momenta.
-
   subroutine add_hybrid_momentum_source(loc, mom, source)
+    ! Update hybrid momenta to account for source term to linear momenta.
+
 
     use amrex_fort_module, only : rt => amrex_real
     implicit none
@@ -162,11 +161,12 @@ contains
 
     ! This is analogous to the conversion of linear momentum to hybrid momentum.
 
-    mom(1) = mom(1) - source(1) * (loc(1) / R) - source(2) * (loc(2) / R)
-    mom(2) = mom(2) + source(2) * loc(2) - source(2) * loc(1)
+    mom(1) = mom(1) + source(1) * (loc(1) / R) + source(2) * (loc(2) / R)
+    mom(2) = mom(2) + source(2) * loc(1) - source(1) * loc(2)
     mom(3) = mom(3) + source(3)
 
   end subroutine add_hybrid_momentum_source
+
 
   subroutine set_hybrid_momentum_source(loc, mom, source)
 
@@ -178,12 +178,14 @@ contains
 
     real(rt) :: R
 
+    !$gpu
+
     R = sqrt( loc(1)**2 + loc(2)**2 )
 
     ! This is analogous to the conversion of linear momentum to hybrid momentum.
 
-    mom(1) = -source(1) * (loc(1) / R) - source(2) * (loc(2) / R)
-    mom(2) =  source(2) * loc(2) - source(2) * loc(1)
+    mom(1) =  source(1) * (loc(1) / R) + source(2) * (loc(2) / R)
+    mom(2) =  source(2) * loc(1) - source(1) * loc(2)
     mom(3) =  source(3)
 
   end subroutine set_hybrid_momentum_source
@@ -193,11 +195,13 @@ contains
   subroutine compute_hybrid_flux(state, flux, idir, idx, cell_centered)
 
     use meth_params_module, only: NVAR, NGDNV, GDRHO, GDU, GDV, GDW, GDPRES, UMR, UML, UMP
+#ifndef AMREX_USE_CUDA
     use amrex_error_module, only: amrex_error
+#endif
     use prob_params_module, only: center
-    use castro_util_module, only: position
-
+    use castro_util_module, only: position ! function
     use amrex_fort_module, only : rt => amrex_real
+
     implicit none
 
     real(rt)         :: state(NGDNV)
@@ -210,6 +214,8 @@ contains
 
     real(rt)         :: u_adv
     logical :: cc
+
+    !$gpu
 
     cc = .false.
 
@@ -277,10 +283,10 @@ contains
 
     use meth_params_module, only: NVAR, NGDNV, GDPRES, UMR
     use prob_params_module, only: center, dx_level
-    use castro_util_module, only: position
+    use castro_util_module, only: position ! function
     use amrinfo_module, only: amr_level
-
     use amrex_fort_module, only : rt => amrex_real
+
     implicit none
 
     integer          :: lo(3), hi(3)
@@ -297,6 +303,8 @@ contains
     integer          :: i, j, k
     real(rt)         :: loc(3), R, dx(3)
 
+    !$gpu
+
     dx = dx_level(:,amr_level)
 
     do k = lo(3), hi(3)
@@ -308,7 +316,7 @@ contains
              R = sqrt( loc(1)**2 + loc(2)**2 )
 
              update(i,j,k,UMR) = update(i,j,k,UMR) - ( (loc(1) / R) * (qx(i+1,j,k,GDPRES) - qx(i,j,k,GDPRES)) / dx(1) + &
-                                                       (loc(2) / R) * (qy(i,j+1,k,GDPRES) - qy(i,j,k,GDPRES)) / dx(2) )
+                  (loc(2) / R) * (qy(i,j+1,k,GDPRES) - qy(i,j,k,GDPRES)) / dx(2) )
 
           enddo
        enddo
@@ -318,9 +326,8 @@ contains
 
 
 
-  ! Update state to account for hybrid advection.
-
   subroutine ca_hybrid_update(lo, hi, state, state_lo, state_hi) bind(C, name='ca_hybrid_update')
+    ! Update state to account for hybrid advection.
 
     use amrex_constants_module, only: HALF, ONE
     use meth_params_module, only: URHO, UMR, UMP, UMX, UMZ, UEDEN, NVAR

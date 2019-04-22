@@ -43,10 +43,6 @@ module model_parser_module
   real (rt), allocatable, save :: model_state(:,:)
   real (rt), allocatable, save :: model_r(:)
 
-#ifdef AMREX_USE_CUDA
-  attributes(managed) :: model_state, model_r, npts_model, model_m
-#endif
-
   ! model_initialized will be .true. once the model is read in and the
   ! model data arrays are initialized and filled
   logical, save :: model_initialized = .false.
@@ -54,6 +50,10 @@ module model_parser_module
   integer, parameter :: MAX_VARNAME_LENGTH=80
 
   public :: read_model_file, close_model_file
+
+#ifdef AMREX_USE_CUDA
+  attributes(managed) :: model_state, model_r, npts_model
+#endif
 
 contains
 
@@ -258,5 +258,33 @@ contains
        model_initialized = .false.
     endif
   end subroutine close_model_file
+
+  ! Initialize the model by passing in the number of points, r and state
+  ! directly (rather than reading from a file)
+  subroutine model_parser_init(npts, r, state)
+
+      integer, intent(in) :: npts
+      real(rt), intent(in) :: r(npts)
+      real(rt), intent(in) :: state(npts, nvars_model)
+
+      ! don't reinitialize
+      if (.not. model_initialized) then
+
+          allocate(npts_model)
+
+          npts_model = npts
+
+          ! allocate storage for the model data
+          allocate (model_state(npts_model, nvars_model))
+          allocate (model_r(npts_model))
+
+          model_r(:) = r(:)
+          model_state(:,:) = state(:,:)
+
+          model_initialized = .true.
+
+      endif
+
+  end subroutine model_parser_init
 
 end module model_parser_module

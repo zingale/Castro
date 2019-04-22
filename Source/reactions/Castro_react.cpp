@@ -7,11 +7,16 @@
 using std::string;
 using namespace amrex;
 
-#ifndef SDC
-
 void
 Castro::strang_react_first_half(Real time, Real dt)
 {
+    BL_PROFILE("Castro::strang_react_first_half()");
+
+    // Sanity check: should only be in here if we're doing CTU or MOL.
+
+    if (time_integration_method != CornerTransportUpwind && time_integration_method != MethodOfLines) {
+        amrex::Error("Strang reactions are only supported for the CTU and MOL advance.");
+    }
 
     // Get the reactions MultiFab to fill in.
 
@@ -141,7 +146,7 @@ Castro::strang_react_first_half(Real time, Real dt)
 
     // Ensure consistency in internal energy and recompute temperature.
 
-    clean_state(state);
+    clean_state(state, time, state.nGrow());
 
 }
 
@@ -150,6 +155,13 @@ Castro::strang_react_first_half(Real time, Real dt)
 void
 Castro::strang_react_second_half(Real time, Real dt)
 {
+    BL_PROFILE("Castro::strang_react_second_half()");
+
+    // Sanity check: should only be in here if we're doing CTU or MOL.
+
+    if (time_integration_method != CornerTransportUpwind && time_integration_method != MethodOfLines) {
+        amrex::Error("Strang reactions are only supported for the CTU and MOL advance.");
+    }
 
     MultiFab& reactions = get_new_data(Reactions_Type);
 
@@ -243,8 +255,7 @@ Castro::strang_react_second_half(Real time, Real dt)
 
     }
 
-    int is_new = 1;
-    clean_state(is_new, state.nGrow());
+    clean_state(state, time + 0.5 * dt, state.nGrow());
 
 }
 
@@ -255,6 +266,12 @@ Castro::react_state(MultiFab& s, MultiFab& r, const iMultiFab& mask, MultiFab& w
 {
 
     BL_PROFILE("Castro::react_state()");
+
+    // Sanity check: should only be in here if we're doing CTU or MOL.
+
+    if (time_integration_method != CornerTransportUpwind && time_integration_method != MethodOfLines) {
+        amrex::Error("Strang reactions are only supported for the CTU and MOL advance.");
+    }
 
     const Real strt_time = ParallelDescriptor::second();
 
@@ -270,7 +287,7 @@ Castro::react_state(MultiFab& s, MultiFab& r, const iMultiFab& mask, MultiFab& w
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-    for (MFIter mfi(s, true); mfi.isValid(); ++mfi)
+    for (MFIter mfi(s, TilingIfNotGPU()); mfi.isValid(); ++mfi)
     {
 
 	const Box& bx = mfi.growntilebox(ngrow);
@@ -318,14 +335,18 @@ Castro::react_state(MultiFab& s, MultiFab& r, const iMultiFab& mask, MultiFab& w
 
 }
 
-#else
-
-// SDC version
+// Simplified SDC version
 
 void
 Castro::react_state(Real time, Real dt)
 {
     BL_PROFILE("Castro::react_state()");
+
+    // Sanity check: should only be in here if we're doing simplified SDC.
+
+    if (time_integration_method != SimplifiedSpectralDeferredCorrections) {
+        amrex::Error("This react_state interface is only supported for simplified SDC.");
+    }
 
     const Real strt_time = ParallelDescriptor::second();
 
@@ -363,13 +384,13 @@ Castro::react_state(Real time, Real dt)
 	FArrayBox& r       = reactions[mfi];
 	const IArrayBox& m = interior_mask[mfi];
 
-	ca_react_state(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
-		       uold.dataPtr(), ARLIM_3D(uold.loVect()), ARLIM_3D(uold.hiVect()),
-		       unew.dataPtr(), ARLIM_3D(unew.loVect()), ARLIM_3D(unew.hiVect()),
-		       a.dataPtr(), ARLIM_3D(a.loVect()), ARLIM_3D(a.hiVect()),
-		       r.dataPtr(), ARLIM_3D(r.loVect()), ARLIM_3D(r.hiVect()),
-		       m.dataPtr(), ARLIM_3D(m.loVect()), ARLIM_3D(m.hiVect()),
-		       time, dt, sdc_iteration);
+	ca_react_state_simplified_sdc(ARLIM_3D(bx.loVect()), ARLIM_3D(bx.hiVect()),
+                                      uold.dataPtr(), ARLIM_3D(uold.loVect()), ARLIM_3D(uold.hiVect()),
+                                      unew.dataPtr(), ARLIM_3D(unew.loVect()), ARLIM_3D(unew.hiVect()),
+                                      a.dataPtr(), ARLIM_3D(a.loVect()), ARLIM_3D(a.hiVect()),
+                                      r.dataPtr(), ARLIM_3D(r.loVect()), ARLIM_3D(r.hiVect()),
+                                      m.dataPtr(), ARLIM_3D(m.loVect()), ARLIM_3D(m.hiVect()),
+                                      time, dt, sdc_iteration);
 
     }
 
@@ -406,8 +427,6 @@ Castro::react_state(Real time, Real dt)
 
 }
 
-#endif
-
 
 
 bool
@@ -441,33 +460,32 @@ Castro::valid_zones_to_burn(MultiFab& State)
     amrex::Vector<Real> small_limiters;
     amrex::Vector<Real> large_limiters;
 
-    int ng = 0;
     bool local = true;
 
     Real small_dens = small;
     Real large_dens = large;
 
     if (limit_small_rho) {
-        Real small_dens = State.min(Density, 0, local);
-        small_limiters.push_back(small_dens);
+      small_dens = State.min(Density, 0, local);
+      small_limiters.push_back(small_dens);
     }
 
     if (limit_large_rho) {
-        Real large_dens = State.max(Density, 0, local);
-        large_limiters.push_back(large_dens);
+      large_dens = State.max(Density, 0, local);
+      large_limiters.push_back(large_dens);
     }
 
     Real small_T = small;
     Real large_T = large;
 
     if (limit_small_T) {
-        Real small_T = State.min(Temp, 0, local);
-        small_limiters.push_back(small_T);
+      small_T = State.min(Temp, 0, local);
+      small_limiters.push_back(small_T);
     }
 
     if (limit_large_T) {
-        Real large_T = State.max(Temp, 0, local);
-        large_limiters.push_back(large_T);
+      large_T = State.max(Temp, 0, local);
+      large_limiters.push_back(large_T);
     }
 
     // Now do the reductions. We're being careful here

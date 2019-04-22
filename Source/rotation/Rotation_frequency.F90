@@ -4,10 +4,6 @@ module rotation_frequency_module
   use amrex_fort_module, only : rt => amrex_real
   implicit none
 
-  private
-
-  public get_omega, get_domegadt
-
 contains
 
   function get_omega(time) result(omega)
@@ -59,7 +55,7 @@ contains
   function get_domegadt(time) result(domegadt)
 
     use prob_params_module, only: coord_type
-    use meth_params_module, only: rot_period, rot_period_dot, rot_axis
+    use meth_params_module, only: rot_period, rot_period_dot
     use amrex_constants_module, only: ZERO, TWO, M_PI
 
     use amrex_fort_module, only : rt => amrex_real
@@ -96,4 +92,16 @@ contains
 
   end function get_domegadt
 
+  subroutine set_rot_period(period) bind(C, name='set_rot_period')
+
+    use meth_params_module, only: rot_period
+
+    implicit none
+
+    real(rt), intent(in) :: period
+
+    rot_period = period
+
+  end subroutine set_rot_period
+  
 end module rotation_frequency_module

@@ -1,6 +1,10 @@
 # sources used with hydro
 
 CEXE_sources += Castro_hydro.cpp
+CEXE_sources += Castro_ctu_hydro.cpp
+CEXE_sources += Castro_mol_hydro.cpp
+FEXE_headers += Castro_hydro_F.H
+
 ifeq ($(USE_HYBRID_MOMENTUM), TRUE)
   CEXE_sources += Castro_hybrid.cpp
   ca_F90EXE_sources += hybrid_advection_nd.F90
@@ -20,12 +24,7 @@ ca_F90EXE_sources += trace_ppm.F90
 ca_F90EXE_sources += Castro_ctu_nd.F90
 ca_F90EXE_sources += Castro_mol_nd.F90
 ca_F90EXE_sources += Castro_fourth_order.F90
-ca_F90EXE_sources += Castro_ctu_$(DIM)d.F90
 
-ifeq ($(DIM), 2)
-  ca_f90EXE_sources += multid_slope_$(DIM)d.f90
-endif
-
-ifeq ($(DIM), 3)
+ifneq ($(DIM), 1)
   ca_F90EXE_sources += trans.F90
 endif

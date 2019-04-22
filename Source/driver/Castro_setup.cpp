@@ -4,6 +4,15 @@
 #include <AMReX_ParmParse.H>
 #include "Castro.H"
 #include "Castro_F.H"
+#ifdef AMREX_DIMENSION_AGNOSTIC
+#include "Castro_bc_fill_nd_F.H"
+#include "Castro_bc_fill_nd.H"
+#else
+#include "Castro_bc_fill_F.H"
+#include "Castro_bc_fill.H"
+#endif
+#include "Castro_generic_fill_F.H"
+#include "Castro_generic_fill.H"
 #include <Derive_F.H>
 #include "Derive.H"
 #ifdef RADIATION
@@ -192,26 +201,14 @@ Castro::variableSetUp ()
 
   NUM_STATE = cnt;
 
+#include "set_primitive.H"
+
+#include "set_godunov.H"
+
   // Define NUM_GROW from the f90 module.
   ca_get_method_params(&NUM_GROW);
 
   const Real run_strt = ParallelDescriptor::second() ;
-
-
-  // we want const_grav in F90, get it here from parmparse, since it
-  // it not in the Castro namespace
-  ParmParse pp("gravity");
-
-  // Pass in the name of the gravity type we're using -- we do this
-  // manually, since the Fortran parmparse doesn't support strings
-  std::string gravity_type = "none";
-  pp.query("gravity_type", gravity_type);
-  const int gravity_type_length = gravity_type.length();
-  Vector<int> gravity_type_name(gravity_type_length);
-
-  for (int i = 0; i < gravity_type_length; i++)
-    gravity_type_name[i] = gravity_type[i];
-
 
   // Read in the input values to Fortran.
   ca_set_castro_method_params();
@@ -225,13 +222,31 @@ Castro::variableSetUp ()
 #ifdef SHOCK_VAR
 		       Shock,
 #endif
-		       gravity_type_name.dataPtr(), gravity_type_length);
+#ifdef MHD
+                       QMAGX, QMAGY, QMAGZ,
+#endif
+#ifdef RADIATION
+                       QPTOT, QREITOT, QRAD,
+#endif
+                       QRHO,
+                       QU, QV, QW,
+                       QGAME, QGC, QPRES, QREINT,
+                       QTEMP,
+                       QFA, QFS, QFX,
+#ifdef RADIATION
+                       GDLAMS, GDERADS,
+#endif
+                       GDRHO, GDU, GDV, GDW,
+                       GDPRES, GDGAME);
 
   // Get the number of primitive variables from Fortran.
-  ca_get_qvar(&QVAR);
+  ca_get_nqsrc(&NQSRC);
 
   // and the auxiliary variables
   ca_get_nqaux(&NQAUX);
+
+  // and the number of primitive variable source terms
+  ca_get_nqsrc(&NQSRC);
 
   // initialize the Godunov state array used in hydro
   ca_get_ngdnv(&NGDNV);
@@ -337,12 +352,23 @@ Castro::variableSetUp ()
 
   // Source terms -- for the CTU method, because we do characteristic
   // tracing on the source terms, we need NUM_GROW ghost cells to do
-  // the reconstruction.  For MOL, on the otherhand, we only need 1
-  // (for the fourth-order stuff).
+  // the reconstruction.  For MOL and SDC, on the other hand, we only
+  // need 1 (for the fourth-order stuff). Simplified SDC uses the CTU
+  // advance, so it behaves the same way as CTU here.
 
   store_in_checkpoint = true;
+  int source_ng;
+  if (time_integration_method == CornerTransportUpwind || time_integration_method == SimplifiedSpectralDeferredCorrections) {
+      source_ng = NUM_GROW;
+  }
+  else if (time_integration_method == MethodOfLines || time_integration_method == SpectralDeferredCorrections) {
+      source_ng = 1;
+  }
+  else {
+      amrex::Error("Unknown time_integration_method");
+  }
   desc_lst.addDescriptor(Source_Type, IndexType::TheCellType(),
-			 StateDescriptor::Point, do_ctu ? NUM_GROW : 1, NUM_STATE,
+			 StateDescriptor::Point, source_ng, NUM_STATE,
 			 &cell_cons_interp, state_data_extrap, store_in_checkpoint);
 
 #ifdef ROTATION
@@ -369,15 +395,17 @@ Castro::variableSetUp ()
 			 &cell_cons_interp,state_data_extrap,store_in_checkpoint);
 #endif
 
-#ifdef SDC
 #ifdef REACTIONS
-  // For SDC, we want to store the reactions source.
+  // For simplified SDC, we want to store the reactions source.
 
-  store_in_checkpoint = true;
-  desc_lst.addDescriptor(SDC_React_Type, IndexType::TheCellType(),
-			 StateDescriptor::Point,NUM_GROW,QVAR,
-			 &cell_cons_interp,state_data_extrap,store_in_checkpoint);
-#endif
+  if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+
+      store_in_checkpoint = true;
+      desc_lst.addDescriptor(Simplified_SDC_React_Type, IndexType::TheCellType(),
+                             StateDescriptor::Point, NUM_GROW, NQSRC,
+                             &cell_cons_interp, state_data_extrap, store_in_checkpoint);
+
+  }
 #endif
 
   Vector<BCRec>       bcs(NUM_STATE);
@@ -562,26 +590,26 @@ Castro::variableSetUp ()
   desc_lst.setComponent(Reactions_Type, NumSpec+1, "rho_enuc", bc, BndryFunc(ca_reactfill));
 #endif
 
-#ifdef SDC
 #ifdef REACTIONS
-  for (int i = 0; i < QVAR; ++i) {
-      char buf[64];
-      sprintf(buf, "sdc_react_source_%d", i);
-      set_scalar_bc(bc,phys_bc);
+  if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+      for (int i = 0; i < NQSRC; ++i) {
+          char buf[64];
+          sprintf(buf, "sdc_react_source_%d", i);
+          set_scalar_bc(bc,phys_bc);
 
-      // Replace inflow BCs with FOEXTRAP.
+          // Replace inflow BCs with FOEXTRAP.
 
-      for (int j = 0; j < AMREX_SPACEDIM; ++j) {
-          if (bc.lo(j) == EXT_DIR)
-              bc.setLo(j, FOEXTRAP);
+          for (int j = 0; j < AMREX_SPACEDIM; ++j) {
+              if (bc.lo(j) == EXT_DIR)
+                  bc.setLo(j, FOEXTRAP);
 
-          if (bc.hi(j) == EXT_DIR)
-              bc.setHi(j, FOEXTRAP);
+              if (bc.hi(j) == EXT_DIR)
+                  bc.setHi(j, FOEXTRAP);
+          }
+
+          desc_lst.setComponent(Simplified_SDC_React_Type,i,std::string(buf),bc,BndryFunc(ca_generic_single_fill));
       }
-
-      desc_lst.setComponent(SDC_React_Type,i,std::string(buf),bc,BndryFunc(ca_generic_single_fill));
   }
-#endif
 #endif
 
 #ifdef RADIATION
@@ -642,14 +670,37 @@ Castro::variableSetUp ()
   }
 #endif
 
+  // some optional State_Type's -- since these depend on the value of
+  // runtime parameters, we don't add these to the enum, but instead
+  // add them to the count of State_Type's if we will use them
+
   if (use_custom_knapsack_weights) {
       Knapsack_Weight_Type = desc_lst.size();
-      desc_lst.addDescriptor(Knapsack_Weight_Type, IndexType::TheCellType(), StateDescriptor::Point,
+      desc_lst.addDescriptor(Knapsack_Weight_Type, IndexType::TheCellType(),
+                             StateDescriptor::Point,
 			     0, 1, &pc_interp);
       // Because we use piecewise constant interpolation, we do not use bc and BndryFunc.
       desc_lst.setComponent(Knapsack_Weight_Type, 0, "KnapsackWeight",
 			    bc, BndryFunc(ca_nullfill));
   }
+
+
+#ifdef REACTIONS
+  if (time_integration_method == SpectralDeferredCorrections && (mol_order == 4 || sdc_order == 4)) {
+
+    // we are doing 4th order reactive SDC.  We need 2 ghost cells here
+    SDC_Source_Type = desc_lst.size();
+
+    store_in_checkpoint = false;
+    desc_lst.addDescriptor(SDC_Source_Type, IndexType::TheCellType(),
+                           StateDescriptor::Point, 2, NUM_STATE,
+                           interp, state_data_extrap, store_in_checkpoint);
+
+    // this is the same thing we do for the sources
+    desc_lst.setComponent(SDC_Source_Type, Density, state_type_source_names, source_bcs,
+                          BndryFunc(ca_generic_single_fill, ca_generic_multi_fill));
+  }
+#endif
 
   num_state_type = desc_lst.size();
 
@@ -791,6 +842,14 @@ Castro::variableSetUp ()
     derive_lst.addComponent(spec_string,desc_lst,State_Type,Density,1);
     derive_lst.addComponent(spec_string,desc_lst,State_Type,FirstSpec+i,1);
   }
+
+  //
+  // Abar
+  //
+  derive_lst.add("abar",IndexType::TheCellType(),1,ca_derabar,the_same_box);
+  derive_lst.addComponent("abar",desc_lst,State_Type,Density,1);
+  derive_lst.addComponent("abar",desc_lst,State_Type,FirstSpec,NumSpec);
+
   //
   // Velocities
   //
@@ -982,6 +1041,33 @@ Castro::variableSetUp ()
   source_names[rot_src] = "rotation";
 #endif
 
+#ifdef AMREX_USE_CUDA
+  // Set the minimum number of threads needed per
+  // threadblock to do BC fills with CUDA. We will
+  // force this to be 8. The reason is that it is
+  // not otherwise guaranteed for our thread blocks
+  // to be aligned with the grid in such a way that
+  // the synchronization logic in amrex_filccn works
+  // out. We need at least NUM_GROW + 1 threads in a
+  // block for CTU. If we used this minimum of 5, we
+  // would hit cases where this doesn't work since
+  // our blocking_factor is usually a power of 2, and
+  // the thread blocks would not be aligned to guarantee
+  // that the threadblocks containing the ghost zones
+  // contained all of the ghost zones, as well as the
+  // required interior zone. And for reflecting BCs,
+  // we need NUM_GROW * 2 == 8 threads anyway. This logic
+  // then requires that blocking_factor be a multiple
+  // of 8. It is a little wasteful for MOL/SDC and for
+  // problems that only have outflow BCs, but the BC
+  // fill is not the expensive part of the algorithm
+  // for our production science problems anyway, so
+  // we ignore this extra cost in favor of safety.
+
+  for (int dim = 0; dim < AMREX_SPACEDIM; ++dim) {
+      numBCThreadsMin[dim] = 8;
+  }
+#endif
 
   // method of lines Butcher tableau
   if (mol_order == 1) {
@@ -1050,6 +1136,26 @@ Castro::variableSetUp ()
 
   } else {
     amrex::Error("invalid value of mol_order\n");
+  }
+
+
+
+  if (sdc_order == 2) {
+
+    SDC_NODES = 2;
+
+    dt_sdc.resize(SDC_NODES);
+    dt_sdc = {0.0, 1.0};
+
+  } else if (sdc_order == 4) {
+
+    SDC_NODES = 3;
+
+    dt_sdc.resize(SDC_NODES);
+    dt_sdc = {0.0, 0.5, 1.0};
+
+  } else {
+    amrex::Error("invalid value of sdc_order");
   }
 
 }

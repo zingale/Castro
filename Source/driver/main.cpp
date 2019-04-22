@@ -41,6 +41,7 @@ main (int   argc,
     // Make sure to catch new failures.
     //
     amrex::Initialize(argc,argv);
+    {
 
     // Refuse to continue if we did not provide an inputs file.
 
@@ -56,7 +57,7 @@ main (int   argc,
 
     BL_PROFILE_VAR("main()", pmain);
 
-    Real dRunTime1 = ParallelDescriptor::second();
+    double dRunTime1 = ParallelDescriptor::second();
 
     std::cout << std::setprecision(10);
 
@@ -127,7 +128,7 @@ main (int   argc,
            amrptr->RegridOnly(amrptr->cumTime());
            }
 
-    Real dRunTime2 = ParallelDescriptor::second();
+    double dRunTime2 = ParallelDescriptor::second();
 
     while ( amrptr->okToContinue()                            &&
            (amrptr->levelSteps(0) < max_step || max_step < 0) &&
@@ -169,14 +170,7 @@ main (int   argc,
 	}
 
         if (amrptr->stepOfLastSmallPlotFile() < amrptr->levelSteps(0)) {
-
-            // We want to be sure here that the user is actually requesting
-            // small plots, we can check this if the last small plot file
-            // is non-negative.
-
-            if (amrptr->stepOfLastSmallPlotFile() >= 0)
-                amrptr->writeSmallPlotFile();
-
+            amrptr->writeSmallPlotFile();
         }
 
     }
@@ -207,10 +201,10 @@ main (int   argc,
     //
     const int IOProc = ParallelDescriptor::IOProcessorNumber();
 
-    Real dRunTime3 = ParallelDescriptor::second();
+    double dRunTime3 = ParallelDescriptor::second();
 
-    Real runtime_total = dRunTime3 - dRunTime1;
-    Real runtime_timestep = dRunTime3 - dRunTime2;
+    Real runtime_total = static_cast<Real>(dRunTime3 - dRunTime1);
+    Real runtime_timestep = static_cast<Real>(dRunTime3 - dRunTime2);
 
     ParallelDescriptor::ReduceRealMax(runtime_total,IOProc);
     ParallelDescriptor::ReduceRealMax(runtime_timestep,IOProc);
@@ -257,6 +251,7 @@ main (int   argc,
     BL_PROFILE_VAR_STOP(pmain);
     BL_PROFILE_SET_RUN_TIME(dRunTime2);
 
+    }
     amrex::Finalize();
 
     return 0;

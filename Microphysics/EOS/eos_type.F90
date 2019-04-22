@@ -249,7 +249,7 @@ contains
   subroutine composition(state)
 
     use amrex_constants_module, only: ONE
-    use network, only: aion, aion_inv, zion
+    use network, only: aion_inv, zion
 
     implicit none
 
@@ -491,9 +491,7 @@ contains
 
     case default
 
-#ifdef AMREX_USE_CUDA
-       stop
-#else
+#ifndef AMREX_USE_CUDA
        call amrex_error("EOS: invalid independent variable")
 #endif
 

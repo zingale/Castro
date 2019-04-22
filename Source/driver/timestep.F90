@@ -8,12 +8,15 @@ module timestep_module
 
 contains
 
-  ! Courant-condition limited timestep
 
   subroutine ca_estdt(lo,hi,u,u_lo,u_hi,dx,dt) bind(C, name="ca_estdt")
+    ! Courant-condition limited timestep
+    !
+    ! .. note::
+    !    Binds to C function ``ca_estdt``
 
     use network, only: nspec, naux
-    use meth_params_module, only: NVAR, URHO, UMX, UMY, UMZ, UEINT, UTEMP, UFS, UFX, do_ctu
+    use meth_params_module, only: NVAR, URHO, UMX, UMY, UMZ, UEINT, UTEMP, UFS, UFX, time_integration_method
     use eos_module, only: eos
     use eos_type_module, only: eos_t, eos_input_re
     use prob_params_module, only: dim
@@ -74,7 +77,7 @@ contains
                 uz = vel(3)
              endif
 #endif
-             
+
              c = eos_state % cs
 
              dt1 = dx(1)/(c + abs(ux))
@@ -89,7 +92,7 @@ contains
                 dt3 = dt1
              endif
 
-             if (do_ctu == 1) then
+             if (time_integration_method == 0) then
                 call amrex_min(dt, min(dt1,dt2,dt3))
              else
                 ! method of lines constraint is tougher
@@ -110,15 +113,18 @@ contains
 
   end subroutine ca_estdt
 
-  ! Reactions-limited timestep
-
 #ifdef REACTIONS
+
   subroutine ca_estdt_burning(lo, hi, sold, so_lo, so_hi, &
-                              snew, sn_lo, sn_hi, &
-                              rold, ro_lo, ro_hi, &
-                              rnew, rn_lo, rn_hi, &
-                              dx, dt_old, dt) &
-                              bind(C, name="ca_estdt_burning")
+       snew, sn_lo, sn_hi, &
+       rold, ro_lo, ro_hi, &
+       rnew, rn_lo, rn_hi, &
+       dx, dt_old, dt) &
+       bind(C, name="ca_estdt_burning")
+    ! Reactions-limited timestep
+    !
+    ! .. note::
+    !    Binds to C function ``ca_estdt_burning``
 
     use amrex_constants_module, only: HALF, ONE
     use network, only: nspec, naux, aion
@@ -132,6 +138,7 @@ contains
     use eos_type_module, only: eos_t, eos_input_rt
     use burner_module, only: ok_to_burn
     use burn_type_module, only : burn_t, net_ienuc, burn_to_eos, eos_to_burn
+    use temperature_integration_module, only: self_heat
     use amrex_fort_module, only : rt => amrex_real
     use extern_probin_module, only: small_x
 
@@ -166,7 +173,7 @@ contains
     ! dtnuc_e * (e / (de/dt)).  If the timestep factor dtnuc is
     ! equal to 1, this says that we don't want the
     ! internal energy to change by any more than its current
-    ! magnitude in the next timestep. 
+    ! magnitude in the next timestep.
     !
     ! If dtnuc is less than one, it controls the fraction we will
     ! allow the internal energy to change in this timestep due to
@@ -221,6 +228,7 @@ contains
 
              state_new % dx = minval(dx(1:dim))
 
+             state_new % self_heat = self_heat
              call actual_rhs(state_new)
 
              dedt = state_new % ydot(net_ienuc)
@@ -252,11 +260,16 @@ contains
   end subroutine ca_estdt_burning
 #endif
 
-  ! Diffusion-limited timestep
 
 #ifdef DIFFUSION
-  subroutine ca_estdt_temp_diffusion(lo,hi,state,s_lo,s_hi,dx,dt) &
-       bind(C, name="ca_estdt_temp_diffusion")
+
+  subroutine ca_estdt_temp_diffusion(lo, hi, &
+       state, s_lo, s_hi, &
+       dx, dt) bind(C, name="ca_estdt_temp_diffusion")
+   ! Diffusion-limited timestep
+   !
+   ! .. note::
+   !    Binds to C function ``ca_estdt_temp_diffusion``
 
     use network, only: nspec, naux
     use eos_module, only: eos
@@ -265,22 +278,24 @@ contains
          diffuse_cutoff_density
     use prob_params_module, only: dim
     use amrex_constants_module, only : ONE, HALF
-    use conductivity_module, only : conductivity
-    use amrex_fort_module, only : rt => amrex_real
+    use conductivity_module, only: conductivity
+    use amrex_fort_module, only: rt => amrex_real, amrex_min
 
     implicit none
 
-    integer, intent(in) :: lo(3), hi(3)
-    integer, intent(in) :: s_lo(3), s_hi(3)
-    real(rt), intent(in) :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
-    real(rt), intent(in) :: dx(3)
+    integer,  intent(in   ) :: lo(3), hi(3)
+    integer,  intent(in   ) :: s_lo(3), s_hi(3)
+    real(rt), intent(in   ) :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
+    real(rt), intent(in   ) :: dx(3)
     real(rt), intent(inout) :: dt
 
-    real(rt)         :: dt1, dt2, dt3, rho_inv
-    integer          :: i, j, k
-    real(rt)         :: D
+    real(rt) :: dt1, dt2, dt3, rho_inv
+    integer  :: i, j, k
+    real(rt) :: D
 
     type (eos_t) :: eos_state
+
+    !$gpu
 
     ! dt < 0.5 dx**2 / D
     ! where D = k/(rho c_v), and k is the conductivity
@@ -323,7 +338,7 @@ contains
                    dt3 = dt1
                 endif
 
-                dt  = min(dt,dt1,dt2,dt3)
+                call amrex_min(dt, min(dt1,dt2,dt3))
 
              endif
 
@@ -332,101 +347,23 @@ contains
     enddo
 
   end subroutine ca_estdt_temp_diffusion
-
-  subroutine ca_estdt_enth_diffusion(lo,hi,state,s_lo,s_hi,dx,dt) &
-       bind(C, name="ca_estdt_enth_diffusion")
-
-    use network, only: nspec, naux
-    use eos_module, only: eos
-    use eos_type_module, only: eos_input_re, eos_t
-    use meth_params_module, only: NVAR, URHO, UEINT, UTEMP, UFS, UFX, &
-         diffuse_cutoff_density
-    use prob_params_module, only: dim
-    use amrex_constants_module, only : HALF, ONE
-    use conductivity_module, only : conductivity
-    use amrex_fort_module, only : rt => amrex_real
-
-    implicit none
-
-    integer, intent(in) :: lo(3), hi(3)
-    integer, intent(in) :: s_lo(3), s_hi(3)
-    real(rt), intent(in) :: state(s_lo(1):s_hi(1),s_lo(2):s_hi(2),s_lo(3):s_hi(3),NVAR)
-    real(rt), intent(in) :: dx(3)
-    real(rt), intent(inout) ::  dt
-
-    real(rt)         :: dt1, dt2, dt3, rho_inv
-    integer          :: i, j, k
-    real(rt)         :: D
-
-    type (eos_t) :: eos_state
-
-    ! dt < 0.5 dx**2 / D
-    ! where D = k/(rho c_p), and k is the conductivity
-
-    do k = lo(3), hi(3)
-       do j = lo(2), hi(2)
-          do i = lo(1), hi(1)
-
-             if (state(i,j,k,URHO) > diffuse_cutoff_density) then
-
-                rho_inv = ONE/state(i,j,k,URHO)
-
-                ! we need cv
-                eos_state % rho = state(i,j,k,URHO )
-                eos_state % T   = state(i,j,k,UTEMP)
-                eos_state % e   = state(i,j,k,UEINT) * rho_inv
-
-                eos_state % xn  = state(i,j,k,UFS:UFS+nspec-1) * rho_inv
-                eos_state % aux = state(i,j,k,UFX:UFX+naux-1) * rho_inv
-
-                call eos(eos_input_re, eos_state)
-
-                ! we also need the conductivity
-                call conductivity(eos_state)
-
-                D = eos_state % conductivity*rho_inv/eos_state%cp
-
-                dt1 = HALF*dx(1)**2/D
-
-                if (dim >= 2) then
-                   dt2 = HALF*dx(2)**2/D
-                else
-                   dt2 = dt1
-                endif
-
-                if (dim == 3) then
-                   dt3 = HALF*dx(3)**2/D
-                else
-                   dt3 = dt1
-                endif
-
-                dt  = min(dt,dt1,dt2,dt3)
-
-             endif
-
-          enddo
-       enddo
-    enddo
-
-  end subroutine ca_estdt_enth_diffusion
 #endif
 
-
-  ! Check whether the last timestep violated any of our stability criteria.
-  ! If so, suggest a new timestep which would not.
 
   subroutine ca_check_timestep(lo, hi, s_old, so_lo, so_hi, &
-                               s_new, sn_lo, sn_hi, &
+       s_new, sn_lo, sn_hi, &
 #ifdef REACTIONS
-                               r_old, ro_lo, ro_hi, &
-                               r_new, rn_lo, rn_hi, &
+       r_old, ro_lo, ro_hi, &
+       r_new, rn_lo, rn_hi, &
 #endif
-                               dx, dt_old, dt_new) &
-                               bind(C, name="ca_check_timestep")
+       dx, dt_old, dt_new) &
+       bind(C, name="ca_check_timestep")
+    ! Check whether the last timestep violated any of our stability criteria.
+    ! If so, suggest a new timestep which would not.
 
     use amrex_constants_module, only: HALF, ONE
     use meth_params_module, only: NVAR, URHO, UTEMP, UEINT, UFS, UFX, UMX, UMZ, &
-                                  cfl, do_hydro
+         cfl, do_hydro
 #ifdef REACTIONS
     use meth_params_module, only: dtnuc_e, dtnuc_X, dtnuc_X_threshold, do_react
     use extern_probin_module, only: small_x
@@ -452,7 +389,8 @@ contains
     real(rt), intent(in) :: r_old(ro_lo(1):ro_hi(1),ro_lo(2):ro_hi(2),ro_lo(3):ro_hi(3),nspec+2)
     real(rt), intent(in) :: r_new(rn_lo(1):rn_hi(1),rn_lo(2):rn_hi(2),rn_lo(3):rn_hi(3),nspec+2)
 #endif
-    real(rt), intent(in) :: dx(3), dt_old
+    real(rt), intent(in) :: dx(3)
+    real(rt), intent(in), value :: dt_old
     real(rt), intent(inout) :: dt_new
 
     integer          :: i, j, k
@@ -469,6 +407,8 @@ contains
     type (eos_t)     :: eos_state
 
     real(rt), parameter :: derivative_floor = 1.e-50_rt
+
+    !$gpu
 
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)

@@ -5,9 +5,9 @@ stop_time =  0.0008
 # PROBLEM SIZE & GEOMETRY
 geometry.is_periodic = 0 0 0
 geometry.coord_sys   = 0  # 0 => cart, 1 => RZ  2=>spherical
-geometry.prob_lo     =  0     0     0
-geometry.prob_hi     = 1.e6    3.125e4 3.125e4
-amr.n_cell           = 128     4      4
+geometry.prob_lo     = 0       0         0
+geometry.prob_hi     = 1.e6    6.25e4    6.25e4
+amr.n_cell           = 128     8         8
 
 # >>>>>>>>>>>>>  BC FLAGS <<<<<<<<<<<<<<<<
 # 0 = Interior           3 = Symmetry
@@ -30,9 +30,6 @@ castro.use_flattening = 1
 
 castro.riemann_solver = 1
 
-castro.allow_negative_energy = 0
-
-
 # TIME STEP CONTROL
 castro.cfl            = 0.8     # cfl number for hyperbolic system
 castro.init_shrink    = 0.1     # scale back initial timestep
@@ -45,11 +42,11 @@ castro.v              = 1       # verbosity in Castro.cpp
 amr.v                 = 1       # verbosity in Amr.cpp
 #amr.grid_log        = grdlog  # name of grid logging file
 
-# REFINEMENT / REGRIDDING 
+# REFINEMENT / REGRIDDING
 amr.max_level       = 0       # maximum level number allowed
 amr.ref_ratio       = 2 2 2 2 # refinement ratio
 amr.regrid_int      = 2 2 2 2 # how often to regrid
-amr.blocking_factor = 4       # block factor in grid generation
+amr.blocking_factor = 8       # block factor in grid generation
 amr.max_grid_size   = 64
 amr.n_error_buf     = 2 2 2 2 # number of buffer cells in error est
 
