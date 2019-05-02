@@ -745,7 +745,7 @@ end subroutine ca_set_method_params
 
 
 subroutine ca_set_problem_params(dm,physbc_lo_in,physbc_hi_in,&
-     Interior_in, Inflow_in, Outflow_in, &
+     Interior_in, UserBC_in, Inflow_in, Outflow_in, &
      Symmetry_in, SlipWall_in, NoSlipWall_in, &
      coord_type_in, &
      problo_in, probhi_in, center_in) &
@@ -767,7 +767,7 @@ subroutine ca_set_problem_params(dm,physbc_lo_in,physbc_hi_in,&
 
   integer,  intent(in) :: dm
   integer,  intent(in) :: physbc_lo_in(dm),physbc_hi_in(dm)
-  integer,  intent(in) :: Interior_in, Inflow_in, Outflow_in, Symmetry_in, SlipWall_in, NoSlipWall_in
+  integer,  intent(in) :: Interior_in, UserBC_in, Inflow_in, Outflow_in, Symmetry_in, SlipWall_in, NoSlipWall_in
   integer,  intent(in) :: coord_type_in
   real(rt), intent(in) :: problo_in(dm), probhi_in(dm), center_in(dm)
 
@@ -785,6 +785,7 @@ subroutine ca_set_problem_params(dm,physbc_lo_in,physbc_hi_in,&
   physbc_hi(1:dm) = physbc_hi_in(1:dm)
 
   allocate(Interior)
+  allocate(UserBC)
   allocate(Inflow)
   allocate(Outflow)
   allocate(Symmetry)
@@ -797,6 +798,7 @@ subroutine ca_set_problem_params(dm,physbc_lo_in,physbc_hi_in,&
   allocate(probhi(3))
 
   Interior   = Interior_in
+  UserBC     = UserBC_in
   Inflow     = Inflow_in
   Outflow    = Outflow_in
   Symmetry   = Symmetry_in

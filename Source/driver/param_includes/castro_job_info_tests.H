@@ -80,6 +80,7 @@ jobInfoFile << (Castro::sdc_solver_atol == 1.e-10 ? "    " : "[*] ") << "castro.
 jobInfoFile << (Castro::sdc_solver_relax_factor == 1.0 ? "    " : "[*] ") << "castro.sdc_solver_relax_factor = " << Castro::sdc_solver_relax_factor << std::endl;
 jobInfoFile << (Castro::sdc_solve_for_rhoe == 1 ? "    " : "[*] ") << "castro.sdc_solve_for_rhoe = " << Castro::sdc_solve_for_rhoe << std::endl;
 jobInfoFile << (Castro::sdc_use_analytic_jac == 1 ? "    " : "[*] ") << "castro.sdc_use_analytic_jac = " << Castro::sdc_use_analytic_jac << std::endl;
+jobInfoFile << (Castro::do_nscbc == 0 ? "    " : "[*] ") << "castro.do_nscbc = " << Castro::do_nscbc << std::endl;
 jobInfoFile << (Castro::fixed_dt == -1.0 ? "    " : "[*] ") << "castro.fixed_dt = " << Castro::fixed_dt << std::endl;
 jobInfoFile << (Castro::initial_dt == -1.0 ? "    " : "[*] ") << "castro.initial_dt = " << Castro::initial_dt << std::endl;
 jobInfoFile << (Castro::dt_cutoff == 0.0 ? "    " : "[*] ") << "castro.dt_cutoff = " << Castro::dt_cutoff << std::endl;

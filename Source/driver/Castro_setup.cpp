@@ -272,7 +272,7 @@ Castro::variableSetUp ()
   ppc.queryarr("center",center,0,BL_SPACEDIM);
 
   ca_set_problem_params(dm,phys_bc.lo(),phys_bc.hi(),
-			Interior,Inflow,Outflow,Symmetry,SlipWall,NoSlipWall,coord_type,
+			Interior,UserBC,Inflow,Outflow,Symmetry,SlipWall,NoSlipWall,coord_type,
 			Geometry::ProbLo(),Geometry::ProbHi(),center.dataPtr());
 
   // Read in the parameters for the tagging criteria

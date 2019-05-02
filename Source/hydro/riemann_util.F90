@@ -732,4 +732,72 @@ contains
 
   end subroutine compute_flux
 
+  pure function bc_test(idir, i, j, k, &
+                        bcMask, bcm_lo, bcm_hi, &
+                        domlo, domhi) result (f)
+
+    use prob_params_module, only : physbc_lo, physbc_hi, Symmetry, SlipWall, NoSlipWall
+
+    integer, intent(in) :: idir, i, j, k, domlo(*), domhi(*)
+    integer, intent(in) :: bcm_lo(3), bcm_hi(3)
+    integer, intent(in) :: bcMask(bcm_lo(1):bcm_hi(1),bcm_lo(2):bcm_hi(2),bcm_lo(3):bcm_hi(3))
+    integer :: f
+
+    ! Enforce that fluxes through a symmetry plane or wall are hard zero.
+    f = 1
+
+    if (idir == 1) then
+
+      if (i == domlo(1) .and. &
+              (bcMask(i,j,k) == SlipWall .or. &
+               bcMask(i,j,k) == Symmetry .or. &
+               bcMask(i,j,k) == NoSlipWall  )) then
+            f = 0
+      endif
+
+      if (i == domhi(1)+1 .and. &
+              (bcMask(i,j,k) == SlipWall .or. &
+               bcMask(i,j,k) == Symmetry .or. &
+               bcMask(i,j,k) == NoSlipWall  )) then
+            f = 0
+      endif
+    end if
+
+    if (idir == 2) then
+
+      if (j == domlo(2) .and. &
+              (bcMask(i,j,k) == SlipWall .or. &
+               bcMask(i,j,k) == Symmetry .or. &
+               bcMask(i,j,k) == NoSlipWall  )) then
+            f = 0
+      endif
+
+      if (j == domhi(2)+1 .and. &
+              (bcMask(i,j,k) == SlipWall .or. &
+               bcMask(i,j,k) == Symmetry .or. &
+               bcMask(i,j,k) == NoSlipWall  )) then
+            f = 0
+      end if
+    endif
+
+    if (idir == 3) then
+
+      if (k == domlo(3) .and. &
+              (bcMask(i,j,k) == SlipWall .or. &
+               bcMask(i,j,k) == Symmetry .or. &
+               bcMask(i,j,k) == NoSlipWall  )) then
+            f = 0
+      endif
+
+      if (k == domhi(3)+1 .and. &
+              (bcMask(i,j,k) == SlipWall .or. &
+               bcMask(i,j,k) == Symmetry .or. &
+               bcMask(i,j,k) == NoSlipWall  )) then
+            f = 0
+      end if
+    endif
+
+  end function bc_test
+
+
 end module riemann_util_module

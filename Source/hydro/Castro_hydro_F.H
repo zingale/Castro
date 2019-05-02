@@ -35,6 +35,25 @@ extern "C"
      const amrex::Real* dx,
      BL_FORT_FAB_ARG_3D(div));
 
+  void ca_impose_NSCBC(const int* lo, const int* hi,
+                       const int* domlo, const int* domhi,
+                       const BL_FORT_FAB_ARG_3D(uin),
+                       BL_FORT_FAB_ARG_3D(q),
+                       BL_FORT_FAB_ARG_3D(qaux),
+                       BL_FORT_IFAB_ARG_3D(x_bcMask),
+                       BL_FORT_IFAB_ARG_3D(y_bcMask),
+                       BL_FORT_IFAB_ARG_3D(z_bcMask),
+                       const int flag_nscbc_isAnyPerio,
+                       const int* flag_nscbc_perio,
+                       const amrex::Real time, const amrex::Real* delta,
+                       const amrex::Real dt, const int verbose);
+
+  void set_bc_mask(const int* lo, const int* hi,
+                   const int* domlo, const int* domhi,
+                   BL_FORT_IFAB_ARG_3D(x_bcMask),
+                   BL_FORT_IFAB_ARG_3D(y_bcMask),
+                   BL_FORT_IFAB_ARG_3D(z_bcMask));
+
   void ca_uflatten
     (const int* lo, const int* hi,
      const BL_FORT_FAB_ARG_3D(q),
@@ -122,6 +141,7 @@ extern "C"
      const BL_FORT_FAB_ARG_3D(ql),
      const BL_FORT_FAB_ARG_3D(qr), const int nc, const int comp,
      BL_FORT_FAB_ARG_3D(flux),
+     const BL_FORT_IFAB_ARG_3D(bcMask),
      BL_FORT_FAB_ARG_3D(q_int),
 #ifdef RADIATION
      BL_FORT_FAB_ARG_3D(radflux),
@@ -479,6 +499,13 @@ extern "C"
 #endif
 #if AMREX_SPACEDIM >= 3
      BL_FORT_FAB_ARG_3D(flux3),
+#endif
+     const BL_FORT_IFAB_ARG_3D(bcMask_x),
+#if AMREX_SPACEDIM >= 2
+     const BL_FORT_IFAB_ARG_3D(bcMask_y),
+#endif
+#if AMREX_SPACEDIM >= 3
+     const BL_FORT_IFAB_ARG_3D(bcMask_z),
 #endif
 #if (BL_SPACEDIM < 3)
      BL_FORT_FAB_ARG_3D(pradial),

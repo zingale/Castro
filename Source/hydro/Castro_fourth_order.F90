@@ -17,6 +17,13 @@ subroutine ca_fourth_single_stage(lo, hi, time, domlo, domhi, &
 #if AMREX_SPACEDIM == 3
                                   flz, flz_lo, flz_hi, &
 #endif
+                                  bcMask_x, bcx_lo, bcx_hi, &
+#if AMREX_SPACEDIM >= 2
+                                  bcMask_y, bcy_lo, bcy_hi, &
+#endif
+#if AMREX_SPACEDIM == 3
+                                  bcMask_z, bcz_lo, bcz_hi, &
+#endif
                                   area1, area1_lo, area1_hi, &
 #if AMREX_SPACEDIM >= 2
                                   area2, area2_lo, area2_hi, &
@@ -70,13 +77,16 @@ subroutine ca_fourth_single_stage(lo, hi, time, domlo, domhi, &
   integer, intent(in) :: srU_lo(3), srU_hi(3)
   integer, intent(in) :: updt_lo(3), updt_hi(3)
   integer, intent(in) :: flx_lo(3), flx_hi(3)
+  integer, intent(in) :: bcx_lo(3), bcx_hi(3)
   integer, intent(in) :: area1_lo(3), area1_hi(3)
 #if AMREX_SPACEDIM >= 2
   integer, intent(in) :: fly_lo(3), fly_hi(3)
+  integer, intent(in) :: bcy_lo(3), bcy_hi(3)
   integer, intent(in) :: area2_lo(3), area2_hi(3)
 #endif
 #if AMREX_SPACEDIM == 3
   integer, intent(in) :: flz_lo(3), flz_hi(3)
+  integer, intent(in) :: bcz_lo(3), bcz_hi(3)
   integer, intent(in) :: area3_lo(3), area3_hi(3)
 #endif
 #if AMREX_SPACEDIM <= 2
@@ -94,13 +104,16 @@ subroutine ca_fourth_single_stage(lo, hi, time, domlo, domhi, &
   real(rt), intent(in) :: srcU(srU_lo(1):srU_hi(1), srU_lo(2):srU_hi(2), srU_lo(3):srU_hi(3), NVAR)
   real(rt), intent(inout) :: update(updt_lo(1):updt_hi(1), updt_lo(2):updt_hi(2), updt_lo(3):updt_hi(3), NVAR)
   real(rt), intent(inout) :: flx(flx_lo(1):flx_hi(1), flx_lo(2):flx_hi(2), flx_lo(3):flx_hi(3), NVAR)
+  integer, intent(inout) :: bcMask_x(bcx_lo(1):bcx_hi(1), bcx_lo(2):bcx_hi(2), bcx_lo(3):bcx_hi(3))
   real(rt), intent(in) :: area1(area1_lo(1):area1_hi(1), area1_lo(2):area1_hi(2), area1_lo(3):area1_hi(3))
 #if AMREX_SPACEDIM >= 2
   real(rt), intent(inout) :: fly(fly_lo(1):fly_hi(1), fly_lo(2):fly_hi(2), fly_lo(3):fly_hi(3), NVAR)
+  integer, intent(inout) :: bcMask_y(bcy_lo(1):bcy_hi(1), bcy_lo(2):bcy_hi(2), bcy_lo(3):bcy_hi(3))
   real(rt), intent(in) :: area2(area2_lo(1):area2_hi(1), area2_lo(2):area2_hi(2), area2_lo(3):area2_hi(3))
 #endif
 #if AMREX_SPACEDIM == 3
   real(rt), intent(inout) :: flz(flz_lo(1):flz_hi(1), flz_lo(2):flz_hi(2), flz_lo(3):flz_hi(3), NVAR)
+  integer, intent(inout) :: bcMask_z(bcz_lo(1):bcz_hi(1), bcz_lo(2):bcz_hi(2), bcz_lo(3):bcz_hi(3))
   real(rt), intent(in) :: area3(area3_lo(1):area3_hi(1), area3_lo(2):area3_hi(2), area3_lo(3):area3_hi(3))
 #endif
 #if AMREX_SPACEDIM <= 2
@@ -296,6 +309,7 @@ subroutine ca_fourth_single_stage(lo, hi, time, domlo, domhi, &
      call riemann_state(qxm, q_lo, q_hi, &
                         qxp, q_lo, q_hi, 1, 1, &
                         qx_avg, q_lo, q_hi, &
+                        bcMask_x, bcx_lo, bcx_hi, &
                         qaux, qa_lo, qa_hi, &
                         1, &
                         [lo(1), lo(2)-dg(2), lo(3)-dg(3)], &
@@ -313,6 +327,7 @@ subroutine ca_fourth_single_stage(lo, hi, time, domlo, domhi, &
      call riemann_state(qym, q_lo, q_hi, &
                         qyp, q_lo, q_hi, 1, 1, &
                         qy_avg, q_lo, q_hi, &
+                        bcMask_y, bcy_lo, bcy_hi, &
                         qaux, qa_lo, qa_hi, &
                         2, &
                         [lo(1)-1, lo(2), lo(3)-dg(3)], &
@@ -330,6 +345,7 @@ subroutine ca_fourth_single_stage(lo, hi, time, domlo, domhi, &
      call riemann_state(qzm, q_lo, q_hi, &
                         qzp, q_lo, q_hi, 1, 1, &
                         qz_avg, q_lo, q_hi, &
+                        bcMask_z, bcz_lo, bcz_hi, &
                         qaux, qa_lo, qa_hi, &
                         3, &
                         [lo(1)-1, lo(2)-1, lo(3)], &

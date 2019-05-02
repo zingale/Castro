@@ -257,6 +257,9 @@ sdc_solve_for_rhoe           int           1                  y
 # do we use the analytic or numerical Jacobian?
 sdc_use_analytic_jac         int           1                  y
 
+# do we use NSCBC boundary conditions?
+do_nscbc                     int           0                  y
+
 #-----------------------------------------------------------------------------
 # category: timestep control
 #-----------------------------------------------------------------------------

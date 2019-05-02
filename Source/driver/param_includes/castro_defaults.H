@@ -85,6 +85,7 @@ amrex::Real Castro::sdc_solver_atol = 1.e-10;
 amrex::Real Castro::sdc_solver_relax_factor = 1.0;
 int         Castro::sdc_solve_for_rhoe = 1;
 int         Castro::sdc_use_analytic_jac = 1;
+int         Castro::do_nscbc = 0;
 amrex::Real Castro::fixed_dt = -1.0;
 amrex::Real Castro::initial_dt = -1.0;
 amrex::Real Castro::dt_cutoff = 0.0;

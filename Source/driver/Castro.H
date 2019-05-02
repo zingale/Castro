@@ -22,6 +22,8 @@
 using std::istream;
 using std::ostream;
 
+#define UserBC 6
+
 
 enum StateType { State_Type = 0,
 #ifdef RADIATION

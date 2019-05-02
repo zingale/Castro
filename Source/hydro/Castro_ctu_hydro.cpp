@@ -118,10 +118,22 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 #endif
     FArrayBox pdivu;
 
+    int flag_nscbc_isAnyPerio = (geom.isAnyPeriodic()) ? 1 : 0;
+    int flag_nscbc_perio[3]; // For 3D, we will know which corners have a periodicity
+    for (int d=0; d<3; ++d) {
+        flag_nscbc_perio[d] = (Geometry::isPeriodic(d)) ? 1 : 0;
+    }
+	IArrayBox bcMask[3];
+
     for (MFIter mfi(S_new, hydro_tile_size); mfi.isValid(); ++mfi) {
 
       // the valid region box
       const Box& bx = mfi.tilebox();
+
+      const int* lo = bx.loVect();
+      const int* hi = bx.hiVect();
+
+      FArrayBox &state  = S_new[mfi];
 
       const Box& obx = amrex::grow(bx, 1);
 
@@ -132,6 +144,38 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       flatg.resize(obx, 1);
       Elixir elix_flatg = flatg.elixir();
 #endif
+
+      for (int i = 0; i < BL_SPACEDIM; i++)  {
+            const Box& bxtmp = amrex::surroundingNodes(bx,i);
+            Box TestBox(bxtmp);
+            for(int d=0; d<BL_SPACEDIM; ++d) {
+                if (i!=d) TestBox.grow(d,1);
+            }
+
+            bcMask[i].resize(TestBox,1);
+            bcMask[i].setVal(0);
+      }
+
+        // Becase bcMask is read in the Riemann solver in any case,
+        // here we put physbc values in the appropriate faces for the non-nscbc case
+      set_bc_mask(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
+                   ARLIM_3D(domain_lo), ARLIM_3D(domain_hi),
+                    BL_TO_FORTRAN_ANYD(bcMask[0]),
+                    BL_TO_FORTRAN_ANYD(bcMask[1]),
+                    BL_TO_FORTRAN_ANYD(bcMask[2]));
+
+      if (do_nscbc == 1) {
+            ca_impose_NSCBC(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
+                         ARLIM_3D(domain_lo), ARLIM_3D(domain_hi),
+                         BL_TO_FORTRAN_ANYD(state),
+                         BL_TO_FORTRAN_ANYD(q[mfi]),
+                         BL_TO_FORTRAN_ANYD(qaux[mfi]),
+                         BL_TO_FORTRAN_ANYD(bcMask[0]),
+                         BL_TO_FORTRAN_ANYD(bcMask[1]),
+                         BL_TO_FORTRAN_ANYD(bcMask[2]),
+                         flag_nscbc_isAnyPerio, AMREX_INT_ANYD(flag_nscbc_perio),
+                         time, ZFILL(dx), dt, verbose);
+      }
 
       // compute the flattening coefficient
 
@@ -348,6 +392,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qxm),
                           BL_TO_FORTRAN_ANYD(qxp), 1, 1,
                           BL_TO_FORTRAN_ANYD(flux[0]),
+                          BL_TO_FORTRAN_ANYD(bcMask[0]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rad_flux[0]),
@@ -410,6 +455,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qxm),
                           BL_TO_FORTRAN_ANYD(qxp), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp1),
+                          BL_TO_FORTRAN_ANYD(bcMask[0]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp1),
@@ -431,6 +477,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qym),
                           BL_TO_FORTRAN_ANYD(qyp), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp2),
+                          BL_TO_FORTRAN_ANYD(bcMask[1]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp2),
@@ -467,6 +514,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(ql),
                           BL_TO_FORTRAN_ANYD(qr), 1, 1,
                           BL_TO_FORTRAN_ANYD(flux[0]),
+                          BL_TO_FORTRAN_ANYD(bcMask[0]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rad_flux[0]),
@@ -507,6 +555,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(ql),
                           BL_TO_FORTRAN_ANYD(qr), 1, 1,
                           BL_TO_FORTRAN_ANYD(flux[1]),
+                          BL_TO_FORTRAN_ANYD(bcMask[1]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rad_flux[1]),
@@ -544,6 +593,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qxm),
                           BL_TO_FORTRAN_ANYD(qxp), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp1),
+                          BL_TO_FORTRAN_ANYD(bcMask[0]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp1),
@@ -615,6 +665,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qym),
                           BL_TO_FORTRAN_ANYD(qyp), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp1),
+                          BL_TO_FORTRAN_ANYD(bcMask[1]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp1),
@@ -689,6 +740,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qzm),
                           BL_TO_FORTRAN_ANYD(qzp), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp1),
+                          BL_TO_FORTRAN_ANYD(bcMask[2]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp1),
@@ -769,6 +821,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qmyz),
                           BL_TO_FORTRAN_ANYD(qpyz), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp1),
+                          BL_TO_FORTRAN_ANYD(bcMask[1]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp1),
@@ -791,6 +844,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qmzy),
                           BL_TO_FORTRAN_ANYD(qpzy), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp2),
+                          BL_TO_FORTRAN_ANYD(bcMask[2]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp2),
@@ -828,6 +882,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(ql),
                           BL_TO_FORTRAN_ANYD(qr), 1, 1,
                           BL_TO_FORTRAN_ANYD(flux[0]),
+                          BL_TO_FORTRAN_ANYD(bcMask[0]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rad_flux[0]),
@@ -854,6 +909,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qmzx),
                           BL_TO_FORTRAN_ANYD(qpzx), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp1),
+                          BL_TO_FORTRAN_ANYD(bcMask[2]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp1),
@@ -876,6 +932,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qmxz),
                           BL_TO_FORTRAN_ANYD(qpxz), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp2),
+                          BL_TO_FORTRAN_ANYD(bcMask[0]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp2),
@@ -915,6 +972,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(ql),
                           BL_TO_FORTRAN_ANYD(qr), 1, 1,
                           BL_TO_FORTRAN_ANYD(flux[1]),
+                          BL_TO_FORTRAN_ANYD(bcMask[1]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rad_flux[1]),
@@ -941,6 +999,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qmxy),
                           BL_TO_FORTRAN_ANYD(qpxy), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp1),
+                          BL_TO_FORTRAN_ANYD(bcMask[0]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp1),
@@ -963,6 +1022,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(qmyx),
                           BL_TO_FORTRAN_ANYD(qpyx), 1, 1,
                           BL_TO_FORTRAN_ANYD(ftmp2),
+                          BL_TO_FORTRAN_ANYD(bcMask[1]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rftmp2),
@@ -1003,6 +1063,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                           BL_TO_FORTRAN_ANYD(ql),
                           BL_TO_FORTRAN_ANYD(qr), 1, 1,
                           BL_TO_FORTRAN_ANYD(flux[2]),
+                          BL_TO_FORTRAN_ANYD(bcMask[2]),
                           BL_TO_FORTRAN_ANYD(q_int),
 #ifdef RADIATION
                           BL_TO_FORTRAN_ANYD(rad_flux[2]),

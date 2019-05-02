@@ -37,6 +37,7 @@ contains
                                  qm, qm_lo, qm_hi, &
                                  qp, qp_lo, qp_hi, nc, comp, &
                                  flx, flx_lo, flx_hi, &
+                                 bcMask, bcm_lo, bcm_hi, &
                                  qint, q_lo, q_hi, &
 #ifdef RADIATION
                                  rflx, rflx_lo, rflx_hi, &
@@ -66,6 +67,7 @@ contains
     integer, intent(in) :: qm_lo(3), qm_hi(3)
     integer, intent(in) :: qp_lo(3), qp_hi(3)
     integer, intent(in) :: flx_lo(3), flx_hi(3)
+    integer, intent(in) :: bcm_lo(3), bcm_hi(3)
     integer, intent(in) :: q_lo(3), q_hi(3)
     integer, intent(in) :: qa_lo(3), qa_hi(3)
     integer, intent(in) :: s_lo(3), s_hi(3)
@@ -80,6 +82,7 @@ contains
     real(rt), intent(inout) :: qp(qp_lo(1):qp_hi(1),qp_lo(2):qp_hi(2),qp_lo(3):qp_hi(3),NQ,nc)
 
     real(rt), intent(inout) :: flx(flx_lo(1):flx_hi(1),flx_lo(2):flx_hi(2),flx_lo(3):flx_hi(3),NVAR)
+    integer, intent(inout) :: bcMask(bcm_lo(1):bcm_hi(1),bcm_lo(2):bcm_hi(2),bcm_lo(3):bcm_hi(3))
     real(rt), intent(inout) :: qint(q_lo(1):q_hi(1),q_lo(2):q_hi(2),q_lo(3):q_hi(3),NQ)
 
 #ifdef RADIATION
@@ -100,6 +103,7 @@ contains
                 qm, qm_lo, qm_hi, &
                 qp, qp_lo, qp_hi, nc, comp, &
                 flx, flx_lo, flx_hi, &
+                bcMask, bcm_lo, bcm_hi, &
                 qint, q_lo, q_hi, &
 #ifdef RADIATION
                 rflx, rflx_lo, rflx_hi, &
@@ -122,6 +126,7 @@ contains
                     qm, qm_lo, qm_hi, &
                     qp, qp_lo, qp_hi, nc, comp, &
                     flx, flx_lo, flx_hi, &
+                    bcMask, bcm_lo, bcm_hi, &
                     qint, q_lo, q_hi, &
 #ifdef RADIATION
                     rflx, rflx_lo, rflx_hi, &
@@ -151,6 +156,7 @@ contains
     integer, intent(in) :: qp_lo(3), qp_hi(3)
     integer, intent(in) :: flx_lo(3), flx_hi(3)
     integer, intent(in) :: q_lo(3), q_hi(3)
+    integer, intent(in) :: bcm_lo(3), bcm_hi(3)
     integer, intent(in) :: qa_lo(3), qa_hi(3)
     integer, intent(in) :: s_lo(3), s_hi(3)
 
@@ -163,6 +169,7 @@ contains
     real(rt), intent(inout) :: qp(qp_lo(1):qp_hi(1),qp_lo(2):qp_hi(2),qp_lo(3):qp_hi(3),NQ,nc)
 
     real(rt), intent(inout) :: flx(flx_lo(1):flx_hi(1),flx_lo(2):flx_hi(2),flx_lo(3):flx_hi(3),NVAR)
+    integer, intent(inout) :: bcMask(bcm_lo(1):bcm_hi(1),bcm_lo(2):bcm_hi(2),bcm_lo(3):bcm_hi(3))
     real(rt), intent(inout) :: qint(q_lo(1):q_hi(1),q_lo(2):q_hi(2),q_lo(3):q_hi(3),NQ)
 
 #ifdef RADIATION
@@ -194,6 +201,7 @@ contains
        call riemann_state(qm, qm_lo, qm_hi, &
                           qp, qp_lo, qp_hi, nc, comp, &
                           qint, q_lo, q_hi, &
+                          bcMask, bcm_lo, bcm_hi, &
 #ifdef RADIATION
                           lambda_int, q_lo, q_hi, &
 #endif
@@ -217,6 +225,7 @@ contains
                  qaux, qa_lo, qa_hi, &
                  flx, flx_lo, flx_hi, &
                  qint, q_lo, q_hi, &
+                 bcMask, bcm_lo, bcm_hi, &
                  idir, lo, hi, &
                  domlo, domhi)
 #ifndef AMREX_USE_CUDA
@@ -276,6 +285,7 @@ contains
   subroutine riemann_state(qm, qm_lo, qm_hi, &
                            qp, qp_lo, qp_hi, nc, comp, &
                            qint, q_lo, q_hi, &
+                           bcMask, bcm_lo, bcm_hi, &
 #ifdef RADIATION
                            lambda_int, l_lo, l_hi, &
 #endif
@@ -297,6 +307,7 @@ contains
     integer, intent(in) :: qm_lo(3), qm_hi(3)
     integer, intent(in) :: qp_lo(3), qp_hi(3)
     integer, intent(in) :: q_lo(3), q_hi(3)
+    integer, intent(in) :: bcm_lo(3), bcm_hi(3)
     integer, intent(in) :: qa_lo(3), qa_hi(3)
 
     integer, intent(in) :: idir
@@ -314,6 +325,7 @@ contains
     real(rt), intent(inout) :: qp(qp_lo(1):qp_hi(1),qp_lo(2):qp_hi(2),qp_lo(3):qp_hi(3),NQ,nc)
 
     real(rt), intent(inout) :: qint(q_lo(1):q_hi(1),q_lo(2):q_hi(2),q_lo(3):q_hi(3),NQ)
+    integer, intent(inout) :: bcMask(bcm_lo(1):bcm_hi(1),bcm_lo(2):bcm_hi(2),bcm_lo(3):bcm_hi(3))
 #ifdef RADIATION
     integer, intent(in) :: l_lo(3), l_hi(3)
     real(rt), intent(inout) :: lambda_int(l_lo(1):l_hi(1),l_lo(2):l_hi(2),l_lo(3):l_hi(3),0:ngroups-1)
@@ -426,6 +438,7 @@ contains
                       qp, qp_lo, qp_hi, nc, comp, &
                       qaux, qa_lo, qa_hi, &
                       qint, q_lo, q_hi, &
+                      bcMask, bcm_lo, bcm_hi, &
 #ifdef RADIATION
                       lambda_int, q_lo, q_hi, &
 #endif
@@ -440,6 +453,7 @@ contains
                       qp, qp_lo, qp_hi, nc, comp, &
                       qaux, qa_lo, qa_hi, &
                       qint, q_lo, q_hi, &
+                      bcMask, bcm_lo, bcm_hi, &
                       idir, lo, hi, &
                       domlo, domhi)
 #else
@@ -464,6 +478,7 @@ contains
                        qr, qr_lo, qr_hi, nc, comp, &
                        qaux, qa_lo, qa_hi, &
                        qint, q_lo, q_hi, &
+                       bcMask, bcm_lo, bcm_hi, &
                        idir, lo, hi, &
                        domlo, domhi)
     ! this implements the approximate Riemann solver of Colella & Glaz
@@ -493,6 +508,7 @@ contains
     integer, intent(in) :: qr_lo(3), qr_hi(3)
     integer, intent(in) :: qa_lo(3), qa_hi(3)
     integer, intent(in) :: q_lo(3), q_hi(3)
+    integer, intent(in) :: bcm_lo(3), bcm_hi(3)
     integer, intent(in) :: idir, lo(3), hi(3)
     integer, intent(in) :: domlo(3), domhi(3)
     integer, intent(in) :: nc, comp
@@ -504,6 +520,7 @@ contains
     ! index in z
     real(rt), intent(in) :: qaux(qa_lo(1):qa_hi(1),qa_lo(2):qa_hi(2),qa_lo(3):qa_hi(3),NQAUX)
     real(rt), intent(inout) :: qint(q_lo(1):q_hi(1),q_lo(2):q_hi(2),q_lo(3):q_hi(3),NQ)
+    integer, intent(inout) :: bcMask(bcm_lo(1):bcm_hi(1),bcm_lo(2):bcm_hi(2),bcm_lo(3):bcm_hi(3))
 
     integer :: i, j, k
     integer :: n, nqp, ipassive
@@ -548,8 +565,6 @@ contains
     real(rt) :: u_adv
 
     integer :: iu, iv1, iv2, im1, im2, im3, sx, sy, sz
-    logical :: special_bnd_lo, special_bnd_hi, special_bnd_lo_x, special_bnd_hi_x
-    real(rt) :: bnd_fac_x, bnd_fac_y, bnd_fac_z
 
     !$gpu
 
@@ -593,23 +608,6 @@ contains
        sz = 1
     end if
 
-    ! do we want to force the flux to zero at the boundary?
-    special_bnd_lo = (physbc_lo(idir) == Symmetry &
-         .or.         physbc_lo(idir) == SlipWall &
-         .or.         physbc_lo(idir) == NoSlipWall)
-    special_bnd_hi = (physbc_hi(idir) == Symmetry &
-         .or.         physbc_hi(idir) == SlipWall &
-         .or.         physbc_hi(idir) == NoSlipWall)
-
-    if (idir == 1) then
-       special_bnd_lo_x = special_bnd_lo
-       special_bnd_hi_x = special_bnd_hi
-    else
-       special_bnd_lo_x = .false.
-       special_bnd_hi_x = .false.
-    end if
-
-
     tol = cg_tol
     iter_max = cg_maxiter
 
@@ -619,23 +617,8 @@ contains
 #endif
 
     do k = lo(3), hi(3)
-       bnd_fac_z = ONE
-       if (idir==3) then
-          if ( k == domlo(3)   .and. special_bnd_lo .or. &
-               k == domhi(3)+1 .and. special_bnd_hi ) then
-             bnd_fac_z = ZERO
-          end if
-       end if
 
        do j = lo(2), hi(2)
-
-          bnd_fac_y = ONE
-          if (idir == 2) then
-             if ( j == domlo(2)   .and. special_bnd_lo .or. &
-                  j == domhi(2)+1 .and. special_bnd_hi ) then
-                bnd_fac_y = ZERO
-             end if
-          end if
 
           do i = lo(1), hi(1)
 
@@ -1025,13 +1008,8 @@ contains
              u_adv = qint(i,j,k,iu)
 
              ! Enforce that fluxes through a symmetry plane or wall are hard zero.
-             if ( special_bnd_lo_x .and. i ==  domlo(1) .or. &
-                  special_bnd_hi_x .and. i ==  domhi(1)+1 ) then
-                bnd_fac_x = ZERO
-             else
-                bnd_fac_x = ONE
-             end if
-             u_adv = u_adv * bnd_fac_x*bnd_fac_y*bnd_fac_z
+             u_adv = u_adv * bc_test(idir, i, j, k, bcMask, bcm_lo, bcm_hi, &
+                                     domlo, domhi)
 
              ! Compute fluxes, order as conserved state (not q)
              qint(i,j,k,iu) = u_adv
@@ -1073,6 +1051,7 @@ contains
                        qr, qr_lo, qr_hi, nc, comp, &
                        qaux, qa_lo, qa_hi, &
                        qint, q_lo, q_hi, &
+                       bcMask, bcm_lo, bcm_hi, &
 #ifdef RADIATION
                        lambda_int, l_lo, l_hi, &
 #endif
@@ -1097,6 +1076,7 @@ contains
     integer, intent(in) :: qr_lo(3), qr_hi(3)
     integer, intent(in) :: qa_lo(3), qa_hi(3)
     integer, intent(in) :: q_lo(3), q_hi(3)
+    integer, intent(in) :: bcm_lo(3), bcm_hi(3)
     integer, intent(in) :: idir, lo(3), hi(3)
     integer, intent(in) :: domlo(3),domhi(3)
     integer, intent(in) :: nc, comp
@@ -1113,6 +1093,7 @@ contains
     ! index in z
     real(rt), intent(in) :: qaux(qa_lo(1):qa_hi(1),qa_lo(2):qa_hi(2),qa_lo(3):qa_hi(3),NQAUX)
     real(rt), intent(inout) :: qint(q_lo(1):q_hi(1),q_lo(2):q_hi(2),q_lo(3):q_hi(3),NQ)
+    integer, intent(inout) :: bcMask(bcm_lo(1):bcm_hi(1),bcm_lo(2):bcm_hi(2),bcm_lo(3):bcm_hi(3))
 #ifdef RADIATION
     real(rt), intent(inout) :: lambda_int(l_lo(1):l_hi(1),l_lo(2):l_hi(2),l_lo(3):l_hi(3),0:ngroups-1)
 #endif
@@ -1144,8 +1125,6 @@ contains
     real(rt) :: u_adv
 
     integer :: iu, iv1, iv2, im1, im2, im3
-    logical :: special_bnd_lo, special_bnd_hi, special_bnd_lo_x, special_bnd_hi_x
-    real(rt) :: bnd_fac_x, bnd_fac_y, bnd_fac_z
     real(rt) :: wwinv, roinv, co2inv
 
     type(eos_t) :: eos_state
@@ -1179,40 +1158,9 @@ contains
        im3 = UMY
     end if
 
-    special_bnd_lo = (physbc_lo(idir) == Symmetry &
-         .or.         physbc_lo(idir) == SlipWall &
-         .or.         physbc_lo(idir) == NoSlipWall)
-    special_bnd_hi = (physbc_hi(idir) == Symmetry &
-         .or.         physbc_hi(idir) == SlipWall &
-         .or.         physbc_hi(idir) == NoSlipWall)
-
-    if (idir == 1) then
-       special_bnd_lo_x = special_bnd_lo
-       special_bnd_hi_x = special_bnd_hi
-    else
-       special_bnd_lo_x = .false.
-       special_bnd_hi_x = .false.
-    end if
-
     do k = lo(3), hi(3)
 
-       bnd_fac_z = ONE
-       if (idir == 3) then
-          if ( k == domlo(3)   .and. special_bnd_lo .or. &
-               k == domhi(3)+1 .and. special_bnd_hi ) then
-             bnd_fac_z = ZERO
-          end if
-       end if
-
        do j = lo(2), hi(2)
-
-          bnd_fac_y = ONE
-          if (idir == 2) then
-             if ( j == domlo(2)   .and. special_bnd_lo .or. &
-                  j == domhi(2)+1 .and. special_bnd_hi ) then
-                bnd_fac_y = ZERO
-             end if
-          end if
 
           !dir$ ivdep
           do i = lo(1), hi(1)
@@ -1594,13 +1542,8 @@ contains
              u_adv = qint(i,j,k,iu)
 
              ! Enforce that fluxes through a symmetry plane or wall are hard zero.
-             if ( special_bnd_lo_x .and. i == domlo(1) .or. &
-                  special_bnd_hi_x .and. i == domhi(1)+1 ) then
-                bnd_fac_x = ZERO
-             else
-                bnd_fac_x = ONE
-             end if
-             u_adv = u_adv * bnd_fac_x*bnd_fac_y*bnd_fac_z
+             u_adv = u_adv * bc_test(idir, i, j, k, bcMask, bcm_lo, bcm_hi, &
+                                     domlo, domhi)
 
              qint(i,j,k,iu) = u_adv
 
@@ -1635,6 +1578,7 @@ contains
                   qaux, qa_lo, qa_hi, &
                   uflx, uflx_lo, uflx_hi, &
                   qint, q_lo, q_hi, &
+                  bcMask, bcm_lo, bcm_hi, &
                   idir, lo, hi, &
                   domlo, domhi)
     ! this is an implementation of the HLLC solver described in Toro's
@@ -1654,6 +1598,7 @@ contains
     integer, intent(in) :: qa_lo(3), qa_hi(3)
     integer, intent(in) :: uflx_lo(3), uflx_hi(3)
     integer, intent(in) :: q_lo(3), q_hi(3)
+    integer, intent(in) :: bcm_lo(3), bcm_hi(3)
     integer, intent(in) :: idir, lo(3), hi(3)
     integer, intent(in) :: domlo(3), domhi(3)
     integer, intent(in) :: nc, comp
@@ -1667,6 +1612,7 @@ contains
 
     real(rt), intent(inout) :: uflx(uflx_lo(1):uflx_hi(1),uflx_lo(2):uflx_hi(2),uflx_lo(3):uflx_hi(3),NVAR)
     real(rt), intent(inout) :: qint(q_lo(1):q_hi(1),q_lo(2):q_hi(2),q_lo(3):q_hi(3),NQ)
+    integer, intent(inout) :: bcMask(bcm_lo(1):bcm_hi(1),bcm_lo(2):bcm_hi(2),bcm_lo(3):bcm_hi(3))
 
     integer :: i, j, k
 
@@ -1681,8 +1627,7 @@ contains
     real(rt) :: cavg, gamcl, gamcr
 
     integer :: iu, iv1, iv2, sx, sy, sz
-    logical :: special_bnd_lo, special_bnd_hi, special_bnd_lo_x, special_bnd_hi_x
-    integer :: bnd_fac_x, bnd_fac_y, bnd_fac_z, bnd_fac
+    integer :: bnd_fac
     real(rt) :: wwinv, roinv, co2inv
 
     real(rt) :: U_hllc_state(nvar), U_state(nvar), F_state(nvar)
@@ -1715,40 +1660,9 @@ contains
        sz = 1
     end if
 
-    special_bnd_lo = (physbc_lo(idir) == Symmetry &
-         .or.         physbc_lo(idir) == SlipWall &
-         .or.         physbc_lo(idir) == NoSlipWall)
-    special_bnd_hi = (physbc_hi(idir) == Symmetry &
-         .or.         physbc_hi(idir) == SlipWall &
-         .or.         physbc_hi(idir) == NoSlipWall)
-
-    if (idir == 1) then
-       special_bnd_lo_x = special_bnd_lo
-       special_bnd_hi_x = special_bnd_hi
-    else
-       special_bnd_lo_x = .false.
-       special_bnd_hi_x = .false.
-    end if
-
     do k = lo(3), hi(3)
 
-       bnd_fac_z = 1
-       if (idir == 3) then
-          if ( k == domlo(3)   .and. special_bnd_lo .or. &
-               k == domhi(3)+1 .and. special_bnd_hi ) then
-             bnd_fac_z = 0
-          end if
-       end if
-
        do j = lo(2), hi(2)
-
-          bnd_fac_y = 1
-          if (idir == 2) then
-             if ( j == domlo(2)   .and. special_bnd_lo .or. &
-                  j == domhi(2)+1 .and. special_bnd_hi ) then
-                bnd_fac_y = 0
-             end if
-          end if
 
           !dir$ ivdep
           do i = lo(1), hi(1)
@@ -1864,16 +1778,8 @@ contains
 
              ! now we do the HLLC construction
 
-
              ! Enforce that the fluxes through a symmetry plane or wall are hard zero.
-             if ( special_bnd_lo_x .and. i== domlo(1) .or. &
-                  special_bnd_hi_x .and. i== domhi(1)+1 ) then
-                bnd_fac_x = 0
-             else
-                bnd_fac_x = 1
-             end if
-
-             bnd_fac = bnd_fac_x*bnd_fac_y*bnd_fac_z
+             bnd_fac = bc_test(idir, i, j, k, bcMask, bcm_lo, bcm_hi, domlo, domhi)
 
              ! use the simplest estimates of the wave speeds
              S_l = min(ul - sqrt(gamcl*pl/rl), ur - sqrt(gamcr*pr/rr))

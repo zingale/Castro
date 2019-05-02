@@ -101,7 +101,7 @@ extern "C"
   void ca_set_problem_params
     (const int& dm,
      const int* physbc_lo, const int* physbc_hi,
-     const int& Interior_value, const int& Inflow_value,
+     const int& Interior_value, const int& UserBC_value, const int& Inflow_value,
      const int& Outflow_value, const int& Symmetry_value,
      const int& SlipWall_value, const int& NoSlipWall_value,
      const int& coord_type,
@@ -361,7 +361,7 @@ extern "C"
 #ifdef ROTATION
 
   void set_rot_period(const amrex::Real* period);
-    
+
   void ca_fill_rotational_potential
     (const int* lo, const int* hi,
      BL_FORT_FAB_ARG_3D(phi),

@@ -10,7 +10,7 @@ module prob_params_module
   ! boundary condition information
   integer, allocatable :: physbc_lo(:)
   integer, allocatable :: physbc_hi(:)
-  integer, allocatable :: Interior, Inflow, Outflow, Symmetry, SlipWall, NoSlipWall
+  integer, allocatable :: Interior, Inflow, Outflow, Symmetry, SlipWall, NoSlipWall, UserBC
 
   ! geometry information
   integer,  allocatable, save :: coord_type
@@ -49,7 +49,7 @@ module prob_params_module
 
 #ifdef AMREX_USE_CUDA
   attributes(managed) :: physbc_lo, physbc_hi
-  attributes(managed) :: Interior, Inflow, Outflow, Symmetry, Slipwall, NoSlipWall
+  attributes(managed) :: Interior, Inflow, Outflow, Symmetry, Slipwall, NoSlipWall, UserBC
   attributes(managed) :: dim
   attributes(managed) :: dg
   attributes(managed) :: coord_type

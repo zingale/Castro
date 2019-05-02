@@ -64,28 +64,67 @@ Castro::construct_mol_hydro_source(Real time, Real dt, MultiFab& A_update)
     FArrayBox pradial;
 #endif
 
+    int flag_nscbc_isAnyPerio = (geom.isAnyPeriodic()) ? 1 : 0;
+    int flag_nscbc_perio[3]; // For 3D, we will know which corners have a periodicity
+    for (int d=0; d<3; ++d) {
+        flag_nscbc_perio[d] = (Geometry::isPeriodic(d)) ? 1 : 0;
+    }
+	IArrayBox bcMask[3];
+
     // The fourth order stuff cannot do tiling because of the Laplacian corrections
     for (MFIter mfi(S_new, (mol_order == 4 || sdc_order == 4) ? no_tile_size : hydro_tile_size); mfi.isValid(); ++mfi)
       {
-	const Box& bx  = mfi.tilebox();
+    	const Box& bx  = mfi.tilebox();
 
-	const int* lo = bx.loVect();
-	const int* hi = bx.hiVect();
+    	const int* lo = bx.loVect();
+    	const int* hi = bx.hiVect();
 
-	FArrayBox &statein  = Sborder[mfi];
-	FArrayBox &stateout = S_new[mfi];
+    	FArrayBox &statein  = Sborder[mfi];
+    	FArrayBox &stateout = S_new[mfi];
 
-	FArrayBox &source_in  = sources_for_hydro[mfi];
+    	FArrayBox &source_in  = sources_for_hydro[mfi];
 
-	// the output of this will be stored in the correct stage MF
-	FArrayBox &source_out = A_update[mfi];
+    	// the output of this will be stored in the correct stage MF
+    	FArrayBox &source_out = A_update[mfi];
 
-	FArrayBox& vol = volume[mfi];
+    	FArrayBox& vol = volume[mfi];
 
         Real stage_weight = 1.0;
 
         if (time_integration_method == MethodOfLines) {
           stage_weight = b_mol[mol_iteration];
+        }
+
+        for (int i = 0; i < BL_SPACEDIM; i++)  {
+            const Box& bxtmp = amrex::surroundingNodes(bx,i);
+            Box TestBox(bxtmp);
+            for(int d=0; d<BL_SPACEDIM; ++d) {
+                if (i!=d) TestBox.grow(d,1);
+            }
+
+            bcMask[i].resize(TestBox,1);
+            bcMask[i].setVal(0);
+        }
+
+        // Becase bcMask is read in the Riemann solver in any case,
+        // here we put physbc values in the appropriate faces for the non-nscbc case
+        set_bc_mask(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
+                     ARLIM_3D(domain_lo), ARLIM_3D(domain_hi),
+                    BL_TO_FORTRAN_ANYD(bcMask[0]),
+                    BL_TO_FORTRAN_ANYD(bcMask[1]),
+                    BL_TO_FORTRAN_ANYD(bcMask[2]));
+
+        if (do_nscbc == 1) {
+            ca_impose_NSCBC(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
+                         ARLIM_3D(domain_lo), ARLIM_3D(domain_hi),
+                         BL_TO_FORTRAN_ANYD(stateout),
+                         BL_TO_FORTRAN_ANYD(q[mfi]),
+                         BL_TO_FORTRAN_ANYD(qaux[mfi]),
+                         BL_TO_FORTRAN_ANYD(bcMask[0]),
+                         BL_TO_FORTRAN_ANYD(bcMask[1]),
+                         BL_TO_FORTRAN_ANYD(bcMask[2]),
+                         flag_nscbc_isAnyPerio, AMREX_INT_ANYD(flag_nscbc_perio),
+                         time, ZFILL(dx), dt, verbose);
         }
 
 
@@ -122,6 +161,13 @@ Castro::construct_mol_hydro_source(Real time, Real dt, MultiFab& A_update)
 #endif
 #if AMREX_SPACEDIM == 3
              BL_TO_FORTRAN_ANYD(flux[2]),
+#endif
+             BL_TO_FORTRAN_ANYD(bcMask[0]),
+#if AMREX_SPACEDIM >= 2
+             BL_TO_FORTRAN_ANYD(bcMask[1]),
+#endif
+#if AMREX_SPACEDIM == 3
+             BL_TO_FORTRAN_ANYD(bcMask[2]),
 #endif
              BL_TO_FORTRAN_ANYD(area[0][mfi]),
 #if AMREX_SPACEDIM >= 2
@@ -281,6 +327,7 @@ Castro::construct_mol_hydro_source(Real time, Real dt, MultiFab& A_update)
                  BL_TO_FORTRAN_ANYD(qm),
                  BL_TO_FORTRAN_ANYD(qp), AMREX_SPACEDIM, idir_f,
                  BL_TO_FORTRAN_ANYD(flux[idir]),
+                 BL_TO_FORTRAN_ANYD(bcMask[idir]),
                  BL_TO_FORTRAN_ANYD(q_int),
                  BL_TO_FORTRAN_ANYD(qe[idir]),
                  BL_TO_FORTRAN_ANYD(qaux[mfi]),

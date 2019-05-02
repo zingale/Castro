@@ -85,6 +85,7 @@ pp.query("sdc_solver_atol", sdc_solver_atol);
 pp.query("sdc_solver_relax_factor", sdc_solver_relax_factor);
 pp.query("sdc_solve_for_rhoe", sdc_solve_for_rhoe);
 pp.query("sdc_use_analytic_jac", sdc_use_analytic_jac);
+pp.query("do_nscbc", do_nscbc);
 pp.query("fixed_dt", fixed_dt);
 pp.query("initial_dt", initial_dt);
 pp.query("dt_cutoff", dt_cutoff);
