@@ -131,9 +131,6 @@ contains
 
     !$gpu
 
-    idir1 = 1
-    idir2 = 2
-
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
@@ -1932,6 +1929,7 @@ contains
   !===========================================================================
 
   subroutine transz_on_xstates(lo, hi, &
+                               idir1, idir2, &
                                qxm, qxm_lo, qxm_hi, &
                                qxmo, qxmo_lo, qxmo_hi, &
                                qxp, qxp_lo, qxp_hi, &
