@@ -467,7 +467,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       // ftmp2 = fy
       // rftmp2 = rfy
 #pragma gpu box(xbx)
-      transy_on_xstates(AMREX_INT_ANYD(xbx.loVect()), AMREX_INT_ANYD(xbx.hiVect()),
+      trans1_on_2states(AMREX_INT_ANYD(xbx.loVect()), AMREX_INT_ANYD(xbx.hiVect()),
+                        2, 1,
                         BL_TO_FORTRAN_ANYD(qxm),
                         BL_TO_FORTRAN_ANYD(ql),
                         BL_TO_FORTRAN_ANYD(qxp),
@@ -478,7 +479,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                         BL_TO_FORTRAN_ANYD(rftmp2),
 #endif
                         BL_TO_FORTRAN_ANYD(qe[1]),
-                        hdtdy);
+                        hdt, hdtdy);
 
       // solve the final Riemann problem axross the x-interfaces
 
@@ -667,7 +668,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       // rftmp1 = rfy
       // qgdnvtmp1 = qgdnvy
 #pragma gpu box(txybx)
-      transy_on_xstates(AMREX_INT_ANYD(txybx.loVect()), AMREX_INT_ANYD(txybx.hiVect()),
+      trans1_on_2states(AMREX_INT_ANYD(txybx.loVect()), AMREX_INT_ANYD(txybx.hiVect()),
+                        2, 1,
                         BL_TO_FORTRAN_ANYD(qxm),
                         BL_TO_FORTRAN_ANYD(qmxy),
                         BL_TO_FORTRAN_ANYD(qxp),
@@ -678,7 +680,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                         BL_TO_FORTRAN_ANYD(rftmp1),
 #endif
                         BL_TO_FORTRAN_ANYD(qgdnvtmp1),
-                        cdtdy);
+                        hdt, cdtdy);
 
       // [lo(1)-1, lo(2), lo(3)], [hi(1)+1, hi(2), lo(3)+1]
       const Box& tzybx = amrex::grow(zbx, IntVect(AMREX_D_DECL(1,0,0)));
@@ -695,7 +697,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       // rftmp1 = rfy
       // qgdnvtmp1 = qgdnvy
 #pragma gpu box(tzybx)
-      transy_on_zstates(AMREX_INT_ANYD(tzybx.loVect()), AMREX_INT_ANYD(tzybx.hiVect()),
+      trans1_on_2states(AMREX_INT_ANYD(tzybx.loVect()), AMREX_INT_ANYD(tzybx.hiVect()),
+                        2, 3,
                         BL_TO_FORTRAN_ANYD(qzm),
                         BL_TO_FORTRAN_ANYD(qmzy),
                         BL_TO_FORTRAN_ANYD(qzp),
@@ -706,7 +709,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                         BL_TO_FORTRAN_ANYD(rftmp1),
 #endif
                         BL_TO_FORTRAN_ANYD(qgdnvtmp1),
-                        cdtdy);
+                        hdt, cdtdy);
 
       // compute F^z
       // [lo(1)-1, lo(2)-1, lo(3)], [hi(1)+1, hi(2)+1, hi(3)+1]
@@ -745,7 +748,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       // rftmp1 = rfz
       // qgdnvtmp1 = qgdnvz
 #pragma gpu box(txzbx)
-      transz_on_xstates(AMREX_INT_ANYD(txzbx.loVect()), AMREX_INT_ANYD(txzbx.hiVect()),
+      trans1_on_2states(AMREX_INT_ANYD(txzbx.loVect()), AMREX_INT_ANYD(txzbx.hiVect()),
+                        3, 1,
                         BL_TO_FORTRAN_ANYD(qxm),
                         BL_TO_FORTRAN_ANYD(qmxz),
                         BL_TO_FORTRAN_ANYD(qxp),
@@ -756,7 +760,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                         BL_TO_FORTRAN_ANYD(rftmp1),
 #endif
                         BL_TO_FORTRAN_ANYD(qgdnvtmp1),
-                        cdtdz);
+                        hdt, cdtdz);
 
       // [lo(1)-1, lo(2), lo(3)], [hi(1)+1, hi(2)+1, lo(3)]
       const Box& tyzbx = amrex::grow(ybx, IntVect(AMREX_D_DECL(1,0,0)));
@@ -773,7 +777,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       // rftmp1 = rfz
       // qgdnvtmp1 = qgdnvz
 #pragma gpu box(tyzbx)
-      transz_on_ystates(AMREX_INT_ANYD(tyzbx.loVect()), AMREX_INT_ANYD(tyzbx.hiVect()),
+      trans1_on_2states(AMREX_INT_ANYD(tyzbx.loVect()), AMREX_INT_ANYD(tyzbx.hiVect()),
+                        3, 2,
                         BL_TO_FORTRAN_ANYD(qym),
                         BL_TO_FORTRAN_ANYD(qmyz),
                         BL_TO_FORTRAN_ANYD(qyp),
@@ -784,7 +789,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
                         BL_TO_FORTRAN_ANYD(rftmp1),
 #endif
                         BL_TO_FORTRAN_ANYD(qgdnvtmp1),
-                        cdtdz);
+                        hdt, cdtdz);
 
       // we now have q?zx, q?yx, q?zy, q?xy, q?yz, q?xz
 
