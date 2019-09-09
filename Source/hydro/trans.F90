@@ -11,22 +11,23 @@ contains
   !===========================================================================
   ! transx routines
   !===========================================================================
-  subroutine transx_on_ystates(lo, hi, &
-                               qym, qym_lo, qym_hi, &
-                               qymo, qymo_lo, qymo_hi, &
-                               qyp, qyp_lo, qyp_hi, &
-                               qypo, qypo_lo, qypo_hi, &
-                               qaux, qa_lo, qa_hi, &
-                               fx, fx_lo, fx_hi, &
+  subroutine trans1(lo, hi, &
+                    idir1, idir2, &
+                    q2m, q2m_lo, q2m_hi, &
+                    q2mo, q2mo_lo, q2mo_hi, &
+                    q2p, q2p_lo, q2p_hi, &
+                    q2po, q2po_lo, q2po_hi, &
+                    qaux, qa_lo, qa_hi, &
+                    f1, f1_lo, f1_hi, &
 #ifdef RADIATION
-                               rfx, rfx_lo, rfx_hi, &
+                    rf1, rf1_lo, rf1_hi, &
 #endif
-                               qx, qx_lo, qx_hi, &
+                    q1, q1_lo, q1_hi, &
 #if AMREX_SPACEDIM == 2
-                               area1, area1_lo, area1_hi, &
-                               vol, vol_lo, vol_hi, &
+                    area1, area1_lo, area1_hi, &
+                    vol, vol_lo, vol_hi, &
 #endif
-                               hdt, cdtdx) bind(C, name="transx_on_ystates")
+                    hdt, cdtdx) bind(C, name="trans1")
 
     ! here, lo and hi are the bounds of the interfaces we are looping over
 
@@ -59,16 +60,16 @@ contains
     use prob_params_module, only : mom_flux_has_p
 #endif
 
-    integer, intent(in) :: qym_lo(3), qym_hi(3)
-    integer, intent(in) :: qyp_lo(3), qyp_hi(3)
-    integer, intent(in) :: qymo_lo(3), qymo_hi(3)
-    integer, intent(in) :: qypo_lo(3), qypo_hi(3)
+    integer, intent(in) :: q2m_lo(3), q2m_hi(3)
+    integer, intent(in) :: q2p_lo(3), q2p_hi(3)
+    integer, intent(in) :: q2mo_lo(3), q2mo_hi(3)
+    integer, intent(in) :: q2po_lo(3), q2po_hi(3)
     integer, intent(in) :: qa_lo(3), qa_hi(3)
-    integer, intent(in) :: fx_lo(3), fx_hi(3)
+    integer, intent(in) :: f1_lo(3), f1_hi(3)
 #ifdef RADIATION
-    integer, intent(in) :: rfx_lo(3), rfx_hi(3)
+    integer, intent(in) :: rf1_lo(3), rf1_hi(3)
 #endif
-    integer, intent(in) :: qx_lo(3), qx_hi(3)
+    integer, intent(in) :: q1_lo(3), q1_hi(3)
     integer, intent(in) :: lo(3), hi(3)
 #if AMREX_SPACEDIM == 2
     integer, intent(in) :: area1_lo(3), area1_hi(3)
@@ -76,133 +77,146 @@ contains
 #endif
 
 #ifdef RADIATION
-    real(rt) :: rfx(rfx_lo(1):rfx_hi(1),rfx_lo(2):rfx_hi(2),rfx_lo(3):rfx_hi(3),0:ngroups-1)
+    real(rt) :: rf1(rf1_lo(1):rf1_hi(1),rf1_lo(2):rf1_hi(2),rf1_lo(3):rf1_hi(3),0:ngroups-1)
 #endif
 
     real(rt), intent(in), value :: hdt, cdtdx
+    integer,  intent(in), value :: idir1, idir2
 
-    real(rt), intent(in) :: qym(qym_lo(1):qym_hi(1),qym_lo(2):qym_hi(2),qym_lo(3):qym_hi(3),NQ)
-    real(rt), intent(in) :: qyp(qyp_lo(1):qyp_hi(1),qyp_lo(2):qyp_hi(2),qyp_lo(3):qyp_hi(3),NQ)
+    real(rt), intent(in) :: q2m(q2m_lo(1):q2m_hi(1),q2m_lo(2):q2m_hi(2),q2m_lo(3):q2m_hi(3),NQ)
+    real(rt), intent(in) :: q2p(q2p_lo(1):q2p_hi(1),q2p_lo(2):q2p_hi(2),q2p_lo(3):q2p_hi(3),NQ)
     real(rt), intent(in) :: qaux(qa_lo(1):qa_hi(1),qa_lo(2):qa_hi(2),qa_lo(3):qa_hi(3),NQAUX)
-    real(rt), intent(in) :: fx(fx_lo(1):fx_hi(1),fx_lo(2):fx_hi(2),fx_lo(3):fx_hi(3),NVAR)
-    real(rt), intent(in) :: qx(qx_lo(1):qx_hi(1),qx_lo(2):qx_hi(2),qx_lo(3):qx_hi(3),NGDNV)
+    real(rt), intent(in) :: f1(f1_lo(1):f1_hi(1),f1_lo(2):f1_hi(2),f1_lo(3):f1_hi(3),NVAR)
+    real(rt), intent(in) :: q1(q1_lo(1):q1_hi(1),q1_lo(2):q1_hi(2),q1_lo(3):q1_hi(3),NGDNV)
 
-    real(rt), intent(out) :: qymo(qymo_lo(1):qymo_hi(1),qymo_lo(2):qymo_hi(2),qymo_lo(3):qymo_hi(3),NQ)
-    real(rt), intent(out) :: qypo(qypo_lo(1):qypo_hi(1),qypo_lo(2):qypo_hi(2),qypo_lo(3):qypo_hi(3),NQ)
+    real(rt), intent(out) :: q2mo(q2mo_lo(1):q2mo_hi(1),q2mo_lo(2):q2mo_hi(2),q2mo_lo(3):q2mo_hi(3),NQ)
+    real(rt), intent(out) :: q2po(q2po_lo(1):q2po_hi(1),q2po_lo(2):q2po_hi(2),q2po_lo(3):q2po_hi(3),NQ)
 #if AMREX_SPACEDIM == 2
     real(rt), intent(in) :: area1(area1_lo(1):area1_hi(1),area1_lo(2):area1_hi(2),area1_lo(3):area1_hi(3))
     real(rt), intent(in) :: vol(vol_lo(1):vol_hi(1),vol_lo(2):vol_hi(2),vol_lo(3):vol_hi(3))
 #endif
 
+    integer :: ir, jr, kr, iml, jml, kml, imr, jmr, kmr
+    
     integer i, j, k, n, nqp, ipassive
 
-    real(rt)         rhoinv
-    real(rt)         rrnew
-    real(rt)         rrry, rrly
-    real(rt)         rury, ruly
-    real(rt)         rvry, rvly
-    real(rt)         rwry, rwly
-    real(rt)         ekenry, ekenly
-    real(rt)         rery, rely
-    real(rt)         rrnewry, rrnewly
-    real(rt)         runewry, runewly
-    real(rt)         rvnewry, rvnewly
-    real(rt)         rwnewry, rwnewly
-    real(rt)         renewry, renewly
-    real(rt)         pnewry, pnewly
-    real(rt)         rhoekenry, rhoekenly, rhoekenrz, rhoekenlz
-    real(rt)         pgp, pgm, ugp, ugm, gegp, gegm, dup, pav, du, dge, uav, geav
-    real(rt)         compu
-    real(rt)         :: gamc
+    real(rt) :: rhoinv
+    real(rt) :: rrnew
+    real(rt) :: rrry, rrly
+    real(rt) :: rury, ruly
+    real(rt) :: rvry, rvly
+    real(rt) :: rwry, rwly
+    real(rt) :: ekenry, ekenly
+    real(rt) :: rery, rely
+    real(rt) :: rrnewry, rrnewly
+    real(rt) :: runewry, runewly
+    real(rt) :: rvnewry, rvnewly
+    real(rt) :: rwnewry, rwnewly
+    real(rt) :: renewry, renewly
+    real(rt) :: pnewry, pnewly
+    real(rt) :: rhoekenry, rhoekenly, rhoekenrz, rhoekenlz
+    real(rt) :: pgp, pgm, ugp, ugm, gegp, gegm, dup, pav, du, dge, uav, geav
+    real(rt) :: compu
+    real(rt) :: gamc
 
 #ifdef RADIATION
-    real(rt)         :: dre, dmom, divu
-    real(rt)        , dimension(0:ngroups-1) :: lambda, ergp, ergm, err, erl, ernewr, ernewl, &
-         lamge, luge, der
-    real(rt)         eddf, f1, ugc
-    integer :: g
+    real(rt) :: dre, dmom, divu
+    real(rt), dimension(0:ngroups-1) :: lambda, ergp, ergm, err, erl, ernewr, ernewl, &
+                                        lamge, luge, der
+    real(rt) :: eddf, f1, ugc
+    integer   :: g
 #endif
 
     logical :: reset_state
 
     !$gpu
 
-    !-------------------------------------------------------------------------
-    ! update all of the passively-advected quantities with the
-    ! transverse term and convert back to the primitive quantity
-    !-------------------------------------------------------------------------
-
-
-    !       qm|qp
-    !         |
-    ! --------+--------
-    !   i-1       i
-    !        i-1/2
-    !
-    ! the qm state will see the transverse flux in zone i-1
-
-    do ipassive = 1, npassive
-       n  = upass_map(ipassive)
-       nqp = qpass_map(ipassive)
-
-       do k = lo(3), hi(3)
-          do j = lo(2), hi(2)
-             do i = lo(1), hi(1)
-#if AMREX_SPACEDIM == 2
-                rrnew = qyp(i,j,k,QRHO) - hdt*(area1(i+1,j,k)*fx(i+1,j,k,URHO) - &
-                                               area1(i,j,k)*fx(i,j,k,URHO))/vol(i,j,k)
-                compu = qyp(i,j,k,QRHO)*qyp(i,j,k,nqp) - &
-                     hdt*(area1(i+1,j,k)*fx(i+1,j,k,n) - &
-                             area1(i,j,k)*fx(i,j,k,n))/vol(i,j,k)
-                qypo(i,j,k,nqp) = compu/rrnew
-#else
-                rrnew = qyp(i,j,k,QRHO) - cdtdx*(fx(i+1,j,k,URHO) - fx(i,j,k,URHO))
-                compu = qyp(i,j,k,QRHO)*qyp(i,j,k,nqp) - cdtdx*(fx(i+1,j,k,n) - fx(i,j,k,n))
-                qypo(i,j,k,nqp) = compu/rrnew
-#endif
-
-#if AMREX_SPACEDIM == 2
-                rrnew = qym(i,j,k,QRHO) - hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,URHO) - &
-                                               area1(i,j-1,k)*fx(i,j-1,k,URHO))/vol(i,j-1,k)
-                compu = qym(i,j,k,QRHO)*qym(i,j,k,nqp) - &
-                     hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,n) - &
-                          area1(i,j-1,k)*fx(i,j-1,k,n))/vol(i,j-1,k)
-                qymo(i,j,k,nqp) = compu/rrnew
-#else
-                rrnew = qym(i,j,k,QRHO) - cdtdx*(fx(i+1,j-1,k,URHO) - fx(i,j-1,k,URHO))
-                compu = qym(i,j,k,QRHO)*qym(i,j,k,nqp) - cdtdx*(fx(i+1,j-1,k,n) - fx(i,j-1,k,n))
-                qymo(i,j,k,nqp) = compu/rrnew
-#endif
-             end do
-          end do
-       end do
-    end do
-
-    !-------------------------------------------------------------------
-    ! add the transverse flux difference in the x-direction to y-states
-    ! for the fluid variables
-    !-------------------------------------------------------------------
+    idir1 = 1
+    idir2 = 2
 
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
 
+             if (idir1 == 1 .and. idir2 == 2) then
+                ir = i+1
+                jr = j
+                kr = k
+
+                iml = i
+                jml = j-1
+                kml = k
+
+                imr = i+1
+                jmr = j-1
+                kmr = k
+             end if
+
+             !-------------------------------------------------------------------------
+             ! update all of the passively-advected quantities with the
+             ! transverse term and convert back to the primitive quantity
+             !-------------------------------------------------------------------------
+
+             !       qm|qp
+             !         |
+             ! --------+--------
+             !   i-1       i
+             !        i-1/2
+             !
+             ! the qm state will see the transverse flux in zone i-1
+
+             do ipassive = 1, npassive
+                n  = upass_map(ipassive)
+                nqp = qpass_map(ipassive)
+
+#if AMREX_SPACEDIM == 2
+                rrnew = q2p(i,j,k,QRHO) - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) - &
+                                               area1(i,j,k)*f1(i,j,k,URHO))/vol(i,j,k)
+                compu = q2p(i,j,k,QRHO)*q2p(i,j,k,nqp) - &
+                     hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,n) - &
+                             area1(i,j,k)*f1(i,j,k,n))/vol(i,j,k)
+                q2po(i,j,k,nqp) = compu/rrnew
+#else
+                rrnew = q2p(i,j,k,QRHO) - cdtdx*(f1(ir,jr,kr,URHO) - f1(i,j,k,URHO))
+                compu = q2p(i,j,k,QRHO)*q2p(i,j,k,nqp) - cdtdx*(f1(ir,jr,kr,n) - f1(i,j,k,n))
+                q2po(i,j,k,nqp) = compu/rrnew
+#endif
+
+#if AMREX_SPACEDIM == 2
+                rrnew = q2m(i,j,k,QRHO) - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,URHO) - &
+                                               area1(iml,jml,kml)*f1(iml,jml,kml,URHO))/vol(iml,jml,kml)
+                compu = q2m(i,j,k,QRHO)*q2m(i,j,k,nqp) - &
+                     hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,n) - &
+                          area1(iml,jml,kml)*f1(iml,jml,kml,n))/vol(iml,jml,kml)
+                q2mo(i,j,k,nqp) = compu/rrnew
+#else
+                rrnew = q2m(i,j,k,QRHO) - cdtdx*(f1(imr,jmr,kmr,URHO) - f1(iml,jml,kml,URHO))
+                compu = q2m(i,j,k,QRHO)*q2m(i,j,k,nqp) - cdtdx*(f1(imr,jmr,kmr,n) - f1(iml,jml,kml,n))
+                q2mo(i,j,k,nqp) = compu/rrnew
+#endif
+             end do
+
+             !-------------------------------------------------------------------
+             ! add the transverse flux difference in the x-direction to y-states
+             ! for the fluid variables
+             !-------------------------------------------------------------------
+
              !----------------------------------------------------------------
-             ! qypo state
+             ! q2po state
              !----------------------------------------------------------------
 
-             pgp  = qx(i+1,j,k,GDPRES)
-             pgm  = qx(i  ,j,k,GDPRES)
-             ugp  = qx(i+1,j,k,GDU   )
-             ugm  = qx(i  ,j,k,GDU   )
-             gegp = qx(i+1,j,k,GDGAME)
-             gegm = qx(i  ,j,k,GDGAME)
+             pgp  = q1(ir,jr,kr,GDPRES)
+             pgm  = q1(i  ,j,k,GDPRES)
+             ugp  = q1(ir,jr,kr,GDU   )
+             ugm  = q1(i  ,j,k,GDU   )
+             gegp = q1(ir,jr,kr,GDGAME)
+             gegm = q1(i  ,j,k,GDGAME)
 
 #ifdef RADIATION
              lambda = qaux(i,j,k,QLAMS:QLAMS+ngroups-1)
              ugc = HALF*(ugp+ugm)
-             ergp = qx(i+1,j,k,GDERADS:GDERADS-1+ngroups)
-             ergm = qx(i  ,j,k,GDERADS:GDERADS-1+ngroups)
+             ergp = q1(ir,jr,kr,GDERADS:GDERADS-1+ngroups)
+             ergm = q1(i  ,j,k,GDERADS:GDERADS-1+ngroups)
 #endif
 
              ! we need to augment our conserved system with either a p
@@ -210,8 +224,8 @@ contains
              ! be able to deal with the general EOS
 
 #if AMREX_SPACEDIM == 2
-             dup = area1(i+1,j,k)*pgp*ugp - area1(i,j,k)*pgm*ugm
-             du = area1(i+1,j,k)*ugp-area1(i,j,k)*ugm
+             dup = area1(ir,jr,kr)*pgp*ugp - area1(i,j,k)*pgm*ugm
+             du = area1(ir,jr,kr)*ugp-area1(i,j,k)*ugm
 #else
              dup = pgp*ugp - pgm*ugm
              du = ugp-ugm
@@ -242,7 +256,7 @@ contains
                 end do
              else if (fspace_type .eq. 2) then
 #if AMREX_SPACEDIM == 2
-                divu = (area1(i+1,j,k)*ugp-area1(i,j,k)*ugm)/vol(i,j,k)
+                divu = (area1(ir,jr,kr)*ugp-area1(i,j,k)*ugm)/vol(i,j,k)
                 do g=0, ngroups-1
                    eddf = Edd_factor(lambda(g))
                    f1 = 0.5e0_rt*(1.e0_rt-eddf)
@@ -261,20 +275,20 @@ contains
 #endif
 
              ! Convert to conservation form
-             rrry = qyp(i,j,k,QRHO)
-             rury = rrry*qyp(i,j,k,QU)
-             rvry = rrry*qyp(i,j,k,QV)
-             rwry = rrry*qyp(i,j,k,QW)
-             ekenry = HALF*rrry*sum(qyp(i,j,k,QU:QW)**2)
-             rery = qyp(i,j,k,QREINT) + ekenry
+             rrry = q2p(i,j,k,QRHO)
+             rury = rrry*q2p(i,j,k,QU)
+             rvry = rrry*q2p(i,j,k,QV)
+             rwry = rrry*q2p(i,j,k,QW)
+             ekenry = HALF*rrry*sum(q2p(i,j,k,QU:QW)**2)
+             rery = q2p(i,j,k,QREINT) + ekenry
 #ifdef RADIATION
-             err  = qyp(i,j,k,qrad:qradhi)
+             err  = q2p(i,j,k,qrad:qradhi)
 #endif
 
 #if AMREX_SPACEDIM == 2
              ! Add transverse predictor
-             rrnewry = rrry - hdt*(area1(i+1,j,k)*fx(i+1,j,k,URHO) -  &
-                                   area1(i,j,k)*fx(i,j,k,URHO))/vol(i,j,k)
+             rrnewry = rrry - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) -  &
+                                   area1(i,j,k)*f1(i,j,k,URHO))/vol(i,j,k)
 
              ! Note that pressure may be treated specially here, depending on
              ! the geometry.  Our y-interface equation for (rho u) is:
@@ -285,36 +299,36 @@ contains
              ! a divergence, so there are no area factors.  For this
              ! geometry, we do not include p in our definition of the
              ! flux in the x-direction, for we need to fix this now.
-             runewry = rury - hdt*(area1(i+1,j,k)*fx(i+1,j,k,UMX)  -  &
-                                   area1(i,j,k)*fx(i,j,k,UMX))/vol(i,j,k)
+             runewry = rury - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMX)  -  &
+                                   area1(i,j,k)*f1(i,j,k,UMX))/vol(i,j,k)
              if (.not. mom_flux_has_p(1)%comp(UMX)) then
                 runewry = runewry - cdtdx *(pgp-pgm)
              endif
-             rvnewry = rvry - hdt*(area1(i+1,j,k)*fx(i+1,j,k,UMY)  -  &
-                                   area1(i,j,k)*fx(i,j,k,UMY))/vol(i,j,k)
-             rwnewry = rwry - hdt*(area1(i+1,j,k)*fx(i+1,j,k,UMZ)  -  &
-                                   area1(i,j,k)*fx(i,j,k,UMZ))/vol(i,j,k)
-             renewry = rery - hdt*(area1(i+1,j,k)*fx(i+1,j,k,UEDEN)-  &
-                                  area1(i,j,k)*fx(i,j,k,UEDEN))/vol(i,j,k)
+             rvnewry = rvry - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMY)  -  &
+                                   area1(i,j,k)*f1(i,j,k,UMY))/vol(i,j,k)
+             rwnewry = rwry - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMZ)  -  &
+                                   area1(i,j,k)*f1(i,j,k,UMZ))/vol(i,j,k)
+             renewry = rery - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEDEN)-  &
+                                  area1(i,j,k)*f1(i,j,k,UEDEN))/vol(i,j,k)
 
 #ifdef RADIATION
-             runewry = runewry - HALF*hdt*(area1(i+1,j,k)+area1(i,j,k))*sum(lamge)/vol(i,j,k)
+             runewry = runewry - HALF*hdt*(area1(ir,jr,kr)+area1(i,j,k))*sum(lamge)/vol(i,j,k)
              renewry = renewry + dre
-             ernewr(:) = err(:) - hdt*(area1(i+1,j,k)*rfx(i+1,j,k,:)-  &
-                                       area1(i,j,k)*rfx(i,j,k,:))/vol(i,j,k) + der(:)
+             ernewr(:) = err(:) - hdt*(area1(ir,jr,kr)*rf1(ir,jr,kr,:)-  &
+                                       area1(i,j,k)*rf1(i,j,k,:))/vol(i,j,k) + der(:)
 #endif
 
 #else
              ! Add transverse predictor
-             rrnewry = rrry - cdtdx*(fx(i+1,j,k,URHO) - fx(i,j,k,URHO))
-             runewry = rury - cdtdx*(fx(i+1,j,k,UMX) - fx(i,j,k,UMX))
-             rvnewry = rvry - cdtdx*(fx(i+1,j,k,UMY) - fx(i,j,k,UMY))
-             rwnewry = rwry - cdtdx*(fx(i+1,j,k,UMZ) - fx(i,j,k,UMZ))
-             renewry = rery - cdtdx*(fx(i+1,j,k,UEDEN) - fx(i,j,k,UEDEN))
+             rrnewry = rrry - cdtdx*(f1(ir,jr,kr,URHO) - f1(i,j,k,URHO))
+             runewry = rury - cdtdx*(f1(ir,jr,kr,UMX) - f1(i,j,k,UMX))
+             rvnewry = rvry - cdtdx*(f1(ir,jr,kr,UMY) - f1(i,j,k,UMY))
+             rwnewry = rwry - cdtdx*(f1(ir,jr,kr,UMZ) - f1(i,j,k,UMZ))
+             renewry = rery - cdtdx*(f1(ir,jr,kr,UEDEN) - f1(i,j,k,UEDEN))
 #ifdef RADIATION
              runewry = runewry + dmom
              renewry = renewry + dre
-             ernewr  = err(:) - cdtdx*(rfx(i+1,j,k,:) - rfx(i,j,k,:)) + der(:)
+             ernewr  = err(:) - cdtdx*(rf1(ir,jr,kr,:) - rf1(i,j,k,:)) + der(:)
 #endif
 #endif
 
@@ -333,29 +347,29 @@ contains
              endif
 
              ! Convert back to primitive form
-             qypo(i,j,k,QRHO) = rrnewry
+             q2po(i,j,k,QRHO) = rrnewry
              rhoinv = ONE/rrnewry
-             qypo(i,j,k,QU) = runewry*rhoinv
-             qypo(i,j,k,QV) = rvnewry*rhoinv
-             qypo(i,j,k,QW) = rwnewry*rhoinv
+             q2po(i,j,k,QU) = runewry*rhoinv
+             q2po(i,j,k,QV) = rvnewry*rhoinv
+             q2po(i,j,k,QW) = rwnewry*rhoinv
 
              ! note: we run the risk of (rho e) being negative here
              rhoekenry = HALF*(runewry**2 + rvnewry**2 + rwnewry**2)*rhoinv
-             qypo(i,j,k,QREINT) = renewry - rhoekenry
+             q2po(i,j,k,QREINT) = renewry - rhoekenry
 
              if (.not. reset_state) then
                 ! do the transverse terms for p, gamma, and rhoe, as necessary
 
-                if (transverse_reset_rhoe == 1 .and. qypo(i,j,k,QREINT) <= ZERO) then
+                if (transverse_reset_rhoe == 1 .and. q2po(i,j,k,QREINT) <= ZERO) then
                    ! If it is negative, reset the internal energy by
                    ! using the discretized expression for updating (rho e).
 #if AMREX_SPACEDIM == 2
-                   qypo(i,j,k,QREINT) = qyp(i,j,k,QREINT) - &
-                        hdt*(area1(i+1,j,k)*fx(i+1,j,k,UEINT)-  &
-                             area1(i,j,k)*fx(i,j,k,UEINT) + pav*du)/vol(i,j,k)
+                   q2po(i,j,k,QREINT) = q2p(i,j,k,QREINT) - &
+                        hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEINT)-  &
+                             area1(i,j,k)*f1(i,j,k,UEINT) + pav*du)/vol(i,j,k)
 #else
-                   qypo(i,j,k,QREINT) = qyp(i,j,k,QREINT) - &
-                        cdtdx*(fx(i+1,j,k,UEINT) - fx(i,j,k,UEINT) + pav*du)
+                   q2po(i,j,k,QREINT) = q2p(i,j,k,QREINT) - &
+                        cdtdx*(f1(ir,jr,kr,UEINT) - f1(i,j,k,UEINT) + pav*du)
 #endif
                 end if
 
@@ -366,53 +380,53 @@ contains
                    ! add the transverse term to the p evolution eq here
 #if AMREX_SPACEDIM == 2
                    ! the divergences here, dup and du, already have area factors
-                   pnewry = qyp(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(i,j,k)
+                   pnewry = q2p(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(i,j,k)
 #else
-                   pnewry = qyp(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
+                   pnewry = q2p(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
 #endif
-                   qypo(i,j,k,QPRES) = max(pnewry, small_pres)
+                   q2po(i,j,k,QPRES) = max(pnewry, small_pres)
                 else
                    ! Update gammae with its transverse terms
 #if AMREX_SPACEDIM == 2
-                   qypo(i,j,k,QGAME) = qyp(i,j,k,QGAME) + &
+                   q2po(i,j,k,QGAME) = q2p(i,j,k,QGAME) + &
                         hdt*( (geav-ONE)*(geav - gamc)*du)/vol(i,j,k) - cdtdx*uav*dge
 #else
-                   qypo(i,j,k,QGAME) = qyp(i,j,k,QGAME) + &
+                   q2po(i,j,k,QGAME) = q2p(i,j,k,QGAME) + &
                         cdtdx*( (geav-ONE)*(geav - gamc)*du - uav*dge )
 #endif
                    ! and compute the p edge state from this and (rho e)
-                   qypo(i,j,k,QPRES) = qypo(i,j,k,QREINT)*(qypo(i,j,k,QGAME)-ONE)
-                   qypo(i,j,k,QPRES) = max(qypo(i,j,k,QPRES),small_pres)
+                   q2po(i,j,k,QPRES) = q2po(i,j,k,QREINT)*(q2po(i,j,k,QGAME)-ONE)
+                   q2po(i,j,k,QPRES) = max(q2po(i,j,k,QPRES),small_pres)
                 end if
              else
-                qypo(i,j,k,QPRES) = qyp(i,j,k,QPRES)
-                qypo(i,j,k,QGAME) = qyp(i,j,k,QGAME)
+                q2po(i,j,k,QPRES) = q2p(i,j,k,QPRES)
+                q2po(i,j,k,QGAME) = q2p(i,j,k,QGAME)
              endif
 
-             call reset_edge_state_thermo(qypo, qypo_lo, qypo_hi, i, j, k)
+             call reset_edge_state_thermo(q2po, q2po_lo, q2po_hi, i, j, k)
 
 #ifdef RADIATION
-             qypo(i,j,k,qrad:qradhi) = ernewr(:)
-             qypo(i,j,k,qptot  ) = sum(lambda(:)*ernewr(:)) + qypo(i,j,k,QPRES)
-             qypo(i,j,k,qreitot) = sum(qypo(i,j,k,qrad:qradhi)) + qypo(i,j,k,QREINT)
+             q2po(i,j,k,qrad:qradhi) = ernewr(:)
+             q2po(i,j,k,qptot  ) = sum(lambda(:)*ernewr(:)) + q2po(i,j,k,QPRES)
+             q2po(i,j,k,qreitot) = sum(q2po(i,j,k,qrad:qradhi)) + q2po(i,j,k,QREINT)
 #endif
 
 
              !-------------------------------------------------------------------
-             ! qymo state
+             ! q2mo state
              !-------------------------------------------------------------------
-             pgp  = qx(i+1,j-1,k,GDPRES)
-             pgm  = qx(i  ,j-1,k,GDPRES)
-             ugp  = qx(i+1,j-1,k,GDU   )
-             ugm  = qx(i  ,j-1,k,GDU   )
-             gegp = qx(i+1,j-1,k,GDGAME)
-             gegm = qx(i  ,j-1,k,GDGAME)
+             pgp  = q1(imr,jmr,kmr,GDPRES)
+             pgm  = q1(iml,jml,kml,GDPRES)
+             ugp  = q1(imr,jmr,kmr,GDU   )
+             ugm  = q1(iml,jml,kml,GDU   )
+             gegp = q1(imr,jmr,kmr,GDGAME)
+             gegm = q1(iml,jml,kml,GDGAME)
 
 #ifdef RADIATION
-             lambda = qaux(i,j-1,k,QLAMS:QLAMS+ngroups-1)
+             lambda = qaux(iml,jml,kml,QLAMS:QLAMS+ngroups-1)
              ugc = HALF*(ugp+ugm)
-             ergp = qx(i+1,j-1,k,GDERADS:GDERADS-1+ngroups)
-             ergm = qx(i  ,j-1,k,GDERADS:GDERADS-1+ngroups)
+             ergp = q1(imr,jmr,kmr,GDERADS:GDERADS-1+ngroups)
+             ergm = q1(iml,jml,kml,GDERADS:GDERADS-1+ngroups)
 #endif
 
              ! we need to augment our conserved system with either a p
@@ -420,8 +434,8 @@ contains
              ! be able to deal with the general EOS
 
 #if AMREX_SPACEDIM == 2
-             dup = area1(i+1,j-1,k)*pgp*ugp - area1(i,j-1,k)*pgm*ugm
-             du = area1(i+1,j-1,k)*ugp-area1(i,j-1,k)*ugm
+             dup = area1(imr,jmr,kmr)*pgp*ugp - area1(iml,jml,kml)*pgm*ugm
+             du = area1(imr,jmr,kmr)*ugp-area1(iml,jml,kml)*ugm
 #else
              dup = pgp*ugp - pgm*ugm
              du = ugp-ugm
@@ -433,9 +447,9 @@ contains
 
              ! this is the gas gamma_1
 #ifdef RADIATION
-             gamc = qaux(i,j-1,k,QGAMCG)
+             gamc = qaux(iml,jml,kml,QGAMCG)
 #else
-             gamc = qaux(i,j-1,k,QGAMC)
+             gamc = qaux(iml,jml,kml,QGAMC)
 #endif
 
 #ifdef RADIATION
@@ -452,7 +466,7 @@ contains
                 end do
              else if (fspace_type .eq. 2) then
 #if AMREX_SPACEDIM == 2
-                divu = (area1(i+1,j-1,k)*ugp-area1(i,j-1,k)*ugm)/vol(i,j-1,k)
+                divu = (area1(imr,jmr,kmr)*ugp-area1(iml,jml,kml)*ugm)/vol(iml,jml,kml)
                 do g=0, ngroups-1
                    eddf = Edd_factor(lambda(g))
                    f1 = 0.5e0_rt*(1.e0_rt-eddf)
@@ -471,49 +485,49 @@ contains
 #endif
 
              ! Convert to conservation form
-             rrly = qym(i,j,k,QRHO)
-             ruly = rrly*qym(i,j,k,QU)
-             rvly = rrly*qym(i,j,k,QV)
-             rwly = rrly*qym(i,j,k,QW)
-             ekenly = HALF*rrly*sum(qym(i,j,k,QU:QW)**2)
-             rely = qym(i,j,k,QREINT) + ekenly
+             rrly = q2m(i,j,k,QRHO)
+             ruly = rrly*q2m(i,j,k,QU)
+             rvly = rrly*q2m(i,j,k,QV)
+             rwly = rrly*q2m(i,j,k,QW)
+             ekenly = HALF*rrly*sum(q2m(i,j,k,QU:QW)**2)
+             rely = q2m(i,j,k,QREINT) + ekenly
 #ifdef RADIATION
-             erl  = qym(i,j,k,qrad:qradhi)
+             erl  = q2m(i,j,k,qrad:qradhi)
 #endif
 
 #if AMREX_SPACEDIM == 2
-             rrnewly = rrly - hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,URHO) -  &
-                                   area1(i,j-1,k)*fx(i,j-1,k,URHO))/vol(i,j-1,k)
-             runewly = ruly - hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,UMX)  -  &
-                                   area1(i,j-1,k)*fx(i,j-1,k,UMX))/vol(i,j-1,k)
+             rrnewly = rrly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,URHO) -  &
+                                   area1(iml,jml,kml)*f1(iml,jml,kml,URHO))/vol(iml,jml,kml)
+             runewly = ruly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMX)  -  &
+                                   area1(iml,jml,kml)*f1(iml,jml,kml,UMX))/vol(iml,jml,kml)
              if (.not. mom_flux_has_p(1)%comp(UMX)) then
                 runewly = runewly - cdtdx *(pgp-pgm)
              endif
-             rvnewly = rvly - hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,UMY)  -  &
-                                   area1(i,j-1,k)*fx(i,j-1,k,UMY))/vol(i,j-1,k)
-             rwnewly = rwly - hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,UMZ)  -  &
-                                   area1(i,j-1,k)*fx(i,j-1,k,UMZ))/vol(i,j-1,k)
-             renewly = rely - hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,UEDEN)-  &
-                                   area1(i,j-1,k)*fx(i,j-1,k,UEDEN))/vol(i,j-1,k)
+             rvnewly = rvly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMY)  -  &
+                                   area1(iml,jml,kml)*f1(iml,jml,kml,UMY))/vol(iml,jml,kml)
+             rwnewly = rwly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMZ)  -  &
+                                   area1(iml,jml,kml)*f1(iml,jml,kml,UMZ))/vol(iml,jml,kml)
+             renewly = rely - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UEDEN)-  &
+                                   area1(iml,jml,kml)*f1(iml,jml,kml,UEDEN))/vol(iml,jml,kml)
 
 #ifdef RADIATION
-             runewly = runewly - HALF*hdt*(area1(i+1,j-1,k)+area1(i,j-1,k))*sum(lamge)/vol(i,j-1,k)
+             runewly = runewly - HALF*hdt*(area1(imr,jmr,kmr)+area1(iml,jml,kml))*sum(lamge)/vol(iml,jml,kml)
              renewly = renewly + dre
-             ernewl(:) = erl(:) - hdt*(area1(i+1,j-1,k)*rfx(i+1,j-1,k,:)-  &
-                                       area1(i,j-1,k)*rfx(i,j-1,k,:))/vol(i,j-1,k) + der(:)
+             ernewl(:) = erl(:) - hdt*(area1(imr,jmr,kmr)*rf1(imr,jmr,kmr,:)-  &
+                                       area1(iml,jml,kml)*rf1(iml,jml,kml,:))/vol(iml,jml,kml) + der(:)
 #endif
 
 #else
              ! Add transverse predictor
-             rrnewly = rrly - cdtdx*(fx(i+1,j-1,k,URHO) - fx(i,j-1,k,URHO))
-             runewly = ruly - cdtdx*(fx(i+1,j-1,k,UMX) - fx(i,j-1,k,UMX))
-             rvnewly = rvly - cdtdx*(fx(i+1,j-1,k,UMY) - fx(i,j-1,k,UMY))
-             rwnewly = rwly - cdtdx*(fx(i+1,j-1,k,UMZ) - fx(i,j-1,k,UMZ))
-             renewly = rely - cdtdx*(fx(i+1,j-1,k,UEDEN) - fx(i,j-1,k,UEDEN))
+             rrnewly = rrly - cdtdx*(f1(imr,jmr,kmr,URHO) - f1(iml,jml,kml,URHO))
+             runewly = ruly - cdtdx*(f1(imr,jmr,kmr,UMX) - f1(iml,jml,kml,UMX))
+             rvnewly = rvly - cdtdx*(f1(imr,jmr,kmr,UMY) - f1(iml,jml,kml,UMY))
+             rwnewly = rwly - cdtdx*(f1(imr,jmr,kmr,UMZ) - f1(iml,jml,kml,UMZ))
+             renewly = rely - cdtdx*(f1(imr,jmr,kmr,UEDEN) - f1(iml,jml,kml,UEDEN))
 #ifdef RADIATION
              runewly = runewly + dmom
              renewly = renewly + dre
-             ernewl  = erl(:) - cdtdx*(rfx(i+1,j-1,k,:) - rfx(i,j-1,k,:)) + der(:)
+             ernewl  = erl(:) - cdtdx*(rf1(imr,jmr,kmr,:) - rf1(iml,jml,kml,:)) + der(:)
 #endif
 #endif
              ! Reset to original value if adding transverse terms made density negative
@@ -531,29 +545,29 @@ contains
              endif
 
              ! Convert back to primitive form
-             qymo(i,j,k,QRHO) = rrnewly
+             q2mo(i,j,k,QRHO) = rrnewly
              rhoinv = ONE/rrnewly
-             qymo(i,j,k,QU) = runewly*rhoinv
-             qymo(i,j,k,QV) = rvnewly*rhoinv
-             qymo(i,j,k,QW) = rwnewly*rhoinv
+             q2mo(i,j,k,QU) = runewly*rhoinv
+             q2mo(i,j,k,QV) = rvnewly*rhoinv
+             q2mo(i,j,k,QW) = rwnewly*rhoinv
 
              ! note: we run the risk of (rho e) being negative here
              rhoekenly = HALF*(runewly**2 + rvnewly**2 + rwnewly**2)*rhoinv
-             qymo(i,j,k,QREINT) = renewly - rhoekenly
+             q2mo(i,j,k,QREINT) = renewly - rhoekenly
 
              if (.not. reset_state) then
                 ! do the transverse terms for p, gamma, and rhoe, as necessary
 
-                if (transverse_reset_rhoe == 1 .and. qymo(i,j,k,QREINT) <= ZERO) then
+                if (transverse_reset_rhoe == 1 .and. q2mo(i,j,k,QREINT) <= ZERO) then
                    ! If it is negative, reset the internal energy by using the discretized
                    ! expression for updating (rho e).
 #if AMREX_SPACEDIM == 2
-                   qymo(i,j,k,QREINT) = qym(i,j,k,QREINT) - &
-                        hdt*(area1(i+1,j-1,k)*fx(i+1,j-1,k,UEINT)-  &
-                             area1(i,j-1,k)*fx(i,j-1,k,UEINT) + pav*du)/vol(i,j-1,k)
+                   q2mo(i,j,k,QREINT) = q2m(i,j,k,QREINT) - &
+                        hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UEINT)-  &
+                             area1(iml,jml,kml)*f1(iml,jml,kml,UEINT) + pav*du)/vol(iml,jml,kml)
 #else
-                   qymo(i,j,k,QREINT) = qym(i,j,k,QREINT) - &
-                        cdtdx*(fx(i+1,j-1,k,UEINT) - fx(i,j-1,k,UEINT) + pav*du)
+                   q2mo(i,j,k,QREINT) = q2m(i,j,k,QREINT) - &
+                        cdtdx*(f1(imr,jmr,kmr,UEINT) - f1(iml,jml,kml,UEINT) + pav*du)
 #endif
                 end if
 
@@ -563,43 +577,43 @@ contains
                 if (ppm_predict_gammae == 0) then
                    ! add the transverse term to the p evolution eq here
 #if AMREX_SPACEDIM == 2
-                   pnewly = qym(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(i,j-1,k)
+                   pnewly = q2m(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(iml,jml,kml)
 #else
-                   pnewly = qym(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
+                   pnewly = q2m(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
 #endif
-                   qymo(i,j,k,QPRES) = max(pnewly,small_pres)
+                   q2mo(i,j,k,QPRES) = max(pnewly,small_pres)
                 else
                    ! Update gammae with its transverse terms
 #if AMREX_SPACEDIM == 2
-                   qymo(i,j,k,QGAME) = qym(i,j,k,QGAME) + &
-                        hdt*( (geav-ONE)*(geav - gamc)*du)/vol(i,j-1,k) - cdtdx*uav*dge
+                   q2mo(i,j,k,QGAME) = q2m(i,j,k,QGAME) + &
+                        hdt*( (geav-ONE)*(geav - gamc)*du)/vol(iml,jml,kml) - cdtdx*uav*dge
 #else
-                   qymo(i,j,k,QGAME) = qym(i,j,k,QGAME) + &
+                   q2mo(i,j,k,QGAME) = q2m(i,j,k,QGAME) + &
                         cdtdx*( (geav-ONE)*(geav - gamc)*du - uav*dge )
 #endif
 
                    ! and compute the p edge state from this and (rho e)
-                   qymo(i,j,k,QPRES) = qymo(i,j,k,QREINT)*(qymo(i,j,k,QGAME)-ONE)
-                   qymo(i,j,k,QPRES) = max(qymo(i,j,k,QPRES), small_pres)
+                   q2mo(i,j,k,QPRES) = q2mo(i,j,k,QREINT)*(q2mo(i,j,k,QGAME)-ONE)
+                   q2mo(i,j,k,QPRES) = max(q2mo(i,j,k,QPRES), small_pres)
                 end if
              else
-                qymo(i,j,k,QPRES) = qym(i,j,k,QPRES)
-                qymo(i,j,k,QGAME) = qym(i,j,k,QGAME)
+                q2mo(i,j,k,QPRES) = q2m(i,j,k,QPRES)
+                q2mo(i,j,k,QGAME) = q2m(i,j,k,QGAME)
              endif
 
-             call reset_edge_state_thermo(qymo, qymo_lo, qymo_hi, i, j, k)
+             call reset_edge_state_thermo(q2mo, q2mo_lo, q2mo_hi, i, j, k)
 
 #ifdef RADIATION
-             qymo(i,j,k,qrad:qradhi) = ernewl(:)
-             qymo(i,j,k,qptot  ) = sum(lambda(:)*ernewl(:)) + qymo(i,j,k,QPRES)
-             qymo(i,j,k,qreitot) = sum(qymo(i,j,k,qrad:qradhi)) + qymo(i,j,k,QREINT)
+             q2mo(i,j,k,qrad:qradhi) = ernewl(:)
+             q2mo(i,j,k,qptot  ) = sum(lambda(:)*ernewl(:)) + q2mo(i,j,k,QPRES)
+             q2mo(i,j,k,qreitot) = sum(q2mo(i,j,k,qrad:qradhi)) + q2mo(i,j,k,QREINT)
 #endif
 
           end do
        end do
     end do
 
-  end subroutine transx_on_ystates
+  end subroutine trans1
 
 
   subroutine transx_on_zstates(lo, hi, &
