@@ -102,19 +102,19 @@ contains
 
     real(rt) :: rhoinv
     real(rt) :: rrnew
-    real(rt) :: rrry, rrly
-    real(rt) :: rury, ruly
-    real(rt) :: rvry, rvly
-    real(rt) :: rwry, rwly
-    real(rt) :: ekenry, ekenly
-    real(rt) :: rery, rely
-    real(rt) :: rrnewry, rrnewly
-    real(rt) :: runewry, runewly
-    real(rt) :: rvnewry, rvnewly
-    real(rt) :: rwnewry, rwnewly
-    real(rt) :: renewry, renewly
-    real(rt) :: pnewry, pnewly
-    real(rt) :: rhoekenry, rhoekenly, rhoekenrz, rhoekenlz
+    real(rt) :: rrr2, rrl2
+    real(rt) :: rur2, rul2
+    real(rt) :: rvr2, rvl2
+    real(rt) :: rwr2, rwl2
+    real(rt) :: ekenr2, ekenl2
+    real(rt) :: rer2, rel2
+    real(rt) :: rrnewr2, rrnewl2
+    real(rt) :: runewr2, runewl2
+    real(rt) :: rvnewr2, rvnewl2
+    real(rt) :: rwnewr2, rwnewl2
+    real(rt) :: renewr2, renewl2
+    real(rt) :: pnewr2, pnewl2
+    real(rt) :: rhoekenr2, rhoekenl2
     real(rt) :: pgp, pgm, ugp, ugm, gegp, gegm, dup, pav, du, dge, uav, geav
     real(rt) :: compu
     real(rt) :: gamc
@@ -197,7 +197,7 @@ contains
              end do
 
              !-------------------------------------------------------------------
-             ! add the transverse flux difference in the x-direction to y-states
+             ! add the transverse flux difference in the 1-direction to 2-states
              ! for the fluid variables
              !-------------------------------------------------------------------
 
@@ -206,17 +206,17 @@ contains
              !----------------------------------------------------------------
 
              pgp  = q1(ir,jr,kr,GDPRES)
-             pgm  = q1(i  ,j,k,GDPRES)
+             pgm  = q1(i ,j ,k ,GDPRES)
              ugp  = q1(ir,jr,kr,GDU   )
-             ugm  = q1(i  ,j,k,GDU   )
+             ugm  = q1(i ,j ,k ,GDU   )
              gegp = q1(ir,jr,kr,GDGAME)
-             gegm = q1(i  ,j,k,GDGAME)
+             gegm = q1(i ,j ,k ,GDGAME)
 
 #ifdef RADIATION
              lambda = qaux(i,j,k,QLAMS:QLAMS+ngroups-1)
              ugc = HALF*(ugp+ugm)
              ergp = q1(ir,jr,kr,GDERADS:GDERADS-1+ngroups)
-             ergm = q1(i  ,j,k,GDERADS:GDERADS-1+ngroups)
+             ergm = q1(i ,j ,k ,GDERADS:GDERADS-1+ngroups)
 #endif
 
              ! we need to augment our conserved system with either a p
@@ -275,19 +275,19 @@ contains
 #endif
 
              ! Convert to conservation form
-             rrry = q2p(i,j,k,QRHO)
-             rury = rrry*q2p(i,j,k,QU)
-             rvry = rrry*q2p(i,j,k,QV)
-             rwry = rrry*q2p(i,j,k,QW)
-             ekenry = HALF*rrry*sum(q2p(i,j,k,QU:QW)**2)
-             rery = q2p(i,j,k,QREINT) + ekenry
+             rrr2 = q2p(i,j,k,QRHO)
+             rur2 = rrr2*q2p(i,j,k,QU)
+             rvr2 = rrr2*q2p(i,j,k,QV)
+             rwr2 = rrr2*q2p(i,j,k,QW)
+             ekenr2 = HALF*rrr2*sum(q2p(i,j,k,QU:QW)**2)
+             rer2 = q2p(i,j,k,QREINT) + ekenr2
 #ifdef RADIATION
              err  = q2p(i,j,k,qrad:qradhi)
 #endif
 
 #if AMREX_SPACEDIM == 2
              ! Add transverse predictor
-             rrnewry = rrry - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) -  &
+             rrnewr2 = rrr2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) -  &
                                    area1(i,j,k)*f1(i,j,k,URHO))/vol(i,j,k)
 
              ! Note that pressure may be treated specially here, depending on
@@ -299,47 +299,47 @@ contains
              ! a divergence, so there are no area factors.  For this
              ! geometry, we do not include p in our definition of the
              ! flux in the x-direction, for we need to fix this now.
-             runewry = rury - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMX)  -  &
+             runewr2 = rur2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMX)  -  &
                                    area1(i,j,k)*f1(i,j,k,UMX))/vol(i,j,k)
              if (.not. mom_flux_has_p(1)%comp(UMX)) then
-                runewry = runewry - cdtdx *(pgp-pgm)
+                runewr2 = runewr2 - cdtdx *(pgp-pgm)
              endif
-             rvnewry = rvry - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMY)  -  &
+             rvnewr2 = rvr2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMY)  -  &
                                    area1(i,j,k)*f1(i,j,k,UMY))/vol(i,j,k)
-             rwnewry = rwry - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMZ)  -  &
+             rwnewr2 = rwr2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMZ)  -  &
                                    area1(i,j,k)*f1(i,j,k,UMZ))/vol(i,j,k)
-             renewry = rery - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEDEN)-  &
+             renewr2 = rer2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEDEN)-  &
                                   area1(i,j,k)*f1(i,j,k,UEDEN))/vol(i,j,k)
 
 #ifdef RADIATION
-             runewry = runewry - HALF*hdt*(area1(ir,jr,kr)+area1(i,j,k))*sum(lamge)/vol(i,j,k)
-             renewry = renewry + dre
+             runewr2 = runewr2 - HALF*hdt*(area1(ir,jr,kr)+area1(i,j,k))*sum(lamge)/vol(i,j,k)
+             renewr2 = renewr2 + dre
              ernewr(:) = err(:) - hdt*(area1(ir,jr,kr)*rf1(ir,jr,kr,:)-  &
                                        area1(i,j,k)*rf1(i,j,k,:))/vol(i,j,k) + der(:)
 #endif
 
 #else
              ! Add transverse predictor
-             rrnewry = rrry - cdtdx*(f1(ir,jr,kr,URHO) - f1(i,j,k,URHO))
-             runewry = rury - cdtdx*(f1(ir,jr,kr,UMX) - f1(i,j,k,UMX))
-             rvnewry = rvry - cdtdx*(f1(ir,jr,kr,UMY) - f1(i,j,k,UMY))
-             rwnewry = rwry - cdtdx*(f1(ir,jr,kr,UMZ) - f1(i,j,k,UMZ))
-             renewry = rery - cdtdx*(f1(ir,jr,kr,UEDEN) - f1(i,j,k,UEDEN))
+             rrnewr2 = rrr2 - cdtdx*(f1(ir,jr,kr,URHO) - f1(i,j,k,URHO))
+             runewr2 = rur2 - cdtdx*(f1(ir,jr,kr,UMX) - f1(i,j,k,UMX))
+             rvnewr2 = rvr2 - cdtdx*(f1(ir,jr,kr,UMY) - f1(i,j,k,UMY))
+             rwnewr2 = rwr2 - cdtdx*(f1(ir,jr,kr,UMZ) - f1(i,j,k,UMZ))
+             renewr2 = rer2 - cdtdx*(f1(ir,jr,kr,UEDEN) - f1(i,j,k,UEDEN))
 #ifdef RADIATION
-             runewry = runewry + dmom
-             renewry = renewry + dre
+             runewr2 = runewr2 + dmom
+             renewr2 = renewr2 + dre
              ernewr  = err(:) - cdtdx*(rf1(ir,jr,kr,:) - rf1(i,j,k,:)) + der(:)
 #endif
 #endif
 
              ! Reset to original value if adding transverse terms made density negative
              reset_state = .false.
-             if (transverse_reset_density == 1 .and. rrnewry < ZERO) then
-                rrnewry = rrry
-                runewry = rury
-                rvnewry = rvry
-                rwnewry = rwry
-                renewry = rery
+             if (transverse_reset_density == 1 .and. rrnewr2 < ZERO) then
+                rrnewr2 = rrr2
+                runewr2 = rur2
+                rvnewr2 = rvr2
+                rwnewr2 = rwr2
+                renewr2 = rer2
 #ifdef RADIATION
                 ernewr = err(:)
 #endif
@@ -347,15 +347,15 @@ contains
              endif
 
              ! Convert back to primitive form
-             q2po(i,j,k,QRHO) = rrnewry
-             rhoinv = ONE/rrnewry
-             q2po(i,j,k,QU) = runewry*rhoinv
-             q2po(i,j,k,QV) = rvnewry*rhoinv
-             q2po(i,j,k,QW) = rwnewry*rhoinv
+             q2po(i,j,k,QRHO) = rrnewr2
+             rhoinv = ONE/rrnewr2
+             q2po(i,j,k,QU) = runewr2*rhoinv
+             q2po(i,j,k,QV) = rvnewr2*rhoinv
+             q2po(i,j,k,QW) = rwnewr2*rhoinv
 
              ! note: we run the risk of (rho e) being negative here
-             rhoekenry = HALF*(runewry**2 + rvnewry**2 + rwnewry**2)*rhoinv
-             q2po(i,j,k,QREINT) = renewry - rhoekenry
+             rhoekenr2 = HALF*(runewr2**2 + rvnewr2**2 + rwnewr2**2)*rhoinv
+             q2po(i,j,k,QREINT) = renewr2 - rhoekenr2
 
              if (.not. reset_state) then
                 ! do the transverse terms for p, gamma, and rhoe, as necessary
@@ -380,11 +380,11 @@ contains
                    ! add the transverse term to the p evolution eq here
 #if AMREX_SPACEDIM == 2
                    ! the divergences here, dup and du, already have area factors
-                   pnewry = q2p(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(i,j,k)
+                   pnewr2 = q2p(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(i,j,k)
 #else
-                   pnewry = q2p(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
+                   pnewr2 = q2p(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
 #endif
-                   q2po(i,j,k,QPRES) = max(pnewry, small_pres)
+                   q2po(i,j,k,QPRES) = max(pnewr2, small_pres)
                 else
                    ! Update gammae with its transverse terms
 #if AMREX_SPACEDIM == 2
@@ -485,59 +485,59 @@ contains
 #endif
 
              ! Convert to conservation form
-             rrly = q2m(i,j,k,QRHO)
-             ruly = rrly*q2m(i,j,k,QU)
-             rvly = rrly*q2m(i,j,k,QV)
-             rwly = rrly*q2m(i,j,k,QW)
-             ekenly = HALF*rrly*sum(q2m(i,j,k,QU:QW)**2)
-             rely = q2m(i,j,k,QREINT) + ekenly
+             rrl2 = q2m(i,j,k,QRHO)
+             rul2 = rrl2*q2m(i,j,k,QU)
+             rvl2 = rrl2*q2m(i,j,k,QV)
+             rwl2 = rrl2*q2m(i,j,k,QW)
+             ekenl2 = HALF*rrl2*sum(q2m(i,j,k,QU:QW)**2)
+             rel2 = q2m(i,j,k,QREINT) + ekenl2
 #ifdef RADIATION
              erl  = q2m(i,j,k,qrad:qradhi)
 #endif
 
 #if AMREX_SPACEDIM == 2
-             rrnewly = rrly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,URHO) -  &
+             rrnewl2 = rrl2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,URHO) -  &
                                    area1(iml,jml,kml)*f1(iml,jml,kml,URHO))/vol(iml,jml,kml)
-             runewly = ruly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMX)  -  &
+             runewl2 = rul2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMX)  -  &
                                    area1(iml,jml,kml)*f1(iml,jml,kml,UMX))/vol(iml,jml,kml)
              if (.not. mom_flux_has_p(1)%comp(UMX)) then
-                runewly = runewly - cdtdx *(pgp-pgm)
+                runewl2 = runewl2 - cdtdx *(pgp-pgm)
              endif
-             rvnewly = rvly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMY)  -  &
+             rvnewl2 = rvl2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMY)  -  &
                                    area1(iml,jml,kml)*f1(iml,jml,kml,UMY))/vol(iml,jml,kml)
-             rwnewly = rwly - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMZ)  -  &
+             rwnewl2 = rwl2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMZ)  -  &
                                    area1(iml,jml,kml)*f1(iml,jml,kml,UMZ))/vol(iml,jml,kml)
-             renewly = rely - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UEDEN)-  &
+             renewl2 = rel2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UEDEN)-  &
                                    area1(iml,jml,kml)*f1(iml,jml,kml,UEDEN))/vol(iml,jml,kml)
 
 #ifdef RADIATION
-             runewly = runewly - HALF*hdt*(area1(imr,jmr,kmr)+area1(iml,jml,kml))*sum(lamge)/vol(iml,jml,kml)
-             renewly = renewly + dre
+             runewl2 = runewl2 - HALF*hdt*(area1(imr,jmr,kmr)+area1(iml,jml,kml))*sum(lamge)/vol(iml,jml,kml)
+             renewl2 = renewl2 + dre
              ernewl(:) = erl(:) - hdt*(area1(imr,jmr,kmr)*rf1(imr,jmr,kmr,:)-  &
                                        area1(iml,jml,kml)*rf1(iml,jml,kml,:))/vol(iml,jml,kml) + der(:)
 #endif
 
 #else
              ! Add transverse predictor
-             rrnewly = rrly - cdtdx*(f1(imr,jmr,kmr,URHO) - f1(iml,jml,kml,URHO))
-             runewly = ruly - cdtdx*(f1(imr,jmr,kmr,UMX) - f1(iml,jml,kml,UMX))
-             rvnewly = rvly - cdtdx*(f1(imr,jmr,kmr,UMY) - f1(iml,jml,kml,UMY))
-             rwnewly = rwly - cdtdx*(f1(imr,jmr,kmr,UMZ) - f1(iml,jml,kml,UMZ))
-             renewly = rely - cdtdx*(f1(imr,jmr,kmr,UEDEN) - f1(iml,jml,kml,UEDEN))
+             rrnewl2 = rrl2 - cdtdx*(f1(imr,jmr,kmr,URHO) - f1(iml,jml,kml,URHO))
+             runewl2 = rul2 - cdtdx*(f1(imr,jmr,kmr,UMX) - f1(iml,jml,kml,UMX))
+             rvnewl2 = rvl2 - cdtdx*(f1(imr,jmr,kmr,UMY) - f1(iml,jml,kml,UMY))
+             rwnewl2 = rwl2 - cdtdx*(f1(imr,jmr,kmr,UMZ) - f1(iml,jml,kml,UMZ))
+             renewl2 = rel2 - cdtdx*(f1(imr,jmr,kmr,UEDEN) - f1(iml,jml,kml,UEDEN))
 #ifdef RADIATION
-             runewly = runewly + dmom
-             renewly = renewly + dre
+             runewl2 = runewl2 + dmom
+             renewl2 = renewl2 + dre
              ernewl  = erl(:) - cdtdx*(rf1(imr,jmr,kmr,:) - rf1(iml,jml,kml,:)) + der(:)
 #endif
 #endif
              ! Reset to original value if adding transverse terms made density negative
              reset_state = .false.
-             if (transverse_reset_density == 1 .and. rrnewly < ZERO) then
-                rrnewly = rrly
-                runewly = ruly
-                rvnewly = rvly
-                rwnewly = rwly
-                renewly = rely
+             if (transverse_reset_density == 1 .and. rrnewl2 < ZERO) then
+                rrnewl2 = rrl2
+                runewl2 = rul2
+                rvnewl2 = rvl2
+                rwnewl2 = rwl2
+                renewl2 = rel2
 #ifdef RADIATION
                 ernewl  = erl(:)
 #endif
@@ -545,15 +545,15 @@ contains
              endif
 
              ! Convert back to primitive form
-             q2mo(i,j,k,QRHO) = rrnewly
-             rhoinv = ONE/rrnewly
-             q2mo(i,j,k,QU) = runewly*rhoinv
-             q2mo(i,j,k,QV) = rvnewly*rhoinv
-             q2mo(i,j,k,QW) = rwnewly*rhoinv
+             q2mo(i,j,k,QRHO) = rrnewl2
+             rhoinv = ONE/rrnewl2
+             q2mo(i,j,k,QU) = runewl2*rhoinv
+             q2mo(i,j,k,QV) = rvnewl2*rhoinv
+             q2mo(i,j,k,QW) = rwnewl2*rhoinv
 
              ! note: we run the risk of (rho e) being negative here
-             rhoekenly = HALF*(runewly**2 + rvnewly**2 + rwnewly**2)*rhoinv
-             q2mo(i,j,k,QREINT) = renewly - rhoekenly
+             rhoekenl2 = HALF*(runewl2**2 + rvnewl2**2 + rwnewl2**2)*rhoinv
+             q2mo(i,j,k,QREINT) = renewl2 - rhoekenl2
 
              if (.not. reset_state) then
                 ! do the transverse terms for p, gamma, and rhoe, as necessary
@@ -577,11 +577,11 @@ contains
                 if (ppm_predict_gammae == 0) then
                    ! add the transverse term to the p evolution eq here
 #if AMREX_SPACEDIM == 2
-                   pnewly = q2m(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(iml,jml,kml)
+                   pnewl2 = q2m(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(iml,jml,kml)
 #else
-                   pnewly = q2m(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
+                   pnewl2 = q2m(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
 #endif
-                   q2mo(i,j,k,QPRES) = max(pnewly,small_pres)
+                   q2mo(i,j,k,QPRES) = max(pnewl2,small_pres)
                 else
                    ! Update gammae with its transverse terms
 #if AMREX_SPACEDIM == 2
