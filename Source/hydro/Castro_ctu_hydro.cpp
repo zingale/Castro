@@ -505,21 +505,21 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       // qgdnvtmp1 = qgdnvx
 
 #pragma gpu box(ybx)
-      trans1(AMREX_INT_ANYD(ybx.loVect()), AMREX_INT_ANYD(ybx.hiVect()),
-             1, 2,
-             BL_TO_FORTRAN_ANYD(qym),
-             BL_TO_FORTRAN_ANYD(ql),
-             BL_TO_FORTRAN_ANYD(qyp),
-             BL_TO_FORTRAN_ANYD(qr),
-             BL_TO_FORTRAN_ANYD(qaux[mfi]),
-             BL_TO_FORTRAN_ANYD(ftmp1),
+      trans1_on_2states(AMREX_INT_ANYD(ybx.loVect()), AMREX_INT_ANYD(ybx.hiVect()),
+                        1, 2,
+                        BL_TO_FORTRAN_ANYD(qym),
+                        BL_TO_FORTRAN_ANYD(ql),
+                        BL_TO_FORTRAN_ANYD(qyp),
+                        BL_TO_FORTRAN_ANYD(qr),
+                        BL_TO_FORTRAN_ANYD(qaux[mfi]),
+                        BL_TO_FORTRAN_ANYD(ftmp1),
 #ifdef RADIATION
-             BL_TO_FORTRAN_ANYD(rftmp1),
+                        BL_TO_FORTRAN_ANYD(rftmp1),
 #endif
-             BL_TO_FORTRAN_ANYD(qgdnvtmp1),
-             BL_TO_FORTRAN_ANYD(area[0][mfi]),
-             BL_TO_FORTRAN_ANYD(volume[mfi]),
-             hdt, hdtdx);
+                        BL_TO_FORTRAN_ANYD(qgdnvtmp1),
+                        BL_TO_FORTRAN_ANYD(area[0][mfi]),
+                        BL_TO_FORTRAN_ANYD(volume[mfi]),
+                        hdt, hdtdx);
 
       // solve the final Riemann problem axross the y-interfaces
 
@@ -590,19 +590,19 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       // rftmp1 = rfx
       // qgdnvtmp1 = qgdnvx
 #pragma gpu box(tyxbx)
-      trans1(AMREX_INT_ANYD(tyxbx.loVect()), AMREX_INT_ANYD(tyxbx.hiVect()),
-             1, 2,
-             BL_TO_FORTRAN_ANYD(qym),
-             BL_TO_FORTRAN_ANYD(qmyx),
-             BL_TO_FORTRAN_ANYD(qyp),
-             BL_TO_FORTRAN_ANYD(qpyx),
-             BL_TO_FORTRAN_ANYD(qaux[mfi]),
-             BL_TO_FORTRAN_ANYD(ftmp1),
+      trans1_on_2states(AMREX_INT_ANYD(tyxbx.loVect()), AMREX_INT_ANYD(tyxbx.hiVect()),
+                        1, 2,
+                        BL_TO_FORTRAN_ANYD(qym),
+                        BL_TO_FORTRAN_ANYD(qmyx),
+                        BL_TO_FORTRAN_ANYD(qyp),
+                        BL_TO_FORTRAN_ANYD(qpyx),
+                        BL_TO_FORTRAN_ANYD(qaux[mfi]),
+                        BL_TO_FORTRAN_ANYD(ftmp1),
 #ifdef RADIATION
-             BL_TO_FORTRAN_ANYD(rftmp1),
+                        BL_TO_FORTRAN_ANYD(rftmp1),
 #endif
-             BL_TO_FORTRAN_ANYD(qgdnvtmp1),
-             hdt, cdtdx);
+                        BL_TO_FORTRAN_ANYD(qgdnvtmp1),
+                        hdt, cdtdx);
 
       // [lo(1), lo(2)-1, lo(3)], [hi(1), hi(2)+1, hi(3)+1]
       const Box& tzxbx = amrex::grow(zbx, IntVect(AMREX_D_DECL(0,1,0)));
@@ -616,7 +616,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
       fab_size += qpzx.nBytes();
 
 #pragma gpu box(tzxbx)
-      transx_on_zstates(AMREX_INT_ANYD(tzxbx.loVect()), AMREX_INT_ANYD(tzxbx.hiVect()),
+      trans1_on_2states(AMREX_INT_ANYD(tzxbx.loVect()), AMREX_INT_ANYD(tzxbx.hiVect()),
+                        1, 3,
                         BL_TO_FORTRAN_ANYD(qzm),
                         BL_TO_FORTRAN_ANYD(qmzx),
                         BL_TO_FORTRAN_ANYD(qzp),

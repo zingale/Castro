@@ -271,35 +271,22 @@ extern "C"
 #endif
       const int* domlo, const int* domhi);
 
-  void trans1(const int* lo, const int* hi,
-              const int idir1, const int idir2,
-              const BL_FORT_FAB_ARG_3D(q2m),
-              BL_FORT_FAB_ARG_3D(q2mo),
-              const BL_FORT_FAB_ARG_3D(q2p),
-              BL_FORT_FAB_ARG_3D(q2po),
-              const BL_FORT_FAB_ARG_3D(qaux),
-              const BL_FORT_FAB_ARG_3D(f1),
-#ifdef RADIATION
-              const BL_FORT_FAB_ARG_3D(rf1),
-#endif
-              const BL_FORT_FAB_ARG_3D(q1),
-#if AMREX_SPACEDIM == 2
-              const BL_FORT_FAB_ARG_3D(area1),
-              const BL_FORT_FAB_ARG_3D(vol),
-#endif
-              const amrex::Real hdt, const amrex::Real cdtdx);
-
-  void transx_on_zstates(const int* lo, const int* hi,
-                         const BL_FORT_FAB_ARG_3D(qzm),
-                         BL_FORT_FAB_ARG_3D(qzmo),
-                         const BL_FORT_FAB_ARG_3D(qzp),
-                         BL_FORT_FAB_ARG_3D(qzpo),
+  void trans1_on_2states(const int* lo, const int* hi,
+                         const int idir1, const int idir2,
+                         const BL_FORT_FAB_ARG_3D(q2m),
+                         BL_FORT_FAB_ARG_3D(q2mo),
+                         const BL_FORT_FAB_ARG_3D(q2p),
+                         BL_FORT_FAB_ARG_3D(q2po),
                          const BL_FORT_FAB_ARG_3D(qaux),
-                         const BL_FORT_FAB_ARG_3D(fx),
+                         const BL_FORT_FAB_ARG_3D(f1),
 #ifdef RADIATION
-                         const BL_FORT_FAB_ARG_3D(rfx),
+                         const BL_FORT_FAB_ARG_3D(rf1),
 #endif
-                         const BL_FORT_FAB_ARG_3D(qx),
+                         const BL_FORT_FAB_ARG_3D(q1),
+#if AMREX_SPACEDIM == 2
+                         const BL_FORT_FAB_ARG_3D(area1),
+                         const BL_FORT_FAB_ARG_3D(vol),
+#endif
                          const amrex::Real hdt, const amrex::Real cdtdx);
 
   void transy_on_xstates(const int* lo, const int* hi,
