@@ -95,9 +95,11 @@ contains
     real(rt), intent(in) :: vol(vol_lo(1):vol_hi(1),vol_lo(2):vol_hi(2),vol_lo(3):vol_hi(3))
 #endif
 
-    integer :: ir, jr, kr, iml, jml, kml, imr, jmr, kmr
-    
+    integer :: d, il, jl, kl, ir, jr, kr, iml, jml, kml, imr, jmr, kmr
+
     integer :: i, j, k, n, nqp, ipassive
+
+    real(rt) :: lq2(NQ), lq2o(NQ)
 
     real(rt) :: rhoinv
     real(rt) :: rrnew
@@ -133,6 +135,89 @@ contains
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
+
+             !-------------------------------------------------------------------------
+             ! update all of the passively-advected quantities with the
+             ! transverse term and convert back to the primitive quantity
+             !-------------------------------------------------------------------------
+
+             !       qm|qp
+             !         |
+             ! --------+--------
+             !   i-1       i
+             !        i-1/2
+             !
+             ! the qm state will see the transverse flux in zone i-1
+
+             il = i
+             jl = j
+             kl = k
+
+             ir = i
+             jr = j
+             kr = k
+
+             do d = -1, 0
+
+                if (idir1 == 1) then
+                   ir = i+1
+                   jr = j
+                   kr = k
+                else if (idir1 == 2) then
+                   ir = i
+                   jr = j+1
+                   kr = k
+                else
+                   ir = i
+                   jr = j
+                   kr = k+1
+                end if
+
+                if (idir2 == 1) then
+                   il = i+d
+                   jl = j
+                   kl = k
+                else if (idir2 == 2) then
+                   il = i
+                   jl = j+d
+                   kl = k
+                else
+                   il = i
+                   jl = j
+                   kl = k+d
+                end if
+
+                if (d == -1) then
+                   lq2(:) = q2m(i,j,k,:)
+                else
+                   lq2(:) = q2p(i,j,k,:)
+                end if
+
+                do ipassive = 1, npassive
+                   n  = upass_map(ipassive)
+                   nqp = qpass_map(ipassive)
+
+#if AMREX_SPACEDIM == 2
+                   rrnew = lq2(QRHO) - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) - &
+                                            area1(il,jl,kl)*f1(il,jl,kl,URHO)) / vol(il,jl,kl)
+                   compu = lq2(QRHO)*lq2(nqp) - &
+                           hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,n) - &
+                                area1(il,jl,kl)*f1(il,jl,kl,n)) / vol(il,jl,kl)
+#else
+                   rrnew = lq2(QRHO) - cdtdx*(f1(ir,jr,kr,URHO) - f1(il,jl,kl,URHO))
+                   compu = lq2(QRHO)*lq2(nqp) - cdtdx*(f1(ir,jr,kr,n) - f1(il,jl,kl,n))
+#endif
+                   lq2o(nqp) = compu/rrnew
+
+                   if (d == -1) then
+                      q2mo(i,j,k,nqp) = lq2o(nqp)
+                   else
+                      q2po(i,j,k,nqp) = lq2o(nqp)
+                   end if
+
+                end do
+
+             end do
 
              if (idir1 == 1) then
                 ir = i+1
@@ -201,50 +286,6 @@ contains
                    kmr = k+1
                 end if
              end if
-
-             !-------------------------------------------------------------------------
-             ! update all of the passively-advected quantities with the
-             ! transverse term and convert back to the primitive quantity
-             !-------------------------------------------------------------------------
-
-             !       qm|qp
-             !         |
-             ! --------+--------
-             !   i-1       i
-             !        i-1/2
-             !
-             ! the qm state will see the transverse flux in zone i-1
-
-             do ipassive = 1, npassive
-                n  = upass_map(ipassive)
-                nqp = qpass_map(ipassive)
-
-#if AMREX_SPACEDIM == 2
-                rrnew = q2p(i,j,k,QRHO) - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) - &
-                                               area1(i,j,k)*f1(i,j,k,URHO))/vol(i,j,k)
-                compu = q2p(i,j,k,QRHO)*q2p(i,j,k,nqp) - &
-                     hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,n) - &
-                             area1(i,j,k)*f1(i,j,k,n))/vol(i,j,k)
-                q2po(i,j,k,nqp) = compu/rrnew
-#else
-                rrnew = q2p(i,j,k,QRHO) - cdtdx*(f1(ir,jr,kr,URHO) - f1(i,j,k,URHO))
-                compu = q2p(i,j,k,QRHO)*q2p(i,j,k,nqp) - cdtdx*(f1(ir,jr,kr,n) - f1(i,j,k,n))
-                q2po(i,j,k,nqp) = compu/rrnew
-#endif
-
-#if AMREX_SPACEDIM == 2
-                rrnew = q2m(i,j,k,QRHO) - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,URHO) - &
-                                               area1(iml,jml,kml)*f1(iml,jml,kml,URHO))/vol(iml,jml,kml)
-                compu = q2m(i,j,k,QRHO)*q2m(i,j,k,nqp) - &
-                     hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,n) - &
-                          area1(iml,jml,kml)*f1(iml,jml,kml,n))/vol(iml,jml,kml)
-                q2mo(i,j,k,nqp) = compu/rrnew
-#else
-                rrnew = q2m(i,j,k,QRHO) - cdtdx*(f1(imr,jmr,kmr,URHO) - f1(iml,jml,kml,URHO))
-                compu = q2m(i,j,k,QRHO)*q2m(i,j,k,nqp) - cdtdx*(f1(imr,jmr,kmr,n) - f1(iml,jml,kml,n))
-                q2mo(i,j,k,nqp) = compu/rrnew
-#endif
-             end do
 
              !-------------------------------------------------------------------
              ! add the transverse flux difference in the 1-direction to 2-states
