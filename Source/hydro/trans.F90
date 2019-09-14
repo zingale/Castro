@@ -149,85 +149,6 @@ contains
              !
              ! the qm state will see the transverse flux in zone i-1
 
-             il = i
-             jl = j
-             kl = k
-
-             ir = i
-             jr = j
-             kr = k
-
-             do d = -1, 0
-
-                if (idir1 == 1) then
-                   ir = i+1
-                   jr = j
-                   kr = k
-                else if (idir1 == 2) then
-                   ir = i
-                   jr = j+1
-                   kr = k
-                else
-                   ir = i
-                   jr = j
-                   kr = k+1
-                end if
-
-                if (idir2 == 1) then
-                   il = i+d
-                   jl = j
-                   kl = k
-                else if (idir2 == 2) then
-                   il = i
-                   jl = j+d
-                   kl = k
-                else
-                   il = i
-                   jl = j
-                   kl = k+d
-                end if
-
-                if (d == -1) then
-                   lq2(:) = q2m(i,j,k,:)
-                else
-                   lq2(:) = q2p(i,j,k,:)
-                end if
-
-                do ipassive = 1, npassive
-                   n  = upass_map(ipassive)
-                   nqp = qpass_map(ipassive)
-
-#if AMREX_SPACEDIM == 2
-                   rrnew = lq2(QRHO) - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) - &
-                                            area1(il,jl,kl)*f1(il,jl,kl,URHO)) / vol(il,jl,kl)
-                   compu = lq2(QRHO)*lq2(nqp) - &
-                           hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,n) - &
-                                area1(il,jl,kl)*f1(il,jl,kl,n)) / vol(il,jl,kl)
-#else
-                   rrnew = lq2(QRHO) - cdtdx*(f1(ir,jr,kr,URHO) - f1(il,jl,kl,URHO))
-                   compu = lq2(QRHO)*lq2(nqp) - cdtdx*(f1(ir,jr,kr,n) - f1(il,jl,kl,n))
-#endif
-                   lq2o(nqp) = compu/rrnew
-
-                   if (d == -1) then
-                      q2mo(i,j,k,nqp) = lq2o(nqp)
-                   else
-                      q2po(i,j,k,nqp) = lq2o(nqp)
-                   end if
-
-                end do
-
-             end do
-
-             !-------------------------------------------------------------------
-             ! add the transverse flux difference in the 1-direction to 2-states
-             ! for the fluid variables
-             !-------------------------------------------------------------------
-
-             !----------------------------------------------------------------
-             ! q2po state
-             !----------------------------------------------------------------
-
              do d = -1, 0
 
                 if (idir1 == 1) then
@@ -266,6 +187,41 @@ contains
                    kl = kl+d
                    kr = kr+d
                 end if
+
+                if (d == -1) then
+                   lq2(:) = q2m(i,j,k,:)
+                else
+                   lq2(:) = q2p(i,j,k,:)
+                end if
+
+                do ipassive = 1, npassive
+                   n  = upass_map(ipassive)
+                   nqp = qpass_map(ipassive)
+
+#if AMREX_SPACEDIM == 2
+                   rrnew = lq2(QRHO) - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) - &
+                                            area1(il,jl,kl)*f1(il,jl,kl,URHO)) / vol(il,jl,kl)
+                   compu = lq2(QRHO)*lq2(nqp) - &
+                           hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,n) - &
+                                area1(il,jl,kl)*f1(il,jl,kl,n)) / vol(il,jl,kl)
+#else
+                   rrnew = lq2(QRHO) - cdtdx*(f1(ir,jr,kr,URHO) - f1(il,jl,kl,URHO))
+                   compu = lq2(QRHO)*lq2(nqp) - cdtdx*(f1(ir,jr,kr,n) - f1(il,jl,kl,n))
+#endif
+                   lq2o(nqp) = compu/rrnew
+
+                   if (d == -1) then
+                      q2mo(i,j,k,nqp) = lq2o(nqp)
+                   else
+                      q2po(i,j,k,nqp) = lq2o(nqp)
+                   end if
+
+                end do
+
+                !-------------------------------------------------------------------
+                ! add the transverse flux difference in the 1-direction to 2-states
+                ! for the fluid variables
+                !-------------------------------------------------------------------
 
                 if (d == 0) then
                    lq2(:) = q2p(i,j,k,:)
