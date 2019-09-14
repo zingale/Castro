@@ -296,6 +296,8 @@ contains
              ! q2po state
              !----------------------------------------------------------------
 
+             lq2(:) = q2p(i,j,k,:)
+             
              pgp  = q1(ir,jr,kr,GDPRES)
              pgm  = q1(i ,j ,k ,GDPRES)
              ugp  = q1(ir,jr,kr,GDU+idir1-1)
@@ -366,14 +368,14 @@ contains
 #endif
 
              ! Convert to conservation form
-             rrr2 = q2p(i,j,k,QRHO)
-             rur2 = rrr2*q2p(i,j,k,QU)
-             rvr2 = rrr2*q2p(i,j,k,QV)
-             rwr2 = rrr2*q2p(i,j,k,QW)
-             ekenr2 = HALF*rrr2*sum(q2p(i,j,k,QU:QW)**2)
-             rer2 = q2p(i,j,k,QREINT) + ekenr2
+             rrr2 = lq2(QRHO)
+             rur2 = rrr2*lq2(QU)
+             rvr2 = rrr2*lq2(QV)
+             rwr2 = rrr2*lq2(QW)
+             ekenr2 = HALF*rrr2*sum(lq2(QU:QW)**2)
+             rer2 = lq2(QREINT) + ekenr2
 #ifdef RADIATION
-             err  = q2p(i,j,k,qrad:qradhi)
+             err  = lq2(qrad:qradhi)
 #endif
 
 #if AMREX_SPACEDIM == 2
@@ -400,7 +402,7 @@ contains
              rwnewr2 = rwr2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMZ)  -  &
                                    area1(i,j,k)*f1(i,j,k,UMZ))/vol(i,j,k)
              renewr2 = rer2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEDEN)-  &
-                                  area1(i,j,k)*f1(i,j,k,UEDEN))/vol(i,j,k)
+                                   area1(i,j,k)*f1(i,j,k,UEDEN))/vol(i,j,k)
 
 #ifdef RADIATION
              runewr2 = runewr2 - HALF*hdt*(area1(ir,jr,kr)+area1(i,j,k))*sum(lamge)/vol(i,j,k)
@@ -438,15 +440,15 @@ contains
              endif
 
              ! Convert back to primitive form
-             q2po(i,j,k,QRHO) = rrnewr2
+             lq2o(QRHO) = rrnewr2
              rhoinv = ONE/rrnewr2
-             q2po(i,j,k,QU) = runewr2*rhoinv
-             q2po(i,j,k,QV) = rvnewr2*rhoinv
-             q2po(i,j,k,QW) = rwnewr2*rhoinv
+             lq2o(QU) = runewr2*rhoinv
+             lq2o(QV) = rvnewr2*rhoinv
+             lq2o(QW) = rwnewr2*rhoinv
 
              ! note: we run the risk of (rho e) being negative here
              rhoekenr2 = HALF*(runewr2**2 + rvnewr2**2 + rwnewr2**2)*rhoinv
-             q2po(i,j,k,QREINT) = renewr2 - rhoekenr2
+             lq2o(QREINT) = renewr2 - rhoekenr2
 
              if (.not. reset_state) then
                 ! do the transverse terms for p, gamma, and rhoe, as necessary
@@ -455,11 +457,11 @@ contains
                    ! If it is negative, reset the internal energy by
                    ! using the discretized expression for updating (rho e).
 #if AMREX_SPACEDIM == 2
-                   q2po(i,j,k,QREINT) = q2p(i,j,k,QREINT) - &
+                   lq2o(QREINT) = lq2(QREINT) - &
                         hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEINT)-  &
                              area1(i,j,k)*f1(i,j,k,UEINT) + pav*du)/vol(i,j,k)
 #else
-                   q2po(i,j,k,QREINT) = q2p(i,j,k,QREINT) - &
+                   lq2o(QREINT) = lq2(QREINT) - &
                         cdtdx*(f1(ir,jr,kr,UEINT) - f1(i,j,k,UEINT) + pav*du)
 #endif
                 end if
@@ -471,41 +473,47 @@ contains
                    ! add the transverse term to the p evolution eq here
 #if AMREX_SPACEDIM == 2
                    ! the divergences here, dup and du, already have area factors
-                   pnewr2 = q2p(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(i,j,k)
+                   pnewr2 = lq2(QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(i,j,k)
 #else
-                   pnewr2 = q2p(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
+                   pnewr2 = lq2(QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
 #endif
-                   q2po(i,j,k,QPRES) = max(pnewr2, small_pres)
+                   lq2o(QPRES) = max(pnewr2, small_pres)
                 else
                    ! Update gammae with its transverse terms
 #if AMREX_SPACEDIM == 2
-                   q2po(i,j,k,QGAME) = q2p(i,j,k,QGAME) + &
+                   lq2o(QGAME) = lq2(QGAME) + &
                         hdt*( (geav-ONE)*(geav - gamc)*du)/vol(i,j,k) - cdtdx*uav*dge
 #else
-                   q2po(i,j,k,QGAME) = q2p(i,j,k,QGAME) + &
+                   lq2o(QGAME) = lq2(QGAME) + &
                         cdtdx*( (geav-ONE)*(geav - gamc)*du - uav*dge )
 #endif
                    ! and compute the p edge state from this and (rho e)
-                   q2po(i,j,k,QPRES) = q2po(i,j,k,QREINT)*(q2po(i,j,k,QGAME)-ONE)
-                   q2po(i,j,k,QPRES) = max(q2po(i,j,k,QPRES),small_pres)
+                   lq2o(QPRES) = lq2o(QREINT)*(lq2o(QGAME)-ONE)
+                   lq2o(QPRES) = max(lq2o(QPRES),small_pres)
                 end if
              else
-                q2po(i,j,k,QPRES) = q2p(i,j,k,QPRES)
-                q2po(i,j,k,QGAME) = q2p(i,j,k,QGAME)
+                lq2o(QPRES) = lq2(QPRES)
+                lq2o(QGAME) = lq2(QGAME)
              endif
+
+#ifdef RADIATION
+             lq2o(i,j,k,qrad:qradhi) = ernewr(:)
+             lq2o(i,j,k,qptot  ) = sum(lambda(:)*ernewr(:)) + lq2o(i,j,k,QPRES)
+             lq2o(i,j,k,qreitot) = sum(lq2o(i,j,k,qrad:qradhi)) + lq2o(i,j,k,QREINT)
+#endif
+
+             q2po(i,j,k,:) = lq2o(:)
 
              call reset_edge_state_thermo(q2po, q2po_lo, q2po_hi, i, j, k)
 
-#ifdef RADIATION
-             q2po(i,j,k,qrad:qradhi) = ernewr(:)
-             q2po(i,j,k,qptot  ) = sum(lambda(:)*ernewr(:)) + q2po(i,j,k,QPRES)
-             q2po(i,j,k,qreitot) = sum(q2po(i,j,k,qrad:qradhi)) + q2po(i,j,k,QREINT)
-#endif
 
 
              !-------------------------------------------------------------------
              ! q2mo state
              !-------------------------------------------------------------------
+
+             lq2(:) = q2m(i,j,k,:)
+
              pgp  = q1(imr,jmr,kmr,GDPRES)
              pgm  = q1(iml,jml,kml,GDPRES)
              ugp  = q1(imr,jmr,kmr,GDU+idir1-1)
@@ -576,14 +584,14 @@ contains
 #endif
 
              ! Convert to conservation form
-             rrl2 = q2m(i,j,k,QRHO)
-             rul2 = rrl2*q2m(i,j,k,QU)
-             rvl2 = rrl2*q2m(i,j,k,QV)
-             rwl2 = rrl2*q2m(i,j,k,QW)
-             ekenl2 = HALF*rrl2*sum(q2m(i,j,k,QU:QW)**2)
-             rel2 = q2m(i,j,k,QREINT) + ekenl2
+             rrl2 = lq2(QRHO)
+             rul2 = rrl2*lq2(QU)
+             rvl2 = rrl2*lq2(QV)
+             rwl2 = rrl2*lq2(QW)
+             ekenl2 = HALF*rrl2*sum(lq2(QU:QW)**2)
+             rel2 = lq2(QREINT) + ekenl2
 #ifdef RADIATION
-             erl  = q2m(i,j,k,qrad:qradhi)
+             erl  = lq2(qrad:qradhi)
 #endif
 
 #if AMREX_SPACEDIM == 2
@@ -636,28 +644,28 @@ contains
              endif
 
              ! Convert back to primitive form
-             q2mo(i,j,k,QRHO) = rrnewl2
+             lq2o(QRHO) = rrnewl2
              rhoinv = ONE/rrnewl2
-             q2mo(i,j,k,QU) = runewl2*rhoinv
-             q2mo(i,j,k,QV) = rvnewl2*rhoinv
-             q2mo(i,j,k,QW) = rwnewl2*rhoinv
+             lq2o(QU) = runewl2*rhoinv
+             lq2o(QV) = rvnewl2*rhoinv
+             lq2o(QW) = rwnewl2*rhoinv
 
              ! note: we run the risk of (rho e) being negative here
              rhoekenl2 = HALF*(runewl2**2 + rvnewl2**2 + rwnewl2**2)*rhoinv
-             q2mo(i,j,k,QREINT) = renewl2 - rhoekenl2
+             lq2o(QREINT) = renewl2 - rhoekenl2
 
              if (.not. reset_state) then
                 ! do the transverse terms for p, gamma, and rhoe, as necessary
 
-                if (transverse_reset_rhoe == 1 .and. q2mo(i,j,k,QREINT) <= ZERO) then
+                if (transverse_reset_rhoe == 1 .and. lq2o(QREINT) <= ZERO) then
                    ! If it is negative, reset the internal energy by using the discretized
                    ! expression for updating (rho e).
 #if AMREX_SPACEDIM == 2
-                   q2mo(i,j,k,QREINT) = q2m(i,j,k,QREINT) - &
+                   lq2o(QREINT) = lq2(QREINT) - &
                         hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UEINT)-  &
                              area1(iml,jml,kml)*f1(iml,jml,kml,UEINT) + pav*du)/vol(iml,jml,kml)
 #else
-                   q2mo(i,j,k,QREINT) = q2m(i,j,k,QREINT) - &
+                   lq2o(QREINT) = lq2(QREINT) - &
                         cdtdx*(f1(imr,jmr,kmr,UEINT) - f1(iml,jml,kml,UEINT) + pav*du)
 #endif
                 end if
@@ -668,37 +676,39 @@ contains
                 if (ppm_predict_gammae == 0) then
                    ! add the transverse term to the p evolution eq here
 #if AMREX_SPACEDIM == 2
-                   pnewl2 = q2m(i,j,k,QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(iml,jml,kml)
+                   pnewl2 = lq2(QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(iml,jml,kml)
 #else
-                   pnewl2 = q2m(i,j,k,QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
+                   pnewl2 = lq2(QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
 #endif
-                   q2mo(i,j,k,QPRES) = max(pnewl2,small_pres)
+                   lq2o(QPRES) = max(pnewl2,small_pres)
                 else
                    ! Update gammae with its transverse terms
 #if AMREX_SPACEDIM == 2
-                   q2mo(i,j,k,QGAME) = q2m(i,j,k,QGAME) + &
+                   lq2o(QGAME) = lq2(QGAME) + &
                         hdt*( (geav-ONE)*(geav - gamc)*du)/vol(iml,jml,kml) - cdtdx*uav*dge
 #else
-                   q2mo(i,j,k,QGAME) = q2m(i,j,k,QGAME) + &
+                   lq2o(QGAME) = lq2(QGAME) + &
                         cdtdx*( (geav-ONE)*(geav - gamc)*du - uav*dge )
 #endif
 
                    ! and compute the p edge state from this and (rho e)
-                   q2mo(i,j,k,QPRES) = q2mo(i,j,k,QREINT)*(q2mo(i,j,k,QGAME)-ONE)
-                   q2mo(i,j,k,QPRES) = max(q2mo(i,j,k,QPRES), small_pres)
+                   lq2o(QPRES) = lq2o(QREINT)*(lq2o(QGAME)-ONE)
+                   lq2o(QPRES) = max(lq2o(QPRES), small_pres)
                 end if
              else
-                q2mo(i,j,k,QPRES) = q2m(i,j,k,QPRES)
-                q2mo(i,j,k,QGAME) = q2m(i,j,k,QGAME)
+                lq2o(QPRES) = lq2(QPRES)
+                lq2o(QGAME) = lq2(QGAME)
              endif
 
-             call reset_edge_state_thermo(q2mo, q2mo_lo, q2mo_hi, i, j, k)
-
 #ifdef RADIATION
-             q2mo(i,j,k,qrad:qradhi) = ernewl(:)
-             q2mo(i,j,k,qptot  ) = sum(lambda(:)*ernewl(:)) + q2mo(i,j,k,QPRES)
-             q2mo(i,j,k,qreitot) = sum(q2mo(i,j,k,qrad:qradhi)) + q2mo(i,j,k,QREINT)
+             lq2o(qrad:qradhi) = ernewl(:)
+             lq2o(qptot  ) = sum(lambda(:)*ernewl(:)) + lq2o(QPRES)
+             lq2o(qreitot) = sum(lq2o(qrad:qradhi)) + lq2o(QREINT)
 #endif
+
+             q2mo(i,j,k,:) = lq2o(:)
+
+             call reset_edge_state_thermo(q2mo, q2mo_lo, q2mo_hi, i, j, k)
 
           end do
        end do
