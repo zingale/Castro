@@ -95,7 +95,7 @@ contains
     real(rt), intent(in) :: vol(vol_lo(1):vol_hi(1),vol_lo(2):vol_hi(2),vol_lo(3):vol_hi(3))
 #endif
 
-    integer :: d, il, jl, kl, ir, jr, kr, iml, jml, kml, imr, jmr, kmr
+    integer :: d, il, jl, kl, ir, jr, kr
 
     integer :: i, j, k, n, nqp, ipassive
 
@@ -223,68 +223,14 @@ contains
                 ir = i+1
                 jr = j
                 kr = k
-
-                if (idir2 == 2) then
-                   iml = i
-                   jml = j-1
-                   kml = k
-
-                   imr = i+1
-                   jmr = j-1
-                   kmr = k
-                else if (idir2 == 3) then
-                   iml = i
-                   jml = j
-                   kml = k-1
-
-                   imr = i+1
-                   jmr = j
-                   kmr = k-1
-                end if
              else if (idir1 == 2) then
                 ir = i
                 jr = j+1
                 kr = k
-
-                if (idir2 == 1) then
-                   iml = i-1
-                   jml = j
-                   kml = k
-
-                   imr = i-1
-                   jmr = j+1
-                   kmr = k
-                else if (idir2 == 3) then
-                   iml = i
-                   jml = j
-                   kml = k-1
-
-                   imr = i
-                   jmr = j+1
-                   kmr = k-1
-                end if
              else if (idir1 == 3) then
                 ir = i
                 jr = j
                 kr = k+1
-
-                if (idir2 == 1) then
-                   iml = i-1
-                   jml = j
-                   kml = k
-
-                   imr = i-1
-                   jmr = j
-                   kmr = k+1
-                else if (idir2 == 2) then
-                   iml = i
-                   jml = j-1
-                   kml = k
-
-                   imr = i
-                   jmr = j-1
-                   kmr = k+1
-                end if
              end if
 
              !-------------------------------------------------------------------
@@ -512,20 +458,57 @@ contains
              ! q2mo state
              !-------------------------------------------------------------------
 
+             if (idir1 == 1) then
+                il = i
+                jl = j
+                kl = k
+
+                ir = i+1
+                jr = j
+                kr = k
+             else if (idir1 == 2) then
+                il = i
+                jl = j
+                kl = k
+
+                ir = i
+                jr = j+1
+                kr = k
+             else
+                il = i
+                jl = j
+                kl = k
+
+                ir = i
+                jr = j
+                kr = k+1
+             end if
+
+             if (idir2 == 1) then
+                il = il-1
+                ir = ir-1
+             else if (idir2 == 2) then
+                jl = jl-1
+                jr = jr-1
+             else
+                kl = kl-1
+                kr = kr-1
+             end if
+
              lq2(:) = q2m(i,j,k,:)
 
-             pgp  = q1(imr,jmr,kmr,GDPRES)
-             pgm  = q1(iml,jml,kml,GDPRES)
-             ugp  = q1(imr,jmr,kmr,GDU+idir1-1)
-             ugm  = q1(iml,jml,kml,GDU+idir1-1)
-             gegp = q1(imr,jmr,kmr,GDGAME)
-             gegm = q1(iml,jml,kml,GDGAME)
+             pgp  = q1(ir,jr,kr,GDPRES)
+             pgm  = q1(il,jl,kl,GDPRES)
+             ugp  = q1(ir,jr,kr,GDU+idir1-1)
+             ugm  = q1(il,jl,kl,GDU+idir1-1)
+             gegp = q1(ir,jr,kr,GDGAME)
+             gegm = q1(il,jl,kl,GDGAME)
 
 #ifdef RADIATION
-             lambda = qaux(iml,jml,kml,QLAMS:QLAMS+ngroups-1)
+             lambda = qaux(il,jl,kl,QLAMS:QLAMS+ngroups-1)
              ugc = HALF*(ugp+ugm)
-             ergp = q1(imr,jmr,kmr,GDERADS:GDERADS-1+ngroups)
-             ergm = q1(iml,jml,kml,GDERADS:GDERADS-1+ngroups)
+             ergp = q1(ir,jr,kr,GDERADS:GDERADS-1+ngroups)
+             ergm = q1(il,jl,kl,GDERADS:GDERADS-1+ngroups)
 #endif
 
              ! we need to augment our conserved system with either a p
@@ -533,8 +516,8 @@ contains
              ! be able to deal with the general EOS
 
 #if AMREX_SPACEDIM == 2
-             dup = area1(imr,jmr,kmr)*pgp*ugp - area1(iml,jml,kml)*pgm*ugm
-             du = area1(imr,jmr,kmr)*ugp-area1(iml,jml,kml)*ugm
+             dup = area1(ir,jr,kr)*pgp*ugp - area1(il,jl,kl)*pgm*ugm
+             du = area1(ir,jr,kr)*ugp-area1(il,jl,kl)*ugm
 #else
              dup = pgp*ugp - pgm*ugm
              du = ugp-ugm
@@ -546,9 +529,9 @@ contains
 
              ! this is the gas gamma_1
 #ifdef RADIATION
-             gamc = qaux(iml,jml,kml,QGAMCG)
+             gamc = qaux(il,jl,kl,QGAMCG)
 #else
-             gamc = qaux(iml,jml,kml,QGAMC)
+             gamc = qaux(il,jl,kl,QGAMC)
 #endif
 
 #ifdef RADIATION
@@ -565,7 +548,7 @@ contains
                 end do
              else if (fspace_type .eq. 2) then
 #if AMREX_SPACEDIM == 2
-                divu = (area1(imr,jmr,kmr)*ugp-area1(iml,jml,kml)*ugm)/vol(iml,jml,kml)
+                divu = (area1(ir,jr,kr)*ugp-area1(il,jl,kl)*ugm)/vol(il,jl,kl)
                 do g=0, ngroups-1
                    eddf = Edd_factor(lambda(g))
                    f1 = 0.5e0_rt*(1.e0_rt-eddf)
@@ -595,38 +578,38 @@ contains
 #endif
 
 #if AMREX_SPACEDIM == 2
-             rrnewl2 = rrl2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,URHO) -  &
-                                   area1(iml,jml,kml)*f1(iml,jml,kml,URHO))/vol(iml,jml,kml)
-             runewl2 = rul2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMX)  -  &
-                                   area1(iml,jml,kml)*f1(iml,jml,kml,UMX))/vol(iml,jml,kml)
+             rrnewl2 = rrl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) -  &
+                                   area1(il,jl,kl)*f1(il,jl,kl,URHO))/vol(il,jl,kl)
+             runewl2 = rul2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMX)  -  &
+                                   area1(il,jl,kl)*f1(il,jl,kl,UMX))/vol(il,jl,kl)
              if (.not. mom_flux_has_p(1)%comp(UMX)) then
                 runewl2 = runewl2 - cdtdx *(pgp-pgm)
              endif
-             rvnewl2 = rvl2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMY)  -  &
-                                   area1(iml,jml,kml)*f1(iml,jml,kml,UMY))/vol(iml,jml,kml)
-             rwnewl2 = rwl2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UMZ)  -  &
-                                   area1(iml,jml,kml)*f1(iml,jml,kml,UMZ))/vol(iml,jml,kml)
-             renewl2 = rel2 - hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UEDEN)-  &
-                                   area1(iml,jml,kml)*f1(iml,jml,kml,UEDEN))/vol(iml,jml,kml)
+             rvnewl2 = rvl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMY)  -  &
+                                   area1(il,jl,kl)*f1(il,jl,kl,UMY))/vol(il,jl,kl)
+             rwnewl2 = rwl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMZ)  -  &
+                                   area1(il,jl,kl)*f1(il,jl,kl,UMZ))/vol(il,jl,kl)
+             renewl2 = rel2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEDEN)-  &
+                                   area1(il,jl,kl)*f1(il,jl,kl,UEDEN))/vol(il,jl,kl)
 
 #ifdef RADIATION
-             runewl2 = runewl2 - HALF*hdt*(area1(imr,jmr,kmr)+area1(iml,jml,kml))*sum(lamge)/vol(iml,jml,kml)
+             runewl2 = runewl2 - HALF*hdt*(area1(ir,jr,kr)+area1(il,jl,kl))*sum(lamge)/vol(il,jl,kl)
              renewl2 = renewl2 + dre
-             ernewl(:) = erl(:) - hdt*(area1(imr,jmr,kmr)*rf1(imr,jmr,kmr,:)-  &
-                                       area1(iml,jml,kml)*rf1(iml,jml,kml,:))/vol(iml,jml,kml) + der(:)
+             ernewl(:) = erl(:) - hdt*(area1(ir,jr,kr)*rf1(ir,jr,kr,:)-  &
+                                       area1(il,jl,kl)*rf1(il,jl,kl,:))/vol(il,jl,kl) + der(:)
 #endif
 
 #else
              ! Add transverse predictor
-             rrnewl2 = rrl2 - cdtdx*(f1(imr,jmr,kmr,URHO) - f1(iml,jml,kml,URHO))
-             runewl2 = rul2 - cdtdx*(f1(imr,jmr,kmr,UMX) - f1(iml,jml,kml,UMX))
-             rvnewl2 = rvl2 - cdtdx*(f1(imr,jmr,kmr,UMY) - f1(iml,jml,kml,UMY))
-             rwnewl2 = rwl2 - cdtdx*(f1(imr,jmr,kmr,UMZ) - f1(iml,jml,kml,UMZ))
-             renewl2 = rel2 - cdtdx*(f1(imr,jmr,kmr,UEDEN) - f1(iml,jml,kml,UEDEN))
+             rrnewl2 = rrl2 - cdtdx*(f1(ir,jr,kr,URHO) - f1(il,jl,kl,URHO))
+             runewl2 = rul2 - cdtdx*(f1(ir,jr,kr,UMX) - f1(il,jl,kl,UMX))
+             rvnewl2 = rvl2 - cdtdx*(f1(ir,jr,kr,UMY) - f1(il,jl,kl,UMY))
+             rwnewl2 = rwl2 - cdtdx*(f1(ir,jr,kr,UMZ) - f1(il,jl,kl,UMZ))
+             renewl2 = rel2 - cdtdx*(f1(ir,jr,kr,UEDEN) - f1(il,jl,kl,UEDEN))
 #ifdef RADIATION
              runewl2 = runewl2 + dmom
              renewl2 = renewl2 + dre
-             ernewl  = erl(:) - cdtdx*(rf1(imr,jmr,kmr,:) - rf1(iml,jml,kml,:)) + der(:)
+             ernewl  = erl(:) - cdtdx*(rf1(ir,jr,kr,:) - rf1(il,jl,kl,:)) + der(:)
 #endif
 #endif
              ! Reset to original value if adding transverse terms made density negative
@@ -662,11 +645,11 @@ contains
                    ! expression for updating (rho e).
 #if AMREX_SPACEDIM == 2
                    lq2o(QREINT) = lq2(QREINT) - &
-                        hdt*(area1(imr,jmr,kmr)*f1(imr,jmr,kmr,UEINT)-  &
-                             area1(iml,jml,kml)*f1(iml,jml,kml,UEINT) + pav*du)/vol(iml,jml,kml)
+                        hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEINT)-  &
+                             area1(il,jl,kl)*f1(il,jl,kl,UEINT) + pav*du)/vol(il,jl,kl)
 #else
                    lq2o(QREINT) = lq2(QREINT) - &
-                        cdtdx*(f1(imr,jmr,kmr,UEINT) - f1(iml,jml,kml,UEINT) + pav*du)
+                        cdtdx*(f1(ir,jr,kr,UEINT) - f1(il,jl,kl,UEINT) + pav*du)
 #endif
                 end if
 
@@ -676,7 +659,7 @@ contains
                 if (ppm_predict_gammae == 0) then
                    ! add the transverse term to the p evolution eq here
 #if AMREX_SPACEDIM == 2
-                   pnewl2 = lq2(QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(iml,jml,kml)
+                   pnewl2 = lq2(QPRES) - hdt*(dup + pav*du*(gamc - ONE))/vol(il,jl,kl)
 #else
                    pnewl2 = lq2(QPRES) - cdtdx*(dup + pav*du*(gamc - ONE))
 #endif
@@ -685,7 +668,7 @@ contains
                    ! Update gammae with its transverse terms
 #if AMREX_SPACEDIM == 2
                    lq2o(QGAME) = lq2(QGAME) + &
-                        hdt*( (geav-ONE)*(geav - gamc)*du)/vol(iml,jml,kml) - cdtdx*uav*dge
+                        hdt*( (geav-ONE)*(geav - gamc)*du)/vol(il,jl,kl) - cdtdx*uav*dge
 #else
                    lq2o(QGAME) = lq2(QGAME) + &
                         cdtdx*( (geav-ONE)*(geav - gamc)*du - uav*dge )
