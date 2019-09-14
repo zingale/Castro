@@ -149,8 +149,14 @@ contains
              !
              ! the qm state will see the transverse flux in zone i-1
 
+             ! Loop over plus and minus states
+             
              do d = -1, 0
 
+                ! We are handling the states at the interface of
+                ! (i, i+1) in the x-direction, and similarly for
+                ! the y- and z- directions.
+                
                 il = i
                 jl = j
                 kl = k
@@ -168,6 +174,10 @@ contains
                    jr = j
                    kr = k+1
                 end if
+
+                ! We're handling both the plus and minus states;
+                ! for the minus state we're shifting one zone to
+                ! the left in our chosen direction.
 
                 if (idir2 == 1) then
                    il = il+d
@@ -208,12 +218,6 @@ contains
                 ! add the transverse flux difference in the 1-direction to 2-states
                 ! for the fluid variables
                 !-------------------------------------------------------------------
-
-                if (d == 0) then
-                   lq2(:) = q2p(i,j,k,:)
-                else
-                   lq2(:) = q2m(i,j,k,:)
-                end if
 
                 pgp  = q1(ir,jr,kr,GDPRES)
                 pgm  = q1(il,jl,kl,GDPRES)
@@ -298,22 +302,22 @@ contains
 #if AMREX_SPACEDIM == 2
                 rrnewl2 = rrl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,URHO) -  &
                                       area1(il,jl,kl)*f1(il,jl,kl,URHO))/vol(il,jl,kl)
-                runewl2 = rul2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMX)  -  &
+                runewl2 = rul2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMX) -  &
                                       area1(il,jl,kl)*f1(il,jl,kl,UMX))/vol(il,jl,kl)
                 if (.not. mom_flux_has_p(1)%comp(UMX)) then
                    runewl2 = runewl2 - cdtdx *(pgp-pgm)
                 endif
-                rvnewl2 = rvl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMY)  -  &
+                rvnewl2 = rvl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMY) -  &
                                       area1(il,jl,kl)*f1(il,jl,kl,UMY))/vol(il,jl,kl)
-                rwnewl2 = rwl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMZ)  -  &
+                rwnewl2 = rwl2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UMZ) -  &
                                       area1(il,jl,kl)*f1(il,jl,kl,UMZ))/vol(il,jl,kl)
-                renewl2 = rel2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEDEN)-  &
+                renewl2 = rel2 - hdt*(area1(ir,jr,kr)*f1(ir,jr,kr,UEDEN) - &
                                       area1(il,jl,kl)*f1(il,jl,kl,UEDEN))/vol(il,jl,kl)
 
 #ifdef RADIATION
                 runewl2 = runewl2 - HALF*hdt*(area1(ir,jr,kr)+area1(il,jl,kl))*sum(lamge)/vol(il,jl,kl)
                 renewl2 = renewl2 + dre
-                ernewl(:) = erl(:) - hdt*(area1(ir,jr,kr)*rf1(ir,jr,kr,:)-  &
+                ernewl(:) = erl(:) - hdt*(area1(ir,jr,kr)*rf1(ir,jr,kr,:) - &
                                           area1(il,jl,kl)*rf1(il,jl,kl,:))/vol(il,jl,kl) + der(:)
 #endif
 
@@ -407,12 +411,12 @@ contains
                 lq2o(qreitot) = sum(lq2o(qrad:qradhi)) + lq2o(QREINT)
 #endif
 
-                if (d == 0) then
-                   q2po(i,j,k,:) = lq2o(:)
-                   call reset_edge_state_thermo(q2po, q2po_lo, q2po_hi, i, j, k)
-                else
+                if (d == -1) then
                    q2mo(i,j,k,:) = lq2o(:)
                    call reset_edge_state_thermo(q2mo, q2mo_lo, q2mo_hi, i, j, k)
+                else
+                   q2po(i,j,k,:) = lq2o(:)
+                   call reset_edge_state_thermo(q2po, q2po_lo, q2po_hi, i, j, k)
                 end if
 
              end do
