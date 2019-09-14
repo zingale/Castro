@@ -151,27 +151,19 @@ contains
 
              do d = -1, 0
 
+                il = i
+                jl = j
+                kl = k
+ 
                 if (idir1 == 1) then
-                   il = i
-                   jl = j
-                   kl = k
-
                    ir = i+1
                    jr = j
                    kr = k
                 else if (idir1 == 2) then
-                   il = i
-                   jl = j
-                   kl = k
-
                    ir = i
                    jr = j+1
                    kr = k
                 else
-                   il = i
-                   jl = j
-                   kl = k
-
                    ir = i
                    jr = j
                    kr = k+1
@@ -209,12 +201,6 @@ contains
                    compu = lq2(QRHO)*lq2(nqp) - cdtdx*(f1(ir,jr,kr,n) - f1(il,jl,kl,n))
 #endif
                    lq2o(nqp) = compu/rrnew
-
-                   if (d == -1) then
-                      q2mo(i,j,k,nqp) = lq2o(nqp)
-                   else
-                      q2po(i,j,k,nqp) = lq2o(nqp)
-                   end if
 
                 end do
 
