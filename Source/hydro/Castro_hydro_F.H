@@ -290,7 +290,7 @@ extern "C"
                          const amrex::Real hdt, const amrex::Real cdtdx);
 
   void transyz(const int* lo, const int* hi,
-               const int idir,
+               const int idir1, const int idir2, const int idir3,
                const BL_FORT_FAB_ARG_3D(qm),
                BL_FORT_FAB_ARG_3D(qmo),
                const BL_FORT_FAB_ARG_3D(qp),
@@ -306,7 +306,7 @@ extern "C"
 #endif
                const BL_FORT_FAB_ARG_3D(qy),
                const BL_FORT_FAB_ARG_3D(qz),
-               const amrex::Real hdt, const amrex::Real cdtdy, const amrex::Real cdtdz);
+               const amrex::Real cdtdx1, const amrex::Real cdtdx2, const amrex::Real cdtdx3);
 
   void ca_mol_plm_reconstruct
     (const int* lo, const int* hi,

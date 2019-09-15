@@ -846,7 +846,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 
 #pragma gpu box(xbx)
       transyz(AMREX_INT_ANYD(xbx.loVect()), AMREX_INT_ANYD(xbx.hiVect()),
-              1,
+              1, 2, 3,
               BL_TO_FORTRAN_ANYD(qxm),
               BL_TO_FORTRAN_ANYD(ql),
               BL_TO_FORTRAN_ANYD(qxp),
@@ -862,7 +862,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 #endif
               BL_TO_FORTRAN_ANYD(qgdnvtmp1),
               BL_TO_FORTRAN_ANYD(qgdnvtmp2),
-              hdt, hdtdy, hdtdz);
+              hdtdx, hdtdy, hdtdz);
 
 #pragma gpu box(xbx)
       cmpflx_plus_godunov(AMREX_INT_ANYD(xbx.loVect()), AMREX_INT_ANYD(xbx.hiVect()),
@@ -932,7 +932,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 
 #pragma gpu box(ybx)
       transyz(AMREX_INT_ANYD(ybx.loVect()), AMREX_INT_ANYD(ybx.hiVect()),
-              2,
+              2, 1, 3,
               BL_TO_FORTRAN_ANYD(qym),
               BL_TO_FORTRAN_ANYD(ql),
               BL_TO_FORTRAN_ANYD(qyp),
@@ -948,7 +948,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 #endif
               BL_TO_FORTRAN_ANYD(qgdnvtmp2),
               BL_TO_FORTRAN_ANYD(qgdnvtmp1),
-              hdt, hdtdx, hdtdz);
+              hdtdy, hdtdx, hdtdz);
 
       // Compute the final F^y
       // [lo(1), lo(2), lo(3)], [hi(1), hi(2)+1, hi(3)]
@@ -1020,7 +1020,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 
 #pragma gpu box(zbx)
       transyz(AMREX_INT_ANYD(zbx.loVect()), AMREX_INT_ANYD(zbx.hiVect()),
-              3,
+              3, 1, 2,
               BL_TO_FORTRAN_ANYD(qzm),
               BL_TO_FORTRAN_ANYD(ql),
               BL_TO_FORTRAN_ANYD(qzp),
@@ -1036,7 +1036,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 #endif
               BL_TO_FORTRAN_ANYD(qgdnvtmp1),
               BL_TO_FORTRAN_ANYD(qgdnvtmp2),
-              hdt, hdtdx, hdtdy);
+              hdtdz, hdtdx, hdtdy);
 
       // compute the final z fluxes F^z
       // [lo(1), lo(2), lo(3)], [hi(1), hi(2), hi(3)+1]

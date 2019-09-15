@@ -434,23 +434,23 @@ contains
   ! transyz
   !===========================================================================
   subroutine transyz(lo, hi, &
-                     idir, &
+                     idir1, idir2, idir3, &
                      qm, qm_lo, qm_hi, &
                      qmo, qmo_lo, qmo_hi, &
                      qp, qp_lo, qp_hi, &
                      qpo, qpo_lo, qpo_hi, &
                      qaux, qa_lo, qa_hi, &
-                     fyz, fyz_lo, fyz_hi, &
+                     f2, f2_lo, f2_hi, &
 #ifdef RADIATION
-                     rfyz, rfyz_lo, rfyz_hi, &
+                     rf2, rf2_lo, rf2_hi, &
 #endif
-                     fzy, fzy_lo, fzy_hi, &
+                     f3, f3_lo, f3_hi, &
 #ifdef RADIATION
-                     rfzy, rfzy_lo, rfzy_hi, &
+                     rf3, rf3_lo, rf3_hi, &
 #endif
-                     qy, qy_lo, qy_hi, &
-                     qz, qz_lo, qz_hi, &
-                     hdt, cdtdy, cdtdz) bind(C, name="transyz")
+                     q2, q2_lo, q2_hi, &
+                     q3, q3_lo, q3_hi, &
+                     cdtdx1, cdtdx2, cdtdx3) bind(C, name="transyz")
 
     ! here, lo and hi are the bounds of the x interfaces we are looping over
 
@@ -485,20 +485,20 @@ contains
     integer, intent(in) :: qp_lo(3), qp_hi(3)
     integer, intent(in) :: qpo_lo(3), qpo_hi(3)
     integer, intent(in) :: qa_lo(3),qa_hi(3)
-    integer, intent(in) :: fyz_lo(3), fyz_hi(3)
-    integer, intent(in) :: fzy_lo(3), fzy_hi(3)
-    integer, intent(in) :: qy_lo(3), qy_hi(3)
-    integer, intent(in) :: qz_lo(3), qz_hi(3)
+    integer, intent(in) :: f2_lo(3), f2_hi(3)
+    integer, intent(in) :: f3_lo(3), f3_hi(3)
+    integer, intent(in) :: q2_lo(3), q2_hi(3)
+    integer, intent(in) :: q3_lo(3), q3_hi(3)
     integer, intent(in) :: lo(3), hi(3)
-    integer, intent(in), value :: idir
+    integer, intent(in), value :: idir1, idir2, idir3
 
-    real(rt), intent(in), value :: hdt, cdtdy, cdtdz
+    real(rt), intent(in), value :: cdtdx1, cdtdx2, cdtdx3
 
 #ifdef RADIATION
-    integer, intent(in) :: rfyz_lo(3), rfyz_hi(3)
-    integer, intent(in) :: rfzy_lo(3), rfzy_hi(3)
-    real(rt), intent(in) :: rfyz(fyz_lo(1):fyz_hi(1),fyz_lo(2):fyz_hi(2),fyz_lo(3):fyz_hi(3),0:ngroups-1)
-    real(rt), intent(in) :: rfzy(fzy_lo(1):fzy_hi(1),fzy_lo(2):fzy_hi(2),fzy_lo(3):fzy_hi(3),0:ngroups-1)
+    integer, intent(in) :: rf2_lo(3), rf2_hi(3)
+    integer, intent(in) :: rf3_lo(3), rf3_hi(3)
+    real(rt), intent(in) :: rf2(f2_lo(1):f2_hi(1),f2_lo(2):f2_hi(2),f2_lo(3):f2_hi(3),0:ngroups-1)
+    real(rt), intent(in) :: rf3(f3_lo(1):f3_hi(1),f3_lo(2):f3_hi(2),f3_lo(3):f3_hi(3),0:ngroups-1)
 #endif
 
     real(rt), intent(in) :: qm(qm_lo(1):qm_hi(1),qm_lo(2):qm_hi(2),qm_lo(3):qm_hi(3),NQ)
@@ -508,13 +508,14 @@ contains
 
     real(rt), intent(in) :: qaux(qa_lo(1):qa_hi(1),qa_lo(2):qa_hi(2),qa_lo(3):qa_hi(3),NQAUX)
 
-    real(rt), intent(in) :: fyz(fyz_lo(1):fyz_hi(1),fyz_lo(2):fyz_hi(2),fyz_lo(3):fyz_hi(3),NVAR)
-    real(rt), intent(in) :: fzy(fzy_lo(1):fzy_hi(1),fzy_lo(2):fzy_hi(2),fzy_lo(3):fzy_hi(3),NVAR)
-    real(rt), intent(in) :: qy(qy_lo(1):qy_hi(1),qy_lo(2):qy_hi(2),qy_lo(3):qy_hi(3),NGDNV)
-    real(rt), intent(in) :: qz(qz_lo(1):qz_hi(1),qz_lo(2):qz_hi(2),qz_lo(3):qz_hi(3),NGDNV)
+    real(rt), intent(in) :: f2(f2_lo(1):f2_hi(1),f2_lo(2):f2_hi(2),f2_lo(3):f2_hi(3),NVAR)
+    real(rt), intent(in) :: f3(f3_lo(1):f3_hi(1),f3_lo(2):f3_hi(2),f3_lo(3):f3_hi(3),NVAR)
+    real(rt), intent(in) :: q2(q2_lo(1):q2_hi(1),q2_lo(2):q2_hi(2),q2_lo(3):q2_hi(3),NGDNV)
+    real(rt), intent(in) :: q3(q3_lo(1):q3_hi(1),q3_lo(2):q3_hi(2),q3_lo(3):q3_hi(3),NGDNV)
 
     integer :: i, j, k, n, nqp, ipassive
-    integer :: d, idir1, idir2, il, jl, kl, il1, jl1, kl1, ir1, jr1, kr1, il2, jl2, kl2, ir2, jr2, kr2
+    integer :: d
+    integer :: il1, jl1, kl1, ir1, jr1, kr1, il2, jl2, kl2, ir2, jr2, kr2, il3, jl3, kl3, ir3, jr3, kr3
 
     real(rt) :: lqo(NQ), lq(NQ)
 
@@ -523,16 +524,16 @@ contains
     real(rt) :: rrnewr, runewr, rvnewr, rwnewr, renewr
     real(rt) :: rrnewl, runewl, rvnewl, rwnewl, renewl
     real(rt) :: pnewr, pnewl
-    real(rt) :: pgyp, pgym, ugyp, ugym, gegyp, gegym, duyp, pyav, duy, pynew, geynew
-    real(rt) :: pgzp, pgzm, ugzp, ugzm, gegzp, gegzm, duzp, pzav, duz, pznew, geznew
-    real(rt) :: uyav, geyav, dgey, uzav, gezav, dgez
+    real(rt) :: pg2p, pg2m, ug2p, ug2m, geg2p, geg2m, du2p, p2av, du2, p2new, ge2new
+    real(rt) :: pg3p, pg3m, ug3p, ug3m, geg3p, geg3m, du3p, p3av, du3, p3new, ge3new
+    real(rt) :: u2av, ge2av, dge2, u3av, ge3av, dge3
     real(rt) :: compr, compl, compnr, compnl
 
 #ifdef RADIATION
-    real(rt) :: dmy, dmz, dre
-    real(rt), dimension(0:ngroups-1) :: der, lambda, lugey, lugez, lgey, lgez, &
-         err, ernewr, erl, ernewl, ergzp, ergyp, ergzm, ergym
-    real(rt)         eddf, f1
+    real(rt) :: dm2, dm3, dre
+    real(rt), dimension(0:ngroups-1) :: der, lambda, luge2, luge3, lge2, lge3, &
+                                        err, ernewr, erl, ernewl, erg3p, erg2p, erg3m, erg2m
+    real(rt) :: eddf, f1
     integer :: g
 #endif
 
@@ -541,36 +542,17 @@ contains
     !$gpu
 
     !-------------------------------------------------------------------
-    ! add the transverse yz and zy differences to the x-states for the
-    ! fluid variables
+    ! add the transverse differences to the states for the fluid variables
+    ! the states we're updating are determined by the 1-index, while the
+    ! transverse differences come from the 2 and 3 indices
     !-------------------------------------------------------------------
-
-    if (idir == 1) then
-       idir1 = 2
-       idir2 = 3
-    else if (idir == 2) then
-       idir1 = 1
-       idir2 = 3
-    else
-       idir1 = 1
-       idir2 = 2
-    end if
 
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
 
-             !-------------------------------------------------------------------------
-             ! update all of the passively-advected quantities with the
-             ! transerse term and convert back to the primitive quantity
-             !-------------------------------------------------------------------------
-
              do d = -1, 0
 
-                il = i
-                jl = j
-                kl = k
-             
                 il1 = i
                 jl1 = j
                 kl1 = k
@@ -579,42 +561,46 @@ contains
                 jl2 = j
                 kl2 = k
 
-                if (idir == 1) then
-                   ir1 = i+d
-                   jr1 = j+1
-                   kr1 = k
+                il3 = i
+                jl3 = j
+                kl3 = k
 
+                if (idir1 == 1) then
                    ir2 = i+d
-                   jr2 = j
-                   kr2 = k+1
+                   jr2 = j+1
+                   kr2 = k
 
-                   il  = i+d
+                   ir3 = i+d
+                   jr3 = j
+                   kr3 = k+1
+
                    il1 = i+d
                    il2 = i+d
-                else if (idir == 2) then
-                   ir1 = i+1
-                   jr1 = j+d
-                   kr1 = k
-
-                   ir2 = i
+                   il3 = i+d
+                else if (idir1 == 2) then
+                   ir2 = i+1
                    jr2 = j+d
-                   kr2 = k+1
+                   kr2 = k
 
-                   jl  = j+d
+                   ir3 = i
+                   jr3 = j+d
+                   kr3 = k+1
+
                    jl1 = j+d
                    jl2 = j+d
+                   jl3 = j+d
                 else
-                   ir1 = i+1
-                   jr1 = j
-                   kr1 = k+d
-
-                   ir2 = i
-                   jr2 = j+1
+                   ir2 = i+1
+                   jr2 = j
                    kr2 = k+d
 
-                   kl  = k+d
+                   ir3 = i
+                   jr3 = j+1
+                   kr3 = k+d
+
                    kl1 = k+d
                    kl2 = k+d
+                   kl3 = k+d
                 end if
 
                 if (d == -1) then
@@ -623,97 +609,102 @@ contains
                    lq(:) = qp(i,j,k,:)
                 end if
 
+                !-------------------------------------------------------------------------
+                ! update all of the passively-advected quantities with the
+                ! transerse term and convert back to the primitive quantity
+                !-------------------------------------------------------------------------
+
                 do ipassive = 1,npassive
                    n  = upass_map(ipassive)
                    nqp = qpass_map(ipassive)
 
                    rrr = lq(QRHO)
                    compr = rrr*lq(nqp)
-                   rrnewr = rrr - cdtdy*(fyz(ir1,jr1,kr1,URHO) - fyz(il1,jl1,kl1,URHO)) &
-                                - cdtdz*(fzy(ir2,jr2,kr2,URHO) - fzy(il2,jl2,kl2,URHO))
-                   compnr = compr - cdtdy*(fyz(ir1,jr1,kr1,n) - fyz(il1,jl1,kl1,n)) &
-                                  - cdtdz*(fzy(ir2,jr2,kr2,n) - fzy(il2,jl2,kl2,n))
+                   rrnewr = rrr - cdtdx2*(f2(ir2,jr2,kr2,URHO) - f2(il2,jl2,kl2,URHO)) &
+                                - cdtdx3*(f3(ir3,jr3,kr3,URHO) - f3(il3,jl3,kl3,URHO))
+                   compnr = compr - cdtdx2*(f2(ir2,jr2,kr2,n) - f2(il2,jl2,kl2,n)) &
+                                  - cdtdx3*(f3(ir3,jr3,kr3,n) - f3(il3,jl3,kl3,n))
 
                    lqo(nqp) = compnr/rrnewr
                 end do
 
-                pgyp  = qy(ir1,jr1,kr1,GDPRES)
-                pgym  = qy(il1,jl1,kl1,GDPRES)
-                ugyp  = qy(ir1,jr1,kr1,GDU+idir1-1)
-                ugym  = qy(il1,jl1,kl1,GDU+idir1-1)
-                gegyp = qy(ir1,jr1,kr1,GDGAME)
-                gegym = qy(il1,jl1,kl1,GDGAME)
+                pg2p  = q2(ir2,jr2,kr2,GDPRES)
+                pg2m  = q2(il2,jl2,kl2,GDPRES)
+                ug2p  = q2(ir2,jr2,kr2,GDU+idir2-1)
+                ug2m  = q2(il2,jl2,kl2,GDU+idir2-1)
+                geg2p = q2(ir2,jr2,kr2,GDGAME)
+                geg2m = q2(il2,jl2,kl2,GDGAME)
 #ifdef RADIATION
-                ergyp = qy(ir1,jr1,kr1,GDERADS:GDERADS-1+ngroups)
-                ergym = qy(il1,jl1,kl1,GDERADS:GDERADS-1+ngroups)
+                erg2p = q2(ir2,jr2,kr2,GDERADS:GDERADS-1+ngroups)
+                erg2m = q2(il2,jl2,kl2,GDERADS:GDERADS-1+ngroups)
 #endif
 
-                duyp = pgyp*ugyp - pgym*ugym
-                pyav = HALF*(pgyp+pgym)
-                uyav = HALF*(ugyp+ugym)
-                geyav = HALF*(gegyp+gegym)
-                duy = ugyp-ugym
-                dgey = gegyp-gegym
+                du2p = pg2p*ug2p - pg2m*ug2m
+                p2av = HALF*(pg2p+pg2m)
+                u2av = HALF*(ug2p+ug2m)
+                ge2av = HALF*(geg2p+geg2m)
+                du2 = ug2p-ug2m
+                dge2 = geg2p-geg2m
 #ifdef RADIATION
-                pynew = cdtdy*(duyp + pyav*duy*(qaux(il,jl,kl,QGAMCG) - ONE))
-                geynew = cdtdy*( (geyav-ONE)*(geyav - qaux(il,jl,kl,QGAMCG))*duy - uyav*dgey )
+                p2new = cdtdx2*(du2p + p2av*du2*(qaux(il1,jl1,kl1,QGAMCG) - ONE))
+                ge2new = cdtdx2*( (ge2av-ONE)*(ge2av - qaux(il1,jl1,kl1,QGAMCG))*du2 - u2av*dge2 )
 #else
-                pynew = cdtdy*(duyp + pyav*duy*(qaux(il,jl,kl,QGAMC) - ONE))
-                geynew = cdtdy*( (geyav-ONE)*(geyav - qaux(il,jl,kl,QGAMC))*duy - uyav*dgey )
+                p2new = cdtdx2*(du2p + p2av*du2*(qaux(il1,jl1,kl1,QGAMC) - ONE))
+                ge2new = cdtdx2*( (ge2av-ONE)*(ge2av - qaux(il1,jl1,kl1,QGAMC))*du2 - u2av*dge2 )
 #endif
 
-                pgzp  = qz(ir2,jr2,kr2,GDPRES)
-                pgzm  = qz(il2,jl2,kl2,GDPRES)
-                ugzp  = qz(ir2,jr2,kr2,GDU+idir2-1)
-                ugzm  = qz(il2,jl2,kl2,GDU+idir2-1)
-                gegzp = qz(ir2,jr2,kr2,GDGAME)
-                gegzm = qz(il2,jl2,kl2,GDGAME)
+                pg3p  = q3(ir3,jr3,kr3,GDPRES)
+                pg3m  = q3(il3,jl3,kl3,GDPRES)
+                ug3p  = q3(ir3,jr3,kr3,GDU+idir3-1)
+                ug3m  = q3(il3,jl3,kl3,GDU+idir3-1)
+                geg3p = q3(ir3,jr3,kr3,GDGAME)
+                geg3m = q3(il3,jl3,kl3,GDGAME)
 #ifdef RADIATION
-                ergzp = qz(ir2,jr2,kr2,GDERADS:GDERADS-1+ngroups)
-                ergzm = qz(il2,jl2,kl2,GDERADS:GDERADS-1+ngroups)
+                erg3p = q3(ir3,jr3,kr3,GDERADS:GDERADS-1+ngroups)
+                erg3m = q3(il3,jl3,kl3,GDERADS:GDERADS-1+ngroups)
 #endif
 
-                duzp = pgzp*ugzp - pgzm*ugzm
-                pzav = HALF*(pgzp+pgzm)
-                uzav = HALF*(ugzp+ugzm)
-                gezav = HALF*(gegzp+gegzm)
-                duz = ugzp-ugzm
-                dgez = gegzp-gegzm
+                du3p = pg3p*ug3p - pg3m*ug3m
+                p3av = HALF*(pg3p+pg3m)
+                u3av = HALF*(ug3p+ug3m)
+                ge3av = HALF*(geg3p+geg3m)
+                du3 = ug3p-ug3m
+                dge3 = geg3p-geg3m
 #ifdef RADIATION
-                pznew = cdtdz*(duzp + pzav*duz*(qaux(il,jl,kl,QGAMCG) - ONE))
-                geznew = cdtdz*( (gezav-ONE)*(gezav - qaux(il,jl,kl,QGAMCG))*duz - uzav*dgez )
+                p3new = cdtdx3*(du3p + p3av*du3*(qaux(il1,jl1,kl1,QGAMCG) - ONE))
+                ge3new = cdtdx3*( (ge3av-ONE)*(ge3av - qaux(il1,jl1,kl1,QGAMCG))*du3 - u3av*dge3 )
 #else
-                pznew = cdtdz*(duzp + pzav*duz*(qaux(il,jl,kl,QGAMC) - ONE))
-                geznew = cdtdz*( (gezav-ONE)*(gezav - qaux(il,jl,kl,QGAMC))*duz - uzav*dgez )
+                p3new = cdtdx3*(du3p + p3av*du3*(qaux(il1,jl1,kl1,QGAMC) - ONE))
+                ge3new = cdtdx3*( (ge3av-ONE)*(ge3av - qaux(il1,jl1,kl1,QGAMC))*du3 - u3av*dge3 )
 #endif
 
 #ifdef RADIATION
-                lambda(:) = qaux(il,jl,kl,QLAMS:QLAMS+ngroups-1)
+                lambda(:) = qaux(il1,jl1,kl1,QLAMS:QLAMS+ngroups-1)
 
-                lgey = lambda(:) * (ergyp(:)-ergym(:))
-                lgez = lambda(:) * (ergzp(:)-ergzm(:))
-                dmy = - cdtdy*sum(lgey)
-                dmz = - cdtdz*sum(lgez)
-                lugey = HALF*(ugyp+ugym) * lgey(:)
-                lugez = HALF*(ugzp+ugzm) * lgez(:)
-                dre = -cdtdy*sum(lugey) - cdtdz*sum(lugez)
+                lge2 = lambda(:) * (erg2p(:)-erg2m(:))
+                lge3 = lambda(:) * (erg3p(:)-erg3m(:))
+                dm2 = - cdtdx2*sum(lge2)
+                dm3 = - cdtdx3*sum(lge3)
+                luge2 = HALF*(ug2p+ug2m) * lge2(:)
+                luge3 = HALF*(ug3p+ug3m) * lge3(:)
+                dre = -cdtdx2*sum(luge2) - cdtdx3*sum(luge3)
 
                 if (fspace_type .eq. 1 .and. comoving) then
                    do g=0, ngroups-1
                       eddf = Edd_factor(lambda(g))
                       f1 = HALF*(ONE-eddf)
-                      der(g) = f1*(cdtdy*HALF*(ugyp+ugym)*(ergyp(g)-ergym(g)) &
-                           +       cdtdz*HALF*(ugzp+ugzm)*(ergzp(g)-ergzm(g)) )
+                      der(g) = f1*(cdtdx2*HALF*(ug2p+ug2m)*(erg2p(g)-erg2m(g)) &
+                           +       cdtdx3*HALF*(ug3p+ug3m)*(erg3p(g)-erg3m(g)) )
                    end do
                 else if (fspace_type .eq. 2) then
                    do g=0, ngroups-1
                       eddf = Edd_factor(lambda(g))
                       f1 = HALF*(ONE-eddf)
-                      der(g) = f1*(cdtdy*HALF*(ergyp(g)+ergym(g))*(ugym-ugyp) &
-                           +       cdtdz*HALF*(ergzp(g)+ergzm(g))*(ugzm-ugzp) )
+                      der(g) = f1*(cdtdx2*HALF*(erg2p(g)+erg2m(g))*(ug2m-ug2p) &
+                           +       cdtdx3*HALF*(erg3p(g)+erg3m(g))*(ug3m-ug3p) )
                    end do
                 else ! mixed frame
-                   der(:) = cdtdy*lugey + cdtdz*lugez
+                   der(:) = cdtdx2*luge2 + cdtdx3*luge3
                 end if
 #endif
 
@@ -729,22 +720,22 @@ contains
 #endif
 
                 ! Add transverse predictor
-                rrnewr = rrr - cdtdy*(fyz(ir1,jr1,kr1,URHO) - fyz(il1,jl1,kl1,URHO)) &
-                             - cdtdz*(fzy(ir2,jr2,kr2,URHO) - fzy(il2,jl2,kl2,URHO))
-                runewr = rur - cdtdy*(fyz(ir1,jr1,kr1,UMX) - fyz(il1,jl1,kl1,UMX)) &
-                             - cdtdz*(fzy(ir2,jr2,kr2,UMX) - fzy(il2,jl2,kl2,UMX))
-                rvnewr = rvr - cdtdy*(fyz(ir1,jr1,kr1,UMY) - fyz(il1,jl1,kl1,UMY)) &
-                             - cdtdz*(fzy(ir2,jr2,kr2,UMY) - fzy(il2,jl2,kl2,UMY))
-                rwnewr = rwr - cdtdy*(fyz(ir1,jr1,kr1,UMZ) - fyz(il1,jl1,kl1,UMZ)) &
-                             - cdtdz*(fzy(ir2,jr2,kr2,UMZ) - fzy(il2,jl2,kl2,UMZ))
-                renewr = rer - cdtdy*(fyz(ir1,jr1,kr1,UEDEN) - fyz(il1,jl1,kl1,UEDEN)) &
-                             - cdtdz*(fzy(ir2,jr2,kr2,UEDEN) - fzy(il2,jl2,kl2,UEDEN))
+                rrnewr = rrr - cdtdx2*(f2(ir2,jr2,kr2,URHO) - f2(il2,jl2,kl2,URHO)) &
+                             - cdtdx3*(f3(ir3,jr3,kr3,URHO) - f3(il3,jl3,kl3,URHO))
+                runewr = rur - cdtdx2*(f2(ir2,jr2,kr2,UMX) - f2(il2,jl2,kl2,UMX)) &
+                             - cdtdx3*(f3(ir3,jr3,kr3,UMX) - f3(il3,jl3,kl3,UMX))
+                rvnewr = rvr - cdtdx2*(f2(ir2,jr2,kr2,UMY) - f2(il2,jl2,kl2,UMY)) &
+                             - cdtdx3*(f3(ir3,jr3,kr3,UMY) - f3(il3,jl3,kl3,UMY))
+                rwnewr = rwr - cdtdx2*(f2(ir2,jr2,kr2,UMZ) - f2(il2,jl2,kl2,UMZ)) &
+                             - cdtdx3*(f3(ir3,jr3,kr3,UMZ) - f3(il3,jl3,kl3,UMZ))
+                renewr = rer - cdtdx2*(f2(ir2,jr2,kr2,UEDEN) - f2(il2,jl2,kl2,UEDEN)) &
+                             - cdtdx3*(f3(ir3,jr3,kr3,UEDEN) - f3(il3,jl3,kl3,UEDEN))
 #ifdef RADIATION
-                rvnewr = rvnewr + dmy
-                rwnewr = rwnewr + dmz
+                rvnewr = rvnewr + dm2
+                rwnewr = rwnewr + dm3
                 renewr = renewr + dre
-                ernewr = err(:) - cdtdy*(rfyz(ir1,jr1,kr1,:) - rfyz(il1,jl1,kl1,:)) &
-                                - cdtdz*(rfzy(ir2,jr2,kr2,:) - rfzy(il2,jl2,kl2,:)) &
+                ernewr = err(:) - cdtdx2*(rf2(ir2,jr2,kr2,:) - rf2(il2,jl2,kl2,:)) &
+                                - cdtdx3*(rf3(ir3,jr3,kr3,:) - rf3(il3,jl3,kl3,:)) &
                                 + der(:)
 #endif
 
@@ -778,8 +769,8 @@ contains
                       ! using the discretized expression for updating
                       ! (rho e).
                       lqo(QREINT) = lq(QREINT) - &
-                                    cdtdy*(fyz(ir1,jr1,kr1,UEINT) - fyz(il1,jl1,kl1,UEINT) + pyav*duy) - &
-                                    cdtdz*(fzy(ir2,jr2,kr2,UEINT) - fzy(il2,jl2,kl2,UEINT) + pzav*duz)
+                                    cdtdx2*(f2(ir2,jr2,kr2,UEINT) - f2(il2,jl2,kl2,UEINT) + p2av*du2) - &
+                                    cdtdx3*(f3(ir3,jr3,kr3,UEINT) - f3(il3,jl3,kl3,UEINT) + p3av*du3)
                    endif
 
                    ! Pretend QREINT has been fixed and transverse_use_eos .ne. 1.
@@ -787,11 +778,11 @@ contains
 
                    if (ppm_predict_gammae == 0) then
                       ! add the transverse term to the p evolution eq here
-                      pnewr = lq(QPRES) - pynew - pznew
+                      pnewr = lq(QPRES) - p2new - p3new
                       lqo(QPRES) = pnewr
                    else
                       ! Update gammae with its transverse terms
-                      lqo(QGAME) = lq(QGAME) + geynew + geznew
+                      lqo(QGAME) = lq(QGAME) + ge2new + ge3new
 
                       ! and compute the p edge state from this and (rho e)
                       lqo(QPRES) = lqo(QREINT)*(lqo(QGAME)-ONE)
@@ -810,7 +801,7 @@ contains
 #endif
 
                 call reset_edge_state_thermo(lqo)
-                
+
                 if (d == -1) then
                    qmo(i,j,k,:) = lqo(:)
                 else
