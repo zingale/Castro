@@ -389,9 +389,9 @@ Castro::variableSetUp ()
   // Component    NumSpec            is      enuc =      (eout-ein)
   // Component    NumSpec+1          is  rho_enuc= rho * (eout-ein)
   store_in_checkpoint = true;
-  desc_lst.addDescriptor(Reactions_Type,IndexType::TheCellType(),
-			 StateDescriptor::Point,0,NumSpec+2,
-			 &cell_cons_interp,state_data_extrap,store_in_checkpoint);
+  desc_lst.addDescriptor(Reactions_Type, IndexType::TheCellType(),
+			 StateDescriptor::Point, sdc_order == 4 ? 1 : 0, NumSpec+2,
+			 &cell_cons_interp, state_data_extrap, store_in_checkpoint);
 #endif
 
 #ifdef REACTIONS
