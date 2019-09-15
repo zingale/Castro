@@ -411,12 +411,12 @@ contains
                 lq2o(qreitot) = sum(lq2o(qrad:qradhi)) + lq2o(QREINT)
 #endif
 
+                call reset_edge_state_thermo(lq2o)
+                
                 if (d == -1) then
                    q2mo(i,j,k,:) = lq2o(:)
-                   call reset_edge_state_thermo(q2mo, q2mo_lo, q2mo_hi, i, j, k)
                 else
                    q2po(i,j,k,:) = lq2o(:)
-                   call reset_edge_state_thermo(q2po, q2po_lo, q2po_hi, i, j, k)
                 end if
 
              end do
@@ -809,12 +809,12 @@ contains
                 lqo(qreitot) = sum(lqo(qrad:qradhi)) + lqo(QREINT)
 #endif
 
+                call reset_edge_state_thermo(lqo)
+                
                 if (d == -1) then
                    qmo(i,j,k,:) = lqo(:)
-                   call reset_edge_state_thermo(qmo, qmo_lo, qmo_hi, i, j, k)
                 else
                    qpo(i,j,k,:) = lqo(:)
-                   call reset_edge_state_thermo(qpo, qpo_lo, qpo_hi, i, j, k)
                 end if
 
              end do
@@ -828,7 +828,7 @@ contains
 
 
 
-  subroutine reset_edge_state_thermo(qedge, qd_lo, qd_hi, ii, jj, kk)
+  subroutine reset_edge_state_thermo(qedge)
 
     use amrex_constants_module, only : ZERO, ONE, HALF
     use network, only : nspec, naux
@@ -837,15 +837,12 @@ contains
          small_pres, small_temp, &
          ppm_predict_gammae, &
          transverse_use_eos, transverse_reset_rhoe
-
     use eos_module, only: eos
     use eos_type_module, only: eos_input_rt, eos_input_re, eos_t
 
     implicit none
 
-    integer, intent(in) :: ii, jj, kk
-    integer, intent(in) :: qd_lo(3), qd_hi(3)
-    real(rt)        , intent(inout) :: qedge(qd_lo(1):qd_hi(1),qd_lo(2):qd_hi(2),qd_lo(3):qd_hi(3),NQ)
+    real(rt), intent(inout) :: qedge(NQ)
 
     logical :: reset
     type (eos_t) :: eos_state
@@ -856,18 +853,18 @@ contains
 
     if (transverse_reset_rhoe == 1) then
        ! if we are still negative, then we need to reset
-       if (qedge(ii,jj,kk,QREINT) < ZERO) then
+       if (qedge(QREINT) < ZERO) then
           reset = .true.
 
-          eos_state % rho = qedge(ii,jj,kk,QRHO)
+          eos_state % rho = qedge(QRHO)
           eos_state % T = small_temp
-          eos_state % xn(:) = qedge(ii,jj,kk,QFS:QFS-1+nspec)
-          eos_state % aux(:) = qedge(ii,jj,kk,QFX:QFX-1+naux)
+          eos_state % xn(:) = qedge(QFS:QFS-1+nspec)
+          eos_state % aux(:) = qedge(QFX:QFX-1+naux)
 
           call eos(eos_input_rt, eos_state)
 
-          qedge(ii,jj,kk,QREINT) = qedge(ii,jj,kk,QRHO)*eos_state % e
-          qedge(ii,jj,kk,QPRES) = eos_state % p
+          qedge(QREINT) = qedge(QRHO)*eos_state % e
+          qedge(QPRES) = eos_state % p
        endif
 
     end if
@@ -875,24 +872,24 @@ contains
     if (ppm_predict_gammae == 0 ) then
 
        if (transverse_use_eos == 1) then
-          eos_state % rho = qedge(ii,jj,kk,QRHO)
-          eos_state % e   = qedge(ii,jj,kk,QREINT) / qedge(ii,jj,kk,QRHO)
+          eos_state % rho = qedge(QRHO)
+          eos_state % e   = qedge(QREINT) / qedge(QRHO)
           eos_state % T   = small_temp
-          eos_state % xn  = qedge(ii,jj,kk,QFS:QFS+nspec-1)
-          eos_state % aux = qedge(ii,jj,kk,QFX:QFX+naux-1)
+          eos_state % xn  = qedge(QFS:QFS+nspec-1)
+          eos_state % aux = qedge(QFX:QFX+naux-1)
 
           call eos(eos_input_re, eos_state)
 
-          qedge(ii,jj,kk,QREINT) = eos_state % e * eos_state % rho
-          qedge(ii,jj,kk,QPRES) = max(eos_state % p, small_pres)
+          qedge(QREINT) = eos_state % e * eos_state % rho
+          qedge(QPRES) = max(eos_state % p, small_pres)
        end if
 
     else
        if (reset) then
           ! recompute the p edge state from this and (rho e), since we reset
           ! qreint  (actually, is this code even necessary?)
-          qedge(ii,jj,kk,QPRES) = qedge(ii,jj,kk,QREINT)*(qedge(ii,jj,kk,QGAME)-ONE)
-          qedge(ii,jj,kk,QPRES) = max(qedge(ii,jj,kk,QPRES), small_pres)
+          qedge(QPRES) = qedge(QREINT)*(qedge(QGAME)-ONE)
+          qedge(QPRES) = max(qedge(QPRES), small_pres)
        end if
     end if
 
