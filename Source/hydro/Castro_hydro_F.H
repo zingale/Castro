@@ -308,42 +308,6 @@ extern "C"
                const BL_FORT_FAB_ARG_3D(qz),
                const amrex::Real hdt, const amrex::Real cdtdy, const amrex::Real cdtdz);
 
-  void transxz(const int* lo, const int* hi,
-               const BL_FORT_FAB_ARG_3D(qm),
-               BL_FORT_FAB_ARG_3D(qmo),
-               const BL_FORT_FAB_ARG_3D(qp),
-               BL_FORT_FAB_ARG_3D(qpo),
-               const BL_FORT_FAB_ARG_3D(qaux),
-               const BL_FORT_FAB_ARG_3D(fxz),
-#ifdef RADIATION
-               const BL_FORT_FAB_ARG_3D(rfxz),
-#endif
-               const BL_FORT_FAB_ARG_3D(fzx),
-#ifdef RADIATION
-               const BL_FORT_FAB_ARG_3D(rfzx),
-#endif
-               const BL_FORT_FAB_ARG_3D(qx),
-               const BL_FORT_FAB_ARG_3D(qz),
-               const amrex::Real hdt, const amrex::Real cdtdx, const amrex::Real cdtdz);
-
-  void transxy(const int* lo, const int* hi,
-               const BL_FORT_FAB_ARG_3D(qm),
-               BL_FORT_FAB_ARG_3D(qmo),
-               const BL_FORT_FAB_ARG_3D(qp),
-               BL_FORT_FAB_ARG_3D(qpo),
-               const BL_FORT_FAB_ARG_3D(qaux),
-               const BL_FORT_FAB_ARG_3D(fxy),
-#ifdef RADIATION
-               const BL_FORT_FAB_ARG_3D(rfxy),
-#endif
-               const BL_FORT_FAB_ARG_3D(fyx),
-#ifdef RADIATION
-               const BL_FORT_FAB_ARG_3D(rfyx),
-#endif
-               const BL_FORT_FAB_ARG_3D(qx),
-               const BL_FORT_FAB_ARG_3D(qy),
-               const amrex::Real hdt, const amrex::Real cdtdx, const amrex::Real cdtdy);
-
   void ca_mol_plm_reconstruct
     (const int* lo, const int* hi,
      BL_FORT_FAB_ARG_3D(q),
