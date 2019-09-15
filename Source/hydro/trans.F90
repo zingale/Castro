@@ -434,6 +434,7 @@ contains
   ! transyz
   !===========================================================================
   subroutine transyz(lo, hi, &
+                     idir, &
                      qm, qm_lo, qm_hi, &
                      qmo, qmo_lo, qmo_hi, &
                      qp, qp_lo, qp_hi, &
@@ -489,6 +490,7 @@ contains
     integer, intent(in) :: qy_lo(3), qy_hi(3)
     integer, intent(in) :: qz_lo(3), qz_hi(3)
     integer, intent(in) :: lo(3), hi(3)
+    integer, intent(in), value :: idir
 
     real(rt), intent(in), value :: hdt, cdtdy, cdtdz
 
@@ -512,6 +514,9 @@ contains
     real(rt), intent(in) :: qz(qz_lo(1):qz_hi(1),qz_lo(2):qz_hi(2),qz_lo(3):qz_hi(3),NGDNV)
 
     integer :: i, j, k, n, nqp, ipassive
+    integer :: d, il1, jl1, kl1, ir1, jr1, kr1, il2, jl2, kl2, ir2, jr2, kr2
+
+    real(rt) :: lqo(NQ), lq(NQ)
 
     real(rt) :: rrr, rur, rvr, rwr, rer, ekenr, rhoekenr
     real(rt) :: rrl, rul, rvl, rwl, rel, ekenl, rhoekenl
@@ -535,42 +540,6 @@ contains
 
     !$gpu
 
-    !-------------------------------------------------------------------------
-    ! update all of the passively-advected quantities with the
-    ! transerse term and convert back to the primitive quantity
-    !-------------------------------------------------------------------------
-
-    do ipassive = 1,npassive
-       n  = upass_map(ipassive)
-       nqp = qpass_map(ipassive)
-
-       do k = lo(3), hi(3)
-          do j = lo(2), hi(2)
-             do i = lo(1), hi(1)
-
-                rrr = qp(i,j,k,QRHO)
-                compr = rrr*qp(i,j,k,nqp)
-                rrnewr = rrr - cdtdy*(fyz(i,j+1,k,URHO) - fyz(i,j,k,URHO)) &
-                             - cdtdz*(fzy(i,j  ,k+1,URHO) - fzy(i,j,k,URHO))
-                compnr = compr - cdtdy*(fyz(i,j+1,k,n   ) - fyz(i,j,k,n)) &
-                               - cdtdz*(fzy(i,j  ,k+1,n   ) - fzy(i,j,k,n))
-
-                qpo(i  ,j,k,nqp) = compnr/rrnewr
-
-                rrl = qm(i,j,k,QRHO)
-                compl = rrl*qm(i,j,k,nqp)
-                rrnewl = rrl - cdtdy*(fyz(i-1,j+1,k,URHO) - fyz(i-1,j,k,URHO)) &
-                             - cdtdz*(fzy(i-1,j  ,k+1,URHO) - fzy(i-1,j,k,URHO))
-                compnl = compl - cdtdy*(fyz(i-1,j+1,k,n   ) - fyz(i-1,j,k,n)) &
-                               - cdtdz*(fzy(i-1,j  ,k+1,n   ) - fzy(i-1,j,k,n))
-
-                qmo(i,j,k,nqp) = compnl/rrnewl
-             end do
-          end do
-       end do
-
-    end do
-
     !-------------------------------------------------------------------
     ! add the transverse yz and zy differences to the x-states for the
     ! fluid variables
@@ -579,6 +548,76 @@ contains
     do k = lo(3), hi(3)
        do j = lo(2), hi(2)
           do i = lo(1), hi(1)
+
+             !-------------------------------------------------------------------------
+             ! update all of the passively-advected quantities with the
+             ! transerse term and convert back to the primitive quantity
+             !-------------------------------------------------------------------------
+
+             do d = -1, 0
+             
+                il1 = i
+                jl1 = j
+                kl1 = k
+
+                il2 = i
+                jl2 = j
+                kl2 = k
+
+                if (idir == 1) then
+                   ir1 = i
+                   jr1 = j+1
+                   kr1 = k
+
+                   ir2 = i
+                   jr2 = j
+                   kr2 = k+1
+                else if (idir == 2) then
+                   ir1 = i+1
+                   jr1 = j
+                   kr1 = k
+
+                   ir2 = i
+                   jr2 = j
+                   kr2 = k+1
+                else
+                   ir1 = i+1
+                   jr1 = j
+                   kr1 = k
+
+                   ir2 = i
+                   jr2 = j+1
+                   kr2 = k
+                end if
+
+                if (d == -1) then
+                   lq(:) = qm(i,j,k,:)
+                else
+                   lq(:) = qp(i,j,k,:)
+                end if
+
+                do ipassive = 1,npassive
+                   n  = upass_map(ipassive)
+                   nqp = qpass_map(ipassive)
+
+                   rrr = lq(QRHO)
+                   compr = rrr*lq(nqp)
+                   rrnewr = rrr - cdtdy*(fyz(ir1,jr1,kr1,URHO) - fyz(il1,jl1,kl1,URHO)) &
+                                - cdtdz*(fzy(ir2,jr2,kr2,URHO) - fzy(il2,jl2,kl2,URHO))
+                   compnr = compr - cdtdy*(fyz(ir1,jr1,kr1,n) - fyz(il1,jl1,kl1,n)) &
+                                  - cdtdz*(fzy(ir2,jr2,kr2,n) - fzy(il2,jl2,kl2,n))
+
+                   lqo(nqp) = compnr/rrnewr
+
+                end do
+
+                if (d == -1) then
+                   qmo(i,j,k,:) = lqo(:)
+                else
+                   qpo(i,j,k,:) = lqo(:)
+                end if
+
+             end do
 
              !-------------------------------------------------------------------
              ! qxpo state

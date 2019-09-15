@@ -846,6 +846,7 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 
 #pragma gpu box(xbx)
       transyz(AMREX_INT_ANYD(xbx.loVect()), AMREX_INT_ANYD(xbx.hiVect()),
+              1,
               BL_TO_FORTRAN_ANYD(qxm),
               BL_TO_FORTRAN_ANYD(ql),
               BL_TO_FORTRAN_ANYD(qxp),

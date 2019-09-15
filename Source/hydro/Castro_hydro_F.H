@@ -290,6 +290,7 @@ extern "C"
                          const amrex::Real hdt, const amrex::Real cdtdx);
 
   void transyz(const int* lo, const int* hi,
+               const int idir,
                const BL_FORT_FAB_ARG_3D(qm),
                BL_FORT_FAB_ARG_3D(qmo),
                const BL_FORT_FAB_ARG_3D(qp),
