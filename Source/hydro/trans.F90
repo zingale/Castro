@@ -454,7 +454,6 @@ contains
     ! here, lo and hi are the bounds of the x interfaces we are looping over
 
     use amrex_constants_module, only : ZERO, ONE, HALF
-
     use network, only : nspec, naux
     use meth_params_module, only : NQ, NVAR, NQAUX, QRHO, QU, QV, QW, &
                                    QPRES, QREINT, QGAME, QFS, QFX, &
@@ -512,17 +511,17 @@ contains
     real(rt), intent(in) :: qy(qy_lo(1):qy_hi(1),qy_lo(2):qy_hi(2),qy_lo(3):qy_hi(3),NGDNV)
     real(rt), intent(in) :: qz(qz_lo(1):qz_hi(1),qz_lo(2):qz_hi(2),qz_lo(3):qz_hi(3),NGDNV)
 
-    integer i, j, k, n, nqp, ipassive
+    integer :: i, j, k, n, nqp, ipassive
 
-    real(rt)         rrr, rur, rvr, rwr, rer, ekenr, rhoekenr
-    real(rt)         rrl, rul, rvl, rwl, rel, ekenl, rhoekenl
-    real(rt)         rrnewr, runewr, rvnewr, rwnewr, renewr
-    real(rt)         rrnewl, runewl, rvnewl, rwnewl, renewl
-    real(rt)         pnewr, pnewl
-    real(rt)         pgyp, pgym, ugyp, ugym, gegyp, gegym, duyp, pyav, duy, pynew, geynew
-    real(rt)         pgzp, pgzm, ugzp, ugzm, gegzp, gegzm, duzp, pzav, duz, pznew, geznew
-    real(rt)         uyav, geyav, dgey, uzav, gezav, dgez
-    real(rt)         compr, compl, compnr, compnl
+    real(rt) :: rrr, rur, rvr, rwr, rer, ekenr, rhoekenr
+    real(rt) :: rrl, rul, rvl, rwl, rel, ekenl, rhoekenl
+    real(rt) :: rrnewr, runewr, rvnewr, rwnewr, renewr
+    real(rt) :: rrnewl, runewl, rvnewl, rwnewl, renewl
+    real(rt) :: pnewr, pnewl
+    real(rt) :: pgyp, pgym, ugyp, ugym, gegyp, gegym, duyp, pyav, duy, pynew, geynew
+    real(rt) :: pgzp, pgzm, ugzp, ugzm, gegzp, gegzm, duzp, pzav, duz, pznew, geznew
+    real(rt) :: uyav, geyav, dgey, uzav, gezav, dgez
+    real(rt) :: compr, compl, compnr, compnl
 
 #ifdef RADIATION
     real(rt) :: dmy, dmz, dre
@@ -965,7 +964,6 @@ contains
     ! here, lo and hi are the bounds of the y interfaces we are looping over
 
     use amrex_constants_module, only : ZERO, ONE, HALF
-
     use network, only : nspec, naux
     use meth_params_module, only : NQ, NVAR, NQAUX, QRHO, QU, QV, QW, &
                                    QPRES, QREINT, QGAME, QFS, QFX, &
@@ -1023,17 +1021,17 @@ contains
     real(rt), intent(in) :: qx(qx_lo(1):qx_hi(1),qx_lo(2):qx_hi(2),qx_lo(3):qx_hi(3),NGDNV)
     real(rt), intent(in) :: qz(qz_lo(1):qz_hi(1),qz_lo(2):qz_hi(2),qz_lo(3):qz_hi(3),NGDNV)
 
-    integer i, j, k, n, nqp, ipassive
+    integer :: i, j, k, n, nqp, ipassive
 
-    real(rt)         rrr, rur, rvr, rwr, rer, ekenr, rhoekenr
-    real(rt)         rrl, rul, rvl, rwl, rel, ekenl, rhoekenl
-    real(rt)         rrnewr, runewr, rvnewr, rwnewr, renewr
-    real(rt)         rrnewl, runewl, rvnewl, rwnewl, renewl
-    real(rt)         pnewr, pnewl
-    real(rt)         pgxp, pgxm, ugxp, ugxm, gegxp, gegxm, duxp, pxav, dux, pxnew, gexnew
-    real(rt)         pgzp, pgzm, ugzp, ugzm, gegzp, gegzm, duzp, pzav, duz, pznew, geznew
-    real(rt)         uxav, gexav, dgex, uzav, gezav, dgez
-    real(rt)         compr, compl, compnr, compnl
+    real(rt) :: rrr, rur, rvr, rwr, rer, ekenr, rhoekenr
+    real(rt) :: rrl, rul, rvl, rwl, rel, ekenl, rhoekenl
+    real(rt) :: rrnewr, runewr, rvnewr, rwnewr, renewr
+    real(rt) :: rrnewl, runewl, rvnewl, rwnewl, renewl
+    real(rt) :: pnewr, pnewl
+    real(rt) :: pgxp, pgxm, ugxp, ugxm, gegxp, gegxm, duxp, pxav, dux, pxnew, gexnew
+    real(rt) :: pgzp, pgzm, ugzp, ugzm, gegzp, gegzm, duzp, pzav, duz, pznew, geznew
+    real(rt) :: uxav, gexav, dgex, uzav, gezav, dgez
+    real(rt) :: compr, compl, compnr, compnl
 
 #ifdef RADIATION
     real(rt) :: dmx, dmz, dre
@@ -1476,7 +1474,6 @@ contains
 
 
     use amrex_constants_module, only : ZERO, ONE, HALF
-
     use network, only : nspec, naux
     use meth_params_module, only : NQ, NVAR, NQAUX, QRHO, QU, QV, QW, &
                                    QPRES, QREINT, QGAME, QFS, QFX, &
@@ -1534,17 +1531,17 @@ contains
     real(rt), intent(in) :: qx(qx_lo(1):qx_hi(1),qx_lo(2):qx_hi(2),qx_lo(3):qx_hi(3),NGDNV)
     real(rt), intent(in) :: qy(qy_lo(1):qy_hi(1),qy_lo(2):qy_hi(2),qy_lo(3):qy_hi(3),NGDNV)
 
-    integer i, j, k, n, nqp, ipassive
+    integer :: i, j, k, n, nqp, ipassive
 
-    real(rt)         rrr, rur, rvr, rwr, rer, ekenr, rhoekenr
-    real(rt)         rrl, rul, rvl, rwl, rel, ekenl, rhoekenl
-    real(rt)         rrnewr, runewr, rvnewr, rwnewr, renewr
-    real(rt)         rrnewl, runewl, rvnewl, rwnewl, renewl
-    real(rt)         pnewr, pnewl
-    real(rt)         pgxp, pgxm, ugxp, ugxm, gegxp, gegxm, duxp, pxav, dux, pxnew, gexnew
-    real(rt)         pgyp, pgym, ugyp, ugym, gegyp, gegym, duyp, pyav, duy, pynew, geynew
-    real(rt)         uxav, gexav, dgex, uyav, geyav, dgey
-    real(rt)         compr, compl, compnr, compnl
+    real(rt) :: rrr, rur, rvr, rwr, rer, ekenr, rhoekenr
+    real(rt) :: rrl, rul, rvl, rwl, rel, ekenl, rhoekenl
+    real(rt) :: rrnewr, runewr, rvnewr, rwnewr, renewr
+    real(rt) :: rrnewl, runewl, rvnewl, rwnewl, renewl
+    real(rt) :: pnewr, pnewl
+    real(rt) :: pgxp, pgxm, ugxp, ugxm, gegxp, gegxm, duxp, pxav, dux, pxnew, gexnew
+    real(rt) :: pgyp, pgym, ugyp, ugym, gegyp, gegym, duyp, pyav, duy, pynew, geynew
+    real(rt) :: uxav, gexav, dgex, uyav, geyav, dgey
+    real(rt) :: compr, compl, compnr, compnl
 
 #ifdef RADIATION
     real(rt) :: dmx, dmy, dre
@@ -1968,17 +1965,18 @@ contains
 
   subroutine reset_edge_state_thermo(qedge, qd_lo, qd_hi, ii, jj, kk)
 
-  use amrex_constants_module, only : ZERO, ONE, HALF
+    use amrex_constants_module, only : ZERO, ONE, HALF
+    use network, only : nspec, naux
+    use meth_params_module, only : NQ, NVAR, NQAUX, QRHO, &
+         QPRES, QREINT, QGAME, QFS, QFX, &
+         small_pres, small_temp, &
+         ppm_predict_gammae, &
+         transverse_use_eos, transverse_reset_rhoe
 
-  use network, only : nspec, naux
-  use meth_params_module, only : NQ, NVAR, NQAUX, QRHO, &
-                                 QPRES, QREINT, QGAME, QFS, QFX, &
-                                 small_pres, small_temp, &
-                                 ppm_predict_gammae, &
-                                 transverse_use_eos, transverse_reset_rhoe
+    use eos_module, only: eos
+    use eos_type_module, only: eos_input_rt, eos_input_re, eos_t
 
-  use eos_module, only: eos
-  use eos_type_module, only: eos_input_rt, eos_input_re, eos_t
+    implicit none
 
     integer, intent(in) :: ii, jj, kk
     integer, intent(in) :: qd_lo(3), qd_hi(3)
