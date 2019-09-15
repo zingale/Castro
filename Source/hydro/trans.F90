@@ -648,17 +648,6 @@ contains
                 ergym = qy(il1,jl1,kl1,GDERADS:GDERADS-1+ngroups)
 #endif
 
-                pgzp  = qz(ir2,jr2,kr2,GDPRES)
-                pgzm  = qz(il2,jl2,kl2,GDPRES)
-                ugzp  = qz(ir2,jr2,kr2,GDU+idir2-1)
-                ugzm  = qz(il2,jl2,kl2,GDU+idir2-1)
-                gegzp = qz(ir2,jr2,kr2,GDGAME)
-                gegzm = qz(il2,jl2,kl2,GDGAME)
-#ifdef RADIATION
-                ergzp = qz(ir2,jr2,kr2,GDERADS:GDERADS-1+ngroups)
-                ergzm = qz(il2,jl2,kl2,GDERADS:GDERADS-1+ngroups)
-#endif
-
                 duyp = pgyp*ugyp - pgym*ugym
                 pyav = HALF*(pgyp+pgym)
                 uyav = HALF*(ugyp+ugym)
@@ -671,6 +660,17 @@ contains
 #else
                 pynew = cdtdy*(duyp + pyav*duy*(qaux(il,jl,kl,QGAMC) - ONE))
                 geynew = cdtdy*( (geyav-ONE)*(geyav - qaux(il,jl,kl,QGAMC))*duy - uyav*dgey )
+#endif
+
+                pgzp  = qz(ir2,jr2,kr2,GDPRES)
+                pgzm  = qz(il2,jl2,kl2,GDPRES)
+                ugzp  = qz(ir2,jr2,kr2,GDU+idir2-1)
+                ugzm  = qz(il2,jl2,kl2,GDU+idir2-1)
+                gegzp = qz(ir2,jr2,kr2,GDGAME)
+                gegzm = qz(il2,jl2,kl2,GDGAME)
+#ifdef RADIATION
+                ergzp = qz(ir2,jr2,kr2,GDERADS:GDERADS-1+ngroups)
+                ergzm = qz(il2,jl2,kl2,GDERADS:GDERADS-1+ngroups)
 #endif
 
                 duzp = pgzp*ugzp - pgzm*ugzm
