@@ -510,7 +510,41 @@ contains
   end subroutine ca_normalize_species
 
 
+  subroutine ca_normalize_species_q(lo, hi, q, q_lo, q_hi) bind(c,name='ca_normalize_species_q')
 
+    use network, only: nspec
+    use meth_params_module, only: NQ, QRHO, QFS
+    use amrex_constants_module, only: ONE
+    use extern_probin_module, only: small_x
+    use amrex_fort_module, only: rt => amrex_real
+
+    implicit none
+
+    integer,  intent(in   ) :: lo(3), hi(3)
+    integer,  intent(in   ) :: q_lo(3), q_hi(3)
+    real(rt), intent(inout) :: q(q_lo(1):q_hi(1), q_lo(2):q_hi(2), q_lo(3):q_hi(3), NQ)
+
+    ! Local variables
+    integer  :: i, j, k
+    real(rt) :: xn(nspec)
+
+    !$gpu
+
+    do k = lo(3), hi(3)
+       do j = lo(2), hi(2)
+          do i = lo(1), hi(1)
+
+             xn(:) = max(small_x, min(ONE, q(i,j,k,QFS:QFS-1+nspec)))
+
+             xn(:) = xn(:) / sum(xn(:))
+
+             q(i,j,k,QFS:QFS+nspec-1) = xn(:)
+
+          enddo
+       enddo
+    enddo
+
+  end subroutine ca_normalize_species_q
 
 
   function position_to_index(loc) result(index)
