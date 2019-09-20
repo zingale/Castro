@@ -721,6 +721,7 @@ contains
     lapy = ZERO
     lapz = ZERO
 
+#if 0
     ! we use 2nd-order accurate one-sided stencils at the physical
     ! boundaries note: this differs from the suggestion in MC2011 --
     ! they just suggest using the Laplacian from +1 off the interior.
@@ -759,6 +760,7 @@ contains
     else
        lapz = a(i,j,k+1,n) - TWO*a(i,j,k,n) + a(i,j,k-1,n)
     end if
+#endif
 #endif
 
     lap = lapx + lapy + lapz
