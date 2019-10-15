@@ -119,17 +119,17 @@ contains
        snew, sn_lo, sn_hi, &
        rold, ro_lo, ro_hi, &
        rnew, rn_lo, rn_hi, &
-       dx, dt_old, dt) &
+       dx, dt_old, dt, coord_dtmin_local) &
        bind(C, name="ca_estdt_burning")
     ! Reactions-limited timestep
     !
     ! .. note::
     !    Binds to C function ``ca_estdt_burning``
 
-    use amrex_constants_module, only: HALF, ONE
+    use amrex_constants_module, only: ZERO, HALF, ONE
     use network, only: nspec, naux, aion
     use meth_params_module, only : NVAR, URHO, UEINT, UTEMP, UFS, dtnuc_e, dtnuc_X, dtnuc_X_threshold
-    use prob_params_module, only : dim
+    use prob_params_module, only : dim, problo
 #if naux > 0
     use meth_params_module, only : UFX
 #endif
@@ -155,8 +155,10 @@ contains
     real(rt), intent(in) :: rnew(rn_lo(1):rn_hi(1),rn_lo(2):rn_hi(2),rn_lo(3):rn_hi(3),nspec+2)
     real(rt), intent(in) :: dx(3), dt_old
     real(rt), intent(inout) :: dt
+    real(rt), intent(inout) :: coord_dtmin_local(3)
 
     real(rt)      :: e, X(nspec), dedt, dXdt(nspec)
+    real(rt)      :: xx, y, z
     integer       :: i, j, k
     integer       :: n
 
@@ -195,8 +197,12 @@ contains
     if (dtnuc_e > 1.e199_rt .and. dtnuc_X > 1.e199_rt) return
 
     do k = lo(3), hi(3)
+       z = problo(3) + (dble(k) + HALF) * dx(3)
        do j = lo(2), hi(2)
+          y = problo(2) + (dble(j) + HALF) * dx(2)
           do i = lo(1), hi(1)
+             xx = problo(1) + (dble(i) + HALF) * dx(1)
+
 
              rhooinv = ONE / sold(i,j,k,URHO)
              rhoninv = ONE / snew(i,j,k,URHO)
@@ -250,8 +256,22 @@ contains
                 end if
              end do
 
-             dt = min(dt, dtnuc_e * e / dedt)
-             dt = min(dt, dtnuc_X * minval(X / dXdt))
+             if (dtnuc_e * e / dedt < dt .and. xx > ZERO .and. y > ZERO) then 
+                dt = dtnuc_e * e / dedt
+                coord_dtmin_local(1) = xx
+                coord_dtmin_local(2) = y
+                coord_dtmin_local(3) = z
+             endif
+
+             if (dtnuc_X * minval(X / dXdt) < dt .and. xx > ZERO .and. y > ZERO) then 
+                dt = dtnuc_X * minval(X / dXdt)
+                coord_dtmin_local(1) = xx
+                coord_dtmin_local(2) = y
+                coord_dtmin_local(3) = z
+             endif
+
+            !  dt = min(dt, dtnuc_e * e / dedt)
+            !  dt = min(dt, dtnuc_X * minval(X / dXdt))
 
           enddo
        enddo

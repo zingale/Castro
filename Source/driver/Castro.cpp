@@ -1463,6 +1463,8 @@ Castro::estTimeStep (Real dt_old)
 
         // Compute burning-limited timestep.
 
+        Vector<Real> coord_dtmin_local(AMREX_SPACEDIM,0.0);
+
 #ifdef _OPENMP
 #pragma omp parallel reduction(min:estdt_burn)
 #endif
@@ -1483,7 +1485,7 @@ Castro::estTimeStep (Real dt_old)
                                      BL_TO_FORTRAN_ANYD(S_new[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_old[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                                     ZFILL(dx),&dt_old,&dt);
+                                     ZFILL(dx),&dt_old,&dt,coord_dtmin_local.dataPtr());
 
                 } else {
 
@@ -1492,7 +1494,7 @@ Castro::estTimeStep (Real dt_old)
                                      BL_TO_FORTRAN_ANYD(S_new[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_new[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                                     ZFILL(dx),&dt_old,&dt);
+                                     ZFILL(dx),&dt_old,&dt,coord_dtmin_local.dataPtr());
 
                 }
 
@@ -1500,10 +1502,67 @@ Castro::estTimeStep (Real dt_old)
             estdt_burn = std::min(estdt_burn,dt);
         }
 
-        ParallelDescriptor::ReduceRealMin(estdt_burn);
+        // ParallelDescriptor::ReduceRealMin(estdt_burn);
+
+        // Find coords of min dt. We do a gather on dt then find the 
+        // index corresponding to the minimum. We then pack the coords
+        // into a local array and gather that to the I/O processor and pick
+        // the values corresponding the minimum
+        int nprocs = ParallelDescriptor::NProcs();
+        int ioproc = ParallelDescriptor::IOProcessorNumber();
+        Vector<Real> dt_data(nprocs);
+
+        if (nprocs == 1) {
+            dt_data[0] = estdt_burn;
+        } else {
+            ParallelDescriptor::Gather(&estdt_burn, 1, &dt_data[0], 1, ioproc);
+        }
+
+        // determine index of min global dt
+        int index_min = 0;
+        Real dt_min_level = 1.e30;
+        for (int ip=0; ip<nprocs; ++ip) {
+            if (dt_data[ip] < dt_min_level) {
+                dt_min_level = dt_data[ip];
+                index_min = ip;
+            }
+        }
+
+        Vector<Real> dt_coords_level(AMREX_SPACEDIM*nprocs);
+
+        if (nprocs == 1) {
+            for (int i=0; i<AMREX_SPACEDIM; ++i) {
+                dt_coords_level[i] = coord_dtmin_local[i];
+            }
+        } else {
+            ParallelDescriptor::Gather(&coord_dtmin_local[0], AMREX_SPACEDIM, &dt_coords_level[0], AMREX_SPACEDIM, ioproc);
+        }
+
+        // initialize global variables
+        Vector<Real> coord_dt_level(AMREX_SPACEDIM);
+        Vector<Real> coord_dt(AMREX_SPACEDIM);
+
+        for (int i=0; i<AMREX_SPACEDIM; ++i) {
+            coord_dt_level[i] = dt_coords_level[AMREX_SPACEDIM*index_min+i];
+        }
+
+        // reduce the current level's data with the global data
+        if (ParallelDescriptor::IOProcessor()) {
+            if (dt_min_level < estdt_burn) {
+                estdt_burn = dt_min_level;
+                for (int i=0; i < AMREX_SPACEDIM; ++i) {
+                    coord_dt[i] = coord_dt_level[i];
+                }
+            }
+        }
 
         if (verbose && estdt_burn < max_dt) {
             amrex::Print() << "...estimated burning-limited timestep at level " << level << ": " << estdt_burn << std::endl;
+            amrex::Print() << "...minimum dt found at coordinates";
+            for (int i=0; i < AMREX_SPACEDIM; ++i) {
+                amrex::Print() << ' ' << coord_dt_level[i];
+            } 
+            amrex::Print() << std::endl;
         }
 
         // Determine if this is more restrictive than the hydro limiting
