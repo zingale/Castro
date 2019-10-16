@@ -65,6 +65,8 @@ enum sources { ext_src = 0,
 #endif
 	       num_src };
 
+#define AMREX_ARR4_TO_FORTRAN_ANYD(a) a.p,&((a).begin.x),amrex::GpuArray<int,3>{(a).end.x-1,(a).end.y-1,(a).end.z-1}.data()
+
 
 // time integration method
 
@@ -73,7 +75,6 @@ enum int_method { CornerTransportUpwind = 0,
                   SpectralDeferredCorrections,
                   SimplifiedSpectralDeferredCorrections
                 };
-
 ///
 /// @class Castro
 ///

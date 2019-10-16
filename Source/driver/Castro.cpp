@@ -21,6 +21,8 @@
 #include <AMReX_TagBox.H>
 #include <AMReX_FillPatchUtil.H>
 #include <AMReX_ParmParse.H>
+#include <AMReX_Reduce.H>
+#include <AMReX_MultiFab.H>
 
 #ifdef RADIATION
 #include "Radiation.H"
@@ -196,6 +198,14 @@ Real         Castro::startCPUTime = 0.0;
 int          Castro::Knapsack_Weight_Type = -1;
 int          Castro::SDC_Source_Type = -1;
 int          Castro::num_state_type = 0;
+
+// store the value and location of a point
+struct Point {
+    Real r;
+    IntVect iv;
+};
+
+bool operator< (const Point& lhs, const Point& rhs) {return lhs.r < rhs.r; }
 
 // Castro::variableSetUp is in Castro_setup.cpp
 // variableCleanUp is called once at the end of a simulation
@@ -1463,106 +1473,100 @@ Castro::estTimeStep (Real dt_old)
 
         // Compute burning-limited timestep.
 
-        Vector<Real> coord_dtmin_local(AMREX_SPACEDIM,0.0);
+        // Vector<Real> coord_dtmin_local(AMREX_SPACEDIM,0.0);
+
+        ReduceOps<ReduceOpMin> reduce_op;
+        ReduceData<Point> reduce_data(reduce_op);
+        using ReduceTuple = typename decltype(reduce_data)::Type;
 
 #ifdef _OPENMP
-#pragma omp parallel reduction(min:estdt_burn)
+#pragma omp parallel 
 #endif
+        for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
         {
-            Real dt = max_dt;
+            const Box& box = mfi.validbox();
 
-            for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
-            {
-                const Box& box = mfi.validbox();
+            if (state[State_Type].hasOldData() && state[Reactions_Type].hasOldData()) {
 
-                if (state[State_Type].hasOldData() && state[Reactions_Type].hasOldData()) {
+                MultiFab& S_old = get_old_data(State_Type);
+                MultiFab& R_old = get_old_data(Reactions_Type);
 
-                    MultiFab& S_old = get_old_data(State_Type);
-                    MultiFab& R_old = get_old_data(Reactions_Type);
+                Array4<Real> const& S_oldarr = S_old.array(mfi);
+                Array4<Real> const& R_oldarr = R_old.array(mfi);
+                Array4<Real> const& S_newarr = S_new.array(mfi);
+                Array4<Real> const& R_newarr = R_new.array(mfi);
 
-                    ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
-                                     BL_TO_FORTRAN_ANYD(S_old[mfi]),
-                                     BL_TO_FORTRAN_ANYD(S_new[mfi]),
-                                     BL_TO_FORTRAN_ANYD(R_old[mfi]),
-                                     BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                                     ZFILL(dx),&dt_old,&dt,coord_dtmin_local.dataPtr());
+                // ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
+                //                  BL_TO_FORTRAN_ANYD(S_old[mfi]),
+                //                  BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                //                  BL_TO_FORTRAN_ANYD(R_old[mfi]),
+                //                  BL_TO_FORTRAN_ANYD(R_new[mfi]),
+                //                  ZFILL(dx),&dt_old,&dt,coord_dtmin_local.dataPtr());
 
-                } else {
+                reduce_op.eval(box, reduce_data, 
+                [=] AMREX_GPU_DEVICE (Box const& box) -> ReduceTuple
+                {
+                    Point tmp {max_dt, IntVect(0)};
+                    amrex::Loop(box,[=,&tmp] (int i, int j, int k) noexcept{
+                        Real dt = max_dt;
+                        ca_estdt_burning_single_zone(i,j,k,
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(S_oldarr),
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(S_newarr),
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(R_oldarr),
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(R_newarr),
+                                    ZFILL(dx), &dt);
+                        tmp = amrex::min(tmp, Point{dt, IntVect(AMREX_D_DECL(i,j,k))});
+                    });
+                    return {tmp};
+                });
 
-                    ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
-                                     BL_TO_FORTRAN_ANYD(S_new[mfi]),
-                                     BL_TO_FORTRAN_ANYD(S_new[mfi]),
-                                     BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                                     BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                                     ZFILL(dx),&dt_old,&dt,coord_dtmin_local.dataPtr());
+            } else {
 
-                }
+                // ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
+                //                  BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                //                  BL_TO_FORTRAN_ANYD(S_new[mfi]),
+                //                  BL_TO_FORTRAN_ANYD(R_new[mfi]),
+                //                  BL_TO_FORTRAN_ANYD(R_new[mfi]),
+                //                  ZFILL(dx),&dt_old,&dt,coord_dtmin_local.dataPtr());
 
-            }
-            estdt_burn = std::min(estdt_burn,dt);
-        }
+                Array4<Real> const& S_newarr = S_new.array(mfi);
+                Array4<Real> const& R_newarr = R_new.array(mfi);
 
-        // ParallelDescriptor::ReduceRealMin(estdt_burn);
+                reduce_op.eval(box, reduce_data, 
+                [=] AMREX_GPU_DEVICE (Box const& box) -> ReduceTuple
+                {
 
-        // Find coords of min dt. We do a gather on dt then find the 
-        // index corresponding to the minimum. We then pack the coords
-        // into a local array and gather that to the I/O processor and pick
-        // the values corresponding the minimum
-        int nprocs = ParallelDescriptor::NProcs();
-        int ioproc = ParallelDescriptor::IOProcessorNumber();
-        Vector<Real> dt_data(nprocs);
+                    Point tmp {std::numeric_limits<Real>::max(), IntVect(0)};
+                    amrex::Loop(box,[=,&tmp] (int i, int j, int k) noexcept{
+                        Real dt = max_dt;
+                        ca_estdt_burning_single_zone(i,j,k,
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(S_newarr),
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(S_newarr),
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(R_newarr),
+                                    AMREX_ARR4_TO_FORTRAN_ANYD(R_newarr),
+                                    ZFILL(dx), &dt);
+                        tmp = amrex::min(tmp, Point{dt, IntVect(AMREX_D_DECL(i,j,k))});
+                    });
+                    Print() << "outside loop, tmp.r = " << tmp.r << std::endl;
+                    return {tmp};
+                });
 
-        if (nprocs == 1) {
-            dt_data[0] = estdt_burn;
-        } else {
-            ParallelDescriptor::Gather(&estdt_burn, 1, &dt_data[0], 1, ioproc);
-        }
-
-        // determine index of min global dt
-        int index_min = 0;
-        Real dt_min_level = 1.e30;
-        for (int ip=0; ip<nprocs; ++ip) {
-            if (dt_data[ip] < dt_min_level) {
-                dt_min_level = dt_data[ip];
-                index_min = ip;
-            }
-        }
-
-        Vector<Real> dt_coords_level(AMREX_SPACEDIM*nprocs);
-
-        if (nprocs == 1) {
-            for (int i=0; i<AMREX_SPACEDIM; ++i) {
-                dt_coords_level[i] = coord_dtmin_local[i];
-            }
-        } else {
-            ParallelDescriptor::Gather(&coord_dtmin_local[0], AMREX_SPACEDIM, &dt_coords_level[0], AMREX_SPACEDIM, ioproc);
-        }
-
-        // initialize global variables
-        Vector<Real> coord_dt_level(AMREX_SPACEDIM);
-        Vector<Real> coord_dt(AMREX_SPACEDIM);
-
-        for (int i=0; i<AMREX_SPACEDIM; ++i) {
-            coord_dt_level[i] = dt_coords_level[AMREX_SPACEDIM*index_min+i];
-        }
-
-        // reduce the current level's data with the global data
-        if (ParallelDescriptor::IOProcessor()) {
-            if (dt_min_level < estdt_burn) {
-                estdt_burn = dt_min_level;
-                for (int i=0; i < AMREX_SPACEDIM; ++i) {
-                    coord_dt[i] = coord_dt_level[i];
-                }
+                Print() << "reduce data = " << amrex::get<0>(reduce_data.value()).r << std::endl;
+                
             }
         }
+
+        ReduceTuple hv = reduce_data.value();
+        Point result_local_proc = amrex::get<0>(hv);
+        estdt_burn = result_local_proc.r;
+        Print() << "estdt_burn = " << estdt_burn << std::endl;
+        estdt_burn = std::min(estdt_burn,max_dt);
+
+        ParallelDescriptor::ReduceRealMin(estdt_burn);
+        Print() << "estdt_burn = " << estdt_burn << std::endl;
 
         if (verbose && estdt_burn < max_dt) {
             amrex::Print() << "...estimated burning-limited timestep at level " << level << ": " << estdt_burn << std::endl;
-            amrex::Print() << "...minimum dt found at coordinates";
-            for (int i=0; i < AMREX_SPACEDIM; ++i) {
-                amrex::Print() << ' ' << coord_dt_level[i];
-            } 
-            amrex::Print() << std::endl;
         }
 
         // Determine if this is more restrictive than the hydro limiting
