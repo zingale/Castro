@@ -906,6 +906,67 @@ contains
 
   end function transz_laplacian
 
+  subroutine ca_convert_cons_state_to_centers(lo, hi, &
+                                              U, U_lo, U_hi, &
+                                              U_cc, U_cc_lo, U_cc_hi, &
+                                              domlo, domhi) &
+                                              bind(C, name="ca_convert_cons_state_to_centers")
+
+    ! Take a cell-average state U and a convert it to a cell-center
+    ! state U_cc via U_cc = U - 1/24 L U
+
+    use meth_params_module, only : NVAR, URHO, UEDEN, UEINT, UFS
+    use network, only : nspec
+
+    implicit none
+
+    integer, intent(in) :: lo(3), hi(3)
+    integer, intent(in) :: U_lo(3), U_hi(3)
+    integer, intent(in) :: U_cc_lo(3), U_cc_hi(3)
+    real(rt), intent(in) :: U(U_lo(1):U_hi(1), U_lo(2):U_hi(2), U_lo(3):U_hi(3), NVAR)
+    real(rt), intent(inout) :: U_cc(U_cc_lo(1):U_cc_hi(1), U_cc_lo(2):U_cc_hi(2), U_cc_lo(3):U_cc_hi(3), NVAR)
+    integer, intent(in) :: domlo(3), domhi(3)
+
+    integer :: i, j, k, n
+    real(rt) :: lap
+    logical :: enforce_positive
+
+    if (U_lo(1) > lo(1)-1 .or. U_hi(1) < hi(1)+1 .or. &
+        (AMREX_SPACEDIM >= 2 .and. (U_lo(2) > lo(2)-1 .or. U_hi(2) < hi(2)+1)) .or. &
+        (AMREX_SPACEDIM == 3 .and. (U_lo(3) > lo(3)-1 .or. U_hi(3) < hi(3)+1))) then
+       call bl_error("insufficient ghostcells in ca_make_cell_center")
+    end if
+
+    do n = 1, NVAR
+
+       enforce_positive = .false.
+
+       if (n == URHO .or. n == UEDEN .or. n == UEINT .or. (n >= UFS .and. n <= UFS-1+nspec)) then
+          enforce_positive = .true.
+       end if
+
+       do k = lo(3), hi(3)
+          do j = lo(2), hi(2)
+             do i = lo(1), hi(1)
+
+                lap = compute_laplacian(i, j, k, n, &
+                                        U, U_lo, U_hi, NVAR, &
+                                        domlo, domhi)
+
+                U_cc(i,j,k,n) = U(i,j,k,n) - TWENTYFOURTH * lap
+                if (enforce_positive) then
+                   if (U_cc(i,j,k,n) <= ZERO) then
+                      U_cc(i,j,k,n) = U(i,j,k,n)
+                   end if
+                end if
+
+             end do
+          end do
+       end do
+    end do
+
+  end subroutine ca_convert_cons_state_to_centers
+
 
   subroutine ca_make_cell_center(lo, hi, &
                                  U, U_lo, U_hi, nc, &

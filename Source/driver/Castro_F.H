@@ -279,6 +279,11 @@ extern "C"
                            BL_FORT_FAB_ARG_3D(U_cc), const int* nc_cc,
                            const int* domlo, const int* domhi);
 
+  void ca_convert_cons_state_to_centers(const int lo[], const int hi[],
+                                        const BL_FORT_FAB_ARG_3D(U),
+                                        BL_FORT_FAB_ARG_3D(U_cc),
+                                        const int* domlo, const int* domhi);
+
   void ca_make_cell_center_in_place(const int lo[], const int hi[],
                                     BL_FORT_FAB_ARG_3D(q), const int* nc,
                                     const int* domlo, const int* domhi);

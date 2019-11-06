@@ -158,10 +158,10 @@ Castro::cons_to_prim_fourth(const Real time)
       FArrayBox U_cc;
       U_cc.resize(qbx, NUM_STATE);
 
-      ca_make_cell_center(BL_TO_FORTRAN_BOX(qbxm1),
-                          BL_TO_FORTRAN_FAB(Sborder[mfi]),
-                          BL_TO_FORTRAN_FAB(U_cc),
-                          AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+      ca_convert_cons_state_to_centers(BL_TO_FORTRAN_BOX(qbxm1),
+                                       BL_TO_FORTRAN_ANYD(Sborder[mfi]),
+                                       BL_TO_FORTRAN_ANYD(U_cc),
+                                       AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
 
       // enforce the minimum density on the new cell-centered state
       Real dens_change = 1.e0;
