@@ -98,7 +98,7 @@ def parse_param_file(param_file):
 
         # this splits the line into separate fields.  A field is a
         # single word or a pair in parentheses like "(a, b)"
-        fields = re.findall(r'[\w\"\+\.-]+|\([\w+\.-]+\s*,\s*[\w\+\.-]+\)', line)
+        fields = re.findall(r'[\w\"\+\./\-]+|\([\w+\./\-]+\s*,\s*[\w\+\.\-]+\)', line)
 
         if len(fields) < 3:
             print("write_probin.py: ERROR: missing one or more fields in parameter definition.")
@@ -139,8 +139,6 @@ def parse_param_file(param_file):
 
         current_param.size = size
         current_param.module = module
-
-        print(current_param)
 
         if not err == 1:
             params_list.append(current_param)
@@ -212,7 +210,6 @@ def write_probin(probin_template, param_file, out_file):
                 # declaraction statements
                 for p in params:
 
-                    print(p.dtype)
                     if p.dtype == "real":
                         if p.is_array():
                             decl_string = "{}real (kind=rt), allocatable, public :: {}(:)\n"
