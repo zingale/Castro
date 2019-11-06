@@ -1,4 +1,4 @@
-CASTRO_EXEC=./Castro1d.gnu.ex
+CASTRO_EXEC=./Castro1d.gnu.TRUESDC.ex
 
 NEEDED_FILES="
 ${CASTRO_EXEC}
