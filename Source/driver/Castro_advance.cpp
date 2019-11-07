@@ -104,7 +104,7 @@ Castro::advance (Real time,
           ca_make_cell_center(BL_TO_FORTRAN_BOX(obx),
                               BL_TO_FORTRAN_FAB(Sborder[mfi]),
                               BL_TO_FORTRAN_FAB(U_center),
-                              AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                              AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
           // pass in the reaction source and state at centers, including one ghost cell
           // and derive everything that is needed including 1 ghost cell
@@ -117,7 +117,7 @@ Castro::advance (Real time,
           // convert R_new from centers to averages in place
           ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(bx),
                                   BL_TO_FORTRAN_FAB(R_center),
-                                  AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                                  AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
 
           // store

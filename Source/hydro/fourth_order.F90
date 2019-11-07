@@ -971,7 +971,7 @@ contains
   subroutine ca_make_cell_center(lo, hi, &
                                  U, U_lo, U_hi, nc, &
                                  U_cc, U_cc_lo, U_cc_hi, nc_cc, &
-                                 domlo, domhi) &
+                                 domlo, domhi, idisable) &
                                  bind(C, name="ca_make_cell_center")
     ! Take a cell-average state U and a convert it to a cell-center
     ! state U_cc via U_cc = U - 1/24 L U
@@ -984,7 +984,7 @@ contains
     integer, intent(in) :: nc, nc_cc
     real(rt), intent(in) :: U(U_lo(1):U_hi(1), U_lo(2):U_hi(2), U_lo(3):U_hi(3), nc)
     real(rt), intent(inout) :: U_cc(U_cc_lo(1):U_cc_hi(1), U_cc_lo(2):U_cc_hi(2), U_cc_lo(3):U_cc_hi(3), nc_cc)
-    integer, intent(in) :: domlo(3), domhi(3)
+    integer, intent(in) :: domlo(3), domhi(3), idisable
 
     integer :: i, j, k, n
     real(rt) :: lap
@@ -1001,11 +1001,15 @@ contains
           do j = lo(2), hi(2)
              do i = lo(1), hi(1)
 
-                lap = compute_laplacian(i, j, k, n, &
-                                        U, U_lo, U_hi, nc, &
-                                        domlo, domhi)
+                if (idisable == 1) then
+                   U_cc(i,j,k,n) = U(i,j,k,n)
+                else
+                   lap = compute_laplacian(i, j, k, n, &
+                                           U, U_lo, U_hi, nc, &
+                                           domlo, domhi)
 
-                U_cc(i,j,k,n) = U(i,j,k,n) - TWENTYFOURTH * lap
+                   U_cc(i,j,k,n) = U(i,j,k,n) - TWENTYFOURTH * lap
+                end if
 
              end do
           end do
@@ -1016,7 +1020,7 @@ contains
 
   subroutine ca_make_cell_center_in_place(lo, hi, &
                                           U, U_lo, U_hi, nc, &
-                                          domlo, domhi) &
+                                          domlo, domhi, idisable) &
                                           bind(C, name="ca_make_cell_center_in_place")
     ! Take a cell-average state U and make it cell-centered in place
     ! via U <- U - 1/24 L U.  Note that this operation is not tile
@@ -1030,7 +1034,7 @@ contains
     integer, intent(in) :: U_lo(3), U_hi(3)
     integer, intent(in) :: nc
     real(rt), intent(inout) :: U(U_lo(1):U_hi(1), U_lo(2):U_hi(2), U_lo(3):U_hi(3), nc)
-    integer, intent(in) :: domlo(3), domhi(3)
+    integer, intent(in) :: domlo(3), domhi(3), idisable
 
     integer :: i, j, k, n
 
@@ -1055,7 +1059,11 @@ contains
        do k = lo(3), hi(3)
           do j = lo(2), hi(2)
              do i = lo(1), hi(1)
-                U(i,j,k,n) = U(i,j,k,n) - TWENTYFOURTH * lap(i,j,k)
+                if (idisable == 1) then
+                   cycle
+                else
+                   U(i,j,k,n) = U(i,j,k,n) - TWENTYFOURTH * lap(i,j,k)
+                end if
              end do
           end do
        end do
@@ -1108,7 +1116,7 @@ contains
   subroutine ca_make_fourth_average(lo, hi, &
                                     q, q_lo, q_hi, nc, &
                                     q_bar, q_bar_lo, q_bar_hi, nc_bar, &
-                                    domlo, domhi) &
+                                    domlo, domhi, idisable) &
                                     bind(C, name="ca_make_fourth_average")
     ! Take the cell-center state q and another state q_bar (e.g.,
     ! constructed from the cell-average U) and replace the cell-center
@@ -1120,7 +1128,7 @@ contains
     integer, intent(in) :: nc, nc_bar
     real(rt), intent(inout) :: q(q_lo(1):q_hi(1), q_lo(2):q_hi(2), q_lo(3):q_hi(3), nc)
     real(rt), intent(in) :: q_bar(q_bar_lo(1):q_bar_hi(1), q_bar_lo(2):q_bar_hi(2), q_bar_lo(3):q_bar_hi(3), nc_bar)
-    integer, intent(in) :: domlo(3), domhi(3)
+    integer, intent(in) :: domlo(3), domhi(3), idisable
 
     integer :: i, j, k, n
     real(rt) :: lap
@@ -1130,11 +1138,15 @@ contains
           do j = lo(2), hi(2)
              do i = lo(1), hi(1)
 
-                lap = compute_laplacian(i, j, k, n, &
-                                        q_bar, q_bar_lo, q_bar_hi, nc, &
-                                        domlo, domhi)
+                if (idisable == 1) then
+                   cycle
+                else
+                   lap = compute_laplacian(i, j, k, n, &
+                                           q_bar, q_bar_lo, q_bar_hi, nc, &
+                                           domlo, domhi)
 
-                q(i,j,k,n) = q(i,j,k,n) + TWENTYFOURTH * lap
+                   q(i,j,k,n) = q(i,j,k,n) + TWENTYFOURTH * lap
+                end if
 
              end do
           end do
@@ -1145,7 +1157,7 @@ contains
 
   subroutine ca_make_fourth_in_place(lo, hi, &
                                      q, q_lo, q_hi, nc, &
-                                     domlo, domhi) &
+                                     domlo, domhi, idisable) &
                                      bind(C, name="ca_make_fourth_in_place")
     ! Take the cell-center q and makes it a cell-average q, in place
     ! (e.g. q is overwritten by its average), q <- q + 1/24 L q.
@@ -1157,12 +1169,16 @@ contains
     integer, intent(in) :: q_lo(3), q_hi(3)
     integer, intent(in) :: nc
     real(rt), intent(inout) :: q(q_lo(1):q_hi(1), q_lo(2):q_hi(2), q_lo(3):q_hi(3), nc)
-    integer, intent(in) :: domlo(3), domhi(3)
+    integer, intent(in) :: domlo(3), domhi(3), idisable
 
     integer :: i, j, k, n
     real(rt), pointer :: lap(:,:,:)
 
     call bl_allocate(lap, lo, hi)
+
+    if (idisable == 1) then
+       return
+    end if
 
     do n = 1, nc
 
@@ -1193,7 +1209,7 @@ contains
 
   subroutine ca_make_fourth_in_place_n(lo, hi, &
                                        q, q_lo, q_hi, nc, ncomp, &
-                                       domlo, domhi) &
+                                       domlo, domhi, idisable) &
                                        bind(C, name="ca_make_fourth_in_place_n")
     ! Take the cell-center q and makes it a cell-average q, in place
     ! (e.g. q is overwritten by its average), q <- q + 1/24 L q.
@@ -1209,10 +1225,14 @@ contains
     integer, intent(in) :: q_lo(3), q_hi(3)
     integer, intent(in) :: nc, ncomp
     real(rt), intent(inout) :: q(q_lo(1):q_hi(1), q_lo(2):q_hi(2), q_lo(3):q_hi(3), nc)
-    integer, intent(in) :: domlo(3), domhi(3)
+    integer, intent(in) :: domlo(3), domhi(3), idisable
 
     integer :: i, j, k
     real(rt), pointer :: lap(:,:,:)
+
+    if (idisable == 1) then
+       return
+    end if
 
     call bl_allocate(lap, lo, hi)
 

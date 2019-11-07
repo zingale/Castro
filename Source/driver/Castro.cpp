@@ -1092,7 +1092,7 @@ Castro::initData ()
 
                ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(box),
                                        BL_TO_FORTRAN_FAB(Sborder[mfi]),
-                                       AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+                                       AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
              }
 
            // now copy back the averages
@@ -1115,7 +1115,7 @@ Castro::initData ()
 
              ca_make_cell_center_in_place(BL_TO_FORTRAN_BOX(box),
                                           BL_TO_FORTRAN_FAB(Sborder[mfi]),
-                                          AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+                                          AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 0);
            }
 
          // reset the energy -- do this in one ghost cell so we can average in place below
@@ -1134,7 +1134,7 @@ Castro::initData ()
 
              ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(box),
                                      BL_TO_FORTRAN_FAB(Sborder[mfi]),
-                                     AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+                                     AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 0);
            }
 
          // now copy back the averages for UEINT and UTEMP only
@@ -3418,7 +3418,7 @@ Castro::computeTemp(MultiFab& State, Real time, int ng)
 
       ca_make_cell_center_in_place(BL_TO_FORTRAN_BOX(bx),
                                    BL_TO_FORTRAN_FAB(Stemp[mfi]),
-                                   AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+                                   AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
 
     }
 
@@ -3505,12 +3505,15 @@ Castro::computeTemp(MultiFab& State, Real time, int ng)
       // only temperature
       ca_make_fourth_in_place_n(BL_TO_FORTRAN_BOX(bx),
                                 BL_TO_FORTRAN_FAB(Stemp[mfi]), &Temp,
-                                AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+                                AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
 
     }
 
     // correct UEINT
-    MultiFab::Add(Stemp, Eint_lap, 0, Eint, 1, 0);
+    int idisable = 1;
+    if (idisable != 1) {
+      MultiFab::Add(Stemp, Eint_lap, 0, Eint, 1, 0);
+    }
 
     // copy back UTEMP and UEINT -- those are the only things that
     // should have changed.

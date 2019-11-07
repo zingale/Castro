@@ -104,7 +104,7 @@ Castro::do_advance_sdc (Real time,
             ca_make_cell_center(BL_TO_FORTRAN_BOX(gbx),
                                 BL_TO_FORTRAN_FAB(Sborder[mfi]),
                                 BL_TO_FORTRAN_FAB(sources_for_hydro[mfi]),
-                                AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                                AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
           }
 
@@ -124,7 +124,7 @@ Castro::do_advance_sdc (Real time,
             const Box& bx = mfi.tilebox();
             ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(bx),
                                     BL_TO_FORTRAN_FAB(old_source[mfi]),
-                                    AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                                    AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
           }
 
         } else {

@@ -222,7 +222,7 @@ Castro::cons_to_prim_fourth(const Real time)
       ca_make_fourth_average(BL_TO_FORTRAN_BOX(qbxm1),
                              BL_TO_FORTRAN_FAB(q[mfi]),
                              BL_TO_FORTRAN_FAB(q_bar[mfi]),
-                             AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+                             AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
 
       // make sure the mass fractions still sum to one after all of this conversion
       ca_normalize_species_q(BL_TO_FORTRAN_BOX(qbxm1),
@@ -234,7 +234,7 @@ Castro::cons_to_prim_fourth(const Real time)
       ca_make_fourth_average(BL_TO_FORTRAN_BOX(qbxm1),
                              BL_TO_FORTRAN_FAB(qaux[mfi]),
                              BL_TO_FORTRAN_FAB(qaux_bar[mfi]),
-                             AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
+                             AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
 
     }
 

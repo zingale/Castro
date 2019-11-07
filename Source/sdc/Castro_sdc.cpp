@@ -181,7 +181,7 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt) {
       ca_make_cell_center(BL_TO_FORTRAN_BOX(bx1),
                           BL_TO_FORTRAN_FAB(Sborder[mfi]),
                           BL_TO_FORTRAN_FAB(U_center),
-                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
       // sometimes the Laplacian can make the species go negative near discontinuities
       ca_normalize_species(AMREX_INT_ANYD(bx1.loVect()), AMREX_INT_ANYD(bx1.hiVect()),
@@ -192,7 +192,7 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt) {
       ca_make_cell_center(BL_TO_FORTRAN_BOX(bx1),
                           BL_TO_FORTRAN_FAB(C_source[mfi]),
                           BL_TO_FORTRAN_FAB(C_center),
-                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
       // solve for the updated cell-center U using our cell-centered C -- we
       // need to do this with one ghost cell
@@ -203,7 +203,7 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt) {
       ca_make_cell_center(BL_TO_FORTRAN_BOX(bx1),
                           BL_TO_FORTRAN_FAB(Sburn[mfi]),
                           BL_TO_FORTRAN_FAB(U_new_center),
-                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
       ca_sdc_update_centers_o4(BL_TO_FORTRAN_BOX(bx1), &dt_m,
                                BL_TO_FORTRAN_3D(U_center),
@@ -220,7 +220,7 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt) {
 
       ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(bx),
                               BL_TO_FORTRAN_FAB(R_new),
-                              AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                              AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
       // now do the conservative update using this <R> to get <U>
       // We'll also need to pass in <C>
@@ -313,7 +313,7 @@ Castro::construct_old_react_source(amrex::MultiFab& U_state,
       ca_make_cell_center(BL_TO_FORTRAN_BOX(obx),
                           BL_TO_FORTRAN_FAB(U_state[mfi]),
                           BL_TO_FORTRAN_FAB(U_center),
-                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
       // burn, including one ghost cell
       R_center.resize(obx, NUM_STATE);
@@ -329,7 +329,7 @@ Castro::construct_old_react_source(amrex::MultiFab& U_state,
       // convert R to averages (in place)
       ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(bx),
                               BL_TO_FORTRAN_FAB(R_center),
-                              AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
+                              AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
 
       // copy this to the center
       R_source[mfi].copy(R_center, bx, 0, bx, 0, NUM_STATE);
