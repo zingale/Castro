@@ -1155,6 +1155,61 @@ contains
 
   end subroutine ca_make_fourth_average
 
+  subroutine ca_make_prim_fourth_average(lo, hi, &
+                                         q, q_lo, q_hi, &
+                                         q_bar, q_bar_lo, q_bar_hi, &
+                                         domlo, domhi) &
+                                         bind(C, name="ca_make_prim_fourth_average")
+
+    ! Take the cell-center state q and another state q_bar (e.g.,
+    ! constructed from the cell-average U) and replace the cell-center
+    ! q with a 4th-order accurate cell-average, q <- q + 1/24 L q_bar
+
+    use meth_params_module, only : NQ
+
+    integer, intent(in) :: lo(3), hi(3)
+    integer, intent(in) :: q_lo(3), q_hi(3)
+    integer, intent(in) :: q_bar_lo(3), q_bar_hi(3)
+    real(rt), intent(inout) :: q(q_lo(1):q_hi(1), q_lo(2):q_hi(2), q_lo(3):q_hi(3), NQ)
+    real(rt), intent(in) :: q_bar(q_bar_lo(1):q_bar_hi(1), q_bar_lo(2):q_bar_hi(2), q_bar_lo(3):q_bar_hi(3), NQ)
+    integer, intent(in) :: domlo(3), domhi(3)
+
+    integer :: i, j, k, n
+    real(rt) :: lap
+
+    logical :: enforce_positive
+
+    do n = 1, nc
+
+       enforce_positive = .false.
+
+       if (n == QRHO .or. n == QREINT .or. n == QPRES .or. (n >= QFS .and. n <= QFS-1+nspec)) then
+          enforce_positive = .true.
+       end if
+
+       do k = lo(3), hi(3)
+          do j = lo(2), hi(2)
+             do i = lo(1), hi(1)
+
+                lap = compute_laplacian(i, j, k, n, &
+                                        q_bar, q_bar_lo, q_bar_hi, nc, &
+                                        domlo, domhi)
+
+                q(i,j,k,n) = q(i,j,k,n) + TWENTYFOURTH * lap
+
+                if (enforce_positive) then
+                   if (q(i,j,k,n) <= ZERO) then
+                      q(i,j,k,n) = q(i,j,k,n) - TWENTYFOURTH * lap
+                   end if
+                end if
+
+             end do
+          end do
+       end do
+    end do
+
+  end subroutine ca_make_prim_fourth_average
+
   subroutine ca_make_fourth_in_place(lo, hi, &
                                      q, q_lo, q_hi, nc, &
                                      domlo, domhi, idisable) &

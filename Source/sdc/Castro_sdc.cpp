@@ -178,10 +178,10 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt) {
       // convert the starting U to cell-centered on a fab-by-fab basis
       // -- including one ghost cell
       U_center.resize(bx1, NUM_STATE);
-      ca_make_cell_center(BL_TO_FORTRAN_BOX(bx1),
-                          BL_TO_FORTRAN_FAB(Sborder[mfi]),
-                          BL_TO_FORTRAN_FAB(U_center),
-                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
+      ca_convert_cons_state_to_centers(BL_TO_FORTRAN_BOX(bx1),
+                                       BL_TO_FORTRAN_ANYD(Sborder[mfi]),
+                                       BL_TO_FORTRAN_ANYD(U_center),
+                                       AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
 
       // sometimes the Laplacian can make the species go negative near discontinuities
       ca_normalize_species(AMREX_INT_ANYD(bx1.loVect()), AMREX_INT_ANYD(bx1.hiVect()),
@@ -200,10 +200,10 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt) {
 
       // initialize U_new with our guess for the new state, stored as
       // an average in Sburn
-      ca_make_cell_center(BL_TO_FORTRAN_BOX(bx1),
-                          BL_TO_FORTRAN_FAB(Sburn[mfi]),
-                          BL_TO_FORTRAN_FAB(U_new_center),
-                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
+      ca_convert_cons_state_to_centers(BL_TO_FORTRAN_BOX(bx1),
+                                       BL_TO_FORTRAN_ANYD(Sburn[mfi]),
+                                       BL_TO_FORTRAN_ANYD(U_new_center),
+                                       AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
 
       ca_sdc_update_centers_o4(BL_TO_FORTRAN_BOX(bx1), &dt_m,
                                BL_TO_FORTRAN_3D(U_center),
@@ -310,10 +310,10 @@ Castro::construct_old_react_source(amrex::MultiFab& U_state,
 
       // Convert to centers
       U_center.resize(obx, NUM_STATE);
-      ca_make_cell_center(BL_TO_FORTRAN_BOX(obx),
-                          BL_TO_FORTRAN_FAB(U_state[mfi]),
-                          BL_TO_FORTRAN_FAB(U_center),
-                          AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
+      ca_convert_cons_state_to_centers(BL_TO_FORTRAN_BOX(obx),
+                                       BL_TO_FORTRAN_ANYD(U_state[mfi]),
+                                       BL_TO_FORTRAN_ANYD(U_center),
+                                       AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
 
       // burn, including one ghost cell
       R_center.resize(obx, NUM_STATE);

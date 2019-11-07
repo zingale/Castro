@@ -101,10 +101,10 @@ Castro::do_advance_sdc (Real time,
 
           for (MFIter mfi(S_new); mfi.isValid(); ++mfi) {
             const Box& gbx = mfi.growntilebox(1);
-            ca_make_cell_center(BL_TO_FORTRAN_BOX(gbx),
-                                BL_TO_FORTRAN_FAB(Sborder[mfi]),
-                                BL_TO_FORTRAN_FAB(sources_for_hydro[mfi]),
-                                AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi), 1);
+            ca_convert_cons_state_to_centers(BL_TO_FORTRAN_BOX(gbx),
+                                             BL_TO_FORTRAN_ANYD(Sborder[mfi]),
+                                             BL_TO_FORTRAN_ANYD(sources_for_hydro[mfi]),
+                                             AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi));
 
           }
 
