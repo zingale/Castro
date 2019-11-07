@@ -1180,7 +1180,7 @@ contains
 
     logical :: enforce_positive
 
-    do n = 1, nc
+    do n = 1, NQ
 
        enforce_positive = .false.
 
@@ -1193,7 +1193,7 @@ contains
              do i = lo(1), hi(1)
 
                 lap = compute_laplacian(i, j, k, n, &
-                                        q_bar, q_bar_lo, q_bar_hi, nc, &
+                                        q_bar, q_bar_lo, q_bar_hi, NQ, &
                                         domlo, domhi)
 
                 q(i,j,k,n) = q(i,j,k,n) + TWENTYFOURTH * lap
