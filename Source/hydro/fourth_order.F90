@@ -1165,7 +1165,8 @@ contains
     ! constructed from the cell-average U) and replace the cell-center
     ! q with a 4th-order accurate cell-average, q <- q + 1/24 L q_bar
 
-    use meth_params_module, only : NQ
+    use meth_params_module, only : NQ, QRHO, QREINT, QPRES, QFS
+    use network, only: nspec
 
     integer, intent(in) :: lo(3), hi(3)
     integer, intent(in) :: q_lo(3), q_hi(3)
