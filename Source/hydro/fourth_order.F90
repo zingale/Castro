@@ -1263,6 +1263,69 @@ contains
 
   end subroutine ca_make_fourth_in_place
 
+
+  subroutine ca_make_cons_fourth_in_place(lo, hi, &
+                                          U, U_lo, U_hi, &
+                                          domlo, domhi) &
+                                          bind(C, name="ca_make_cons_fourth_in_place")
+    ! Take the cell-center U and makes it a cell-average U, in place
+    ! (e.g. U is overwritten by its average), U <- U + 1/24 L U.
+    ! Note: this routine is not tile safe.
+
+    use amrex_mempool_module, only : bl_allocate, bl_deallocate
+    use meth_params_module, only : NVAR, URHO, UEDEN, UEINT, UFS, UTEMP
+    use network, only : nspec
+
+    integer, intent(in) :: lo(3), hi(3)
+    integer, intent(in) :: U_lo(3), U_hi(3)
+    real(rt), intent(inout) :: U(U_lo(1):U_hi(1), U_lo(2):U_hi(2), U_lo(3):U_hi(3), NVAR)
+    integer, intent(in) :: domlo(3), domhi(3)
+
+    integer :: i, j, k, n
+    real(rt), pointer :: lap(:,:,:)
+    logical :: enforce_positive
+
+    call bl_allocate(lap, lo, hi)
+
+    do n = 1, NVAR
+
+       enforce_positive = .false.
+
+       if (n == URHO .or. n == UEDEN .or. n == UEINT .or. n == UTEMP .or. (n >= UFS .and. n <= UFS-1+nspec)) then
+          enforce_positive = .true.
+       end if
+
+       do k = lo(3), hi(3)
+          do j = lo(2), hi(2)
+             do i = lo(1), hi(1)
+
+                lap(i,j,k) = compute_laplacian(i, j, k, n, &
+                                               U, U_lo, U_hi, NVAR, &
+                                               domlo, domhi)
+
+             end do
+          end do
+       end do
+
+       do k = lo(3), hi(3)
+          do j = lo(2), hi(2)
+             do i = lo(1), hi(1)
+                U(i,j,k,n) = U(i,j,k,n) + TWENTYFOURTH * lap(i,j,k)
+                if (enforce_positive) then
+                   if (U(i,j,k,n) < ZERO) then
+                      U(i,j,k,n) = U(i,j,k,n) - TWENTYFOURTH * lap(i,j,k)
+                   end if
+                end if
+             end do
+          end do
+       end do
+    end do
+
+    call bl_deallocate(lap)
+
+  end subroutine ca_make_cons_fourth_in_place
+
+
   subroutine ca_make_fourth_in_place_n(lo, hi, &
                                        q, q_lo, q_hi, nc, ncomp, &
                                        domlo, domhi, idisable) &

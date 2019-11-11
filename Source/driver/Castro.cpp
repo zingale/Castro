@@ -1107,9 +1107,9 @@ Castro::initData ()
              {
                const Box& box     = mfi.validbox();
 
-               ca_make_fourth_in_place(BL_TO_FORTRAN_BOX(box),
-                                       BL_TO_FORTRAN_FAB(Sborder[mfi]),
-                                       AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
+               ca_make_cons_fourth_in_place(BL_TO_FORTRAN_BOX(box),
+                                            BL_TO_FORTRAN_ANYD(Sborder[mfi]),
+                                            AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
              }
 
            // now copy back the averages

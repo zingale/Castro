@@ -270,6 +270,10 @@ extern "C"
                                BL_FORT_FAB_ARG_3D(q), const int* nc,
                                const int* domlo, const int* domhi, const int& idisable);
 
+  void ca_make_cons_fourth_in_place(const int lo[], const int hi[],
+                                    BL_FORT_FAB_ARG_3D(q),
+                                    const int* domlo, const int* domhi);
+
   void ca_make_fourth_in_place_n(const int lo[], const int hi[],
                                  BL_FORT_FAB_ARG_3D(q), const int* nc, const int* ncomp,
                                  const int* domlo, const int* domhi, const int& idisable);
