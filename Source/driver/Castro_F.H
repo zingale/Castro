@@ -261,6 +261,11 @@ extern "C"
                               const BL_FORT_FAB_ARG_3D(q_bar), const int* nc_bar,
                               const int* domlo, const int* domhi, const int& idisable);
 
+  void ca_make_prim_fourth_average(const int lo[], const int hi[],
+                                   BL_FORT_FAB_ARG_3D(q),
+                                   const BL_FORT_FAB_ARG_3D(q_bar),
+                                   const int* domlo, const int* domhi);
+
   void ca_make_fourth_in_place(const int lo[], const int hi[],
                                BL_FORT_FAB_ARG_3D(q), const int* nc,
                                const int* domlo, const int* domhi, const int& idisable);

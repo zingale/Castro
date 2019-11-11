@@ -219,10 +219,10 @@ Castro::cons_to_prim_fourth(const Real time)
       // this will create q, qaux in NUM_GROW-1 ghost cells, but that's
       // we need here
 
-      ca_make_fourth_average(BL_TO_FORTRAN_BOX(qbxm1),
-                             BL_TO_FORTRAN_FAB(q[mfi]),
-                             BL_TO_FORTRAN_FAB(q_bar[mfi]),
-                             AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
+      ca_make_prim_fourth_average(BL_TO_FORTRAN_BOX(qbxm1),
+                                  BL_TO_FORTRAN_ANYD(q[mfi]),
+                                  BL_TO_FORTRAN_ANYD(q_bar[mfi]),
+                                  AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
 
       // make sure the mass fractions still sum to one after all of this conversion
       ca_normalize_species_q(BL_TO_FORTRAN_BOX(qbxm1),
