@@ -915,7 +915,7 @@ contains
     ! Take a cell-average state U and a convert it to a cell-center
     ! state U_cc via U_cc = U - 1/24 L U
 
-    use meth_params_module, only : NVAR, URHO, UEDEN, UEINT, UFS
+    use meth_params_module, only : NVAR, URHO, UEDEN, UEINT, UFS, UTEMP
     use network, only : nspec
 
     implicit none
@@ -941,7 +941,7 @@ contains
 
        enforce_positive = .false.
 
-       if (n == URHO .or. n == UEDEN .or. n == UEINT .or. (n >= UFS .and. n <= UFS-1+nspec)) then
+       if (n == URHO .or. n == UEDEN .or. n == UEINT .or. n == UTEMP .or. (n >= UFS .and. n <= UFS-1+nspec)) then
           enforce_positive = .true.
        end if
 
@@ -1165,7 +1165,7 @@ contains
     ! constructed from the cell-average U) and replace the cell-center
     ! q with a 4th-order accurate cell-average, q <- q + 1/24 L q_bar
 
-    use meth_params_module, only : NQ, QRHO, QREINT, QPRES, QFS
+    use meth_params_module, only : NQ, QRHO, QREINT, QPRES, QFS, QTEMP
     use network, only: nspec
 
     integer, intent(in) :: lo(3), hi(3)
@@ -1184,7 +1184,7 @@ contains
 
        enforce_positive = .false.
 
-       if (n == QRHO .or. n == QREINT .or. n == QPRES .or. (n >= QFS .and. n <= QFS-1+nspec)) then
+       if (n == QRHO .or. n == QREINT .or. n == QPRES .or. n == QTEMP .or. (n >= QFS .and. n <= QFS-1+nspec)) then
           enforce_positive = .true.
        end if
 
