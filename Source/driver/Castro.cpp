@@ -3442,9 +3442,9 @@ Castro::computeTemp(MultiFab& State, Real time, int ng)
                           BL_TO_FORTRAN_ANYD(Eint_lap[mfi]), &Eint,
                           AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
 
-      ca_make_cell_center_in_place(BL_TO_FORTRAN_BOX(bx),
-                                   BL_TO_FORTRAN_FAB(Stemp[mfi]),
-                                   AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi), 1);
+      ca_convert_cons_state_to_centers_in_place(BL_TO_FORTRAN_BOX(bx),
+                                                BL_TO_FORTRAN_ANYD(Stemp[mfi]),
+                                                AMREX_ARLIM_ANYD(domain_lo), AMREX_ARLIM_ANYD(domain_hi));
 
     }
 

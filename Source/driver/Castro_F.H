@@ -297,6 +297,11 @@ extern "C"
                                     BL_FORT_FAB_ARG_3D(q), const int* nc,
                                     const int* domlo, const int* domhi, const int& idisable);
 
+
+  void ca_convert_cons_state_to_centers_in_place(const int lo[], const int hi[],
+                                                 BL_FORT_FAB_ARG_3D(q),
+                                                 const int* domlo, const int* domhi);
+
 #ifdef REACTIONS
   void ca_instantaneous_react
     (const int lo[], const int hi[],

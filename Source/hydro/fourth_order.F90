@@ -915,7 +915,7 @@ contains
     ! Take a cell-average state U and a convert it to a cell-center
     ! state U_cc via U_cc = U - 1/24 L U
 
-    use meth_params_module, only : NVAR, URHO, UEDEN, UEINT, UFS, UTEMP
+    use meth_params_module, only : NVAR, URHO, UEDEN, UEINT, UFS, UTEMP    
     use network, only : nspec
 
     implicit none
@@ -1072,6 +1072,75 @@ contains
     call bl_deallocate(lap)
 
   end subroutine ca_make_cell_center_in_place
+
+
+  subroutine ca_convert_cons_state_to_centers_in_place(lo, hi, &
+                                                       U, U_lo, U_hi, &
+                                                       domlo, domhi) &
+                                                       bind(C, name="ca_convert_cons_state_to_centers_in_place")
+    ! Take a cell-average state U and make it cell-centered in place
+    ! via U <- U - 1/24 L U.  Note that this operation is not tile
+    ! safe.
+
+    use amrex_mempool_module, only : bl_allocate, bl_deallocate
+    use meth_params_module, only : NVAR, URHO, UEDEN, UEINT, UFS, UTEMP    
+    use network, only : nspec
+
+    implicit none
+
+    integer, intent(in) :: lo(3), hi(3)
+    integer, intent(in) :: U_lo(3), U_hi(3)
+    real(rt), intent(inout) :: U(U_lo(1):U_hi(1), U_lo(2):U_hi(2), U_lo(3):U_hi(3), NVAR)
+    integer, intent(in) :: domlo(3), domhi(3)
+
+    integer :: i, j, k, n
+
+    real(rt), pointer :: lap(:,:,:)
+    logical :: enforce_positive
+
+    call bl_allocate(lap, lo, hi)
+
+    do n = 1, NVAR
+
+       enforce_positive = .false.
+
+       if (n == URHO .or. n == UEDEN .or. n == UEINT .or. n == UTEMP .or. (n >= UFS .and. n <= UFS-1+nspec)) then
+          enforce_positive = .true.
+       end if
+
+       do k = lo(3), hi(3)
+          do j = lo(2), hi(2)
+             do i = lo(1), hi(1)
+
+                lap(i,j,k) = compute_laplacian(i, j, k, n, &
+                                               U, U_lo, U_hi, NVAR, &
+                                               domlo, domhi)
+
+             end do
+          end do
+       end do
+
+       do k = lo(3), hi(3)
+          do j = lo(2), hi(2)
+             do i = lo(1), hi(1)
+
+                U(i,j,k,n) = U(i,j,k,n) - TWENTYFOURTH * lap(i,j,k)
+                if (enforce_positive) then
+                   if (U(i,j,k,n) < ZERO) then
+                      U(i,j,k,n) = U(i,j,k,n) + TWENTYFOURTH * lap(i,j,k)
+                   end if
+                end if
+
+             end do
+          end do
+       end do
+
+    end do
+
+    call bl_deallocate(lap)
+
+  end subroutine ca_convert_cons_state_to_centers_in_place
+
 
   subroutine ca_compute_lap_term(lo, hi, &
                                  U, U_lo, U_hi, nc, &
