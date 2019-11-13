@@ -176,7 +176,7 @@ IntVect      Castro::no_tile_size(1024);
 #ifndef AMREX_USE_CUDA
 IntVect      Castro::hydro_tile_size(1024,16);
 #else
-IntVect      Castro::hydro_tile_size(1024,64);
+IntVect      Castro::hydro_tile_size(1024,1024);
 #endif
 IntVect      Castro::no_tile_size(1024,1024);
 #else
@@ -1499,21 +1499,23 @@ Castro::estTimeStep (Real dt_old)
                     MultiFab& S_old = get_old_data(State_Type);
                     MultiFab& R_old = get_old_data(Reactions_Type);
 
-                    ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
+#pragma gpu box(box)
+                    ca_estdt_burning(AMREX_INT_ANYD(box.loVect()), AMREX_INT_ANYD(box.hiVect()),
                                      BL_TO_FORTRAN_ANYD(S_old[mfi]),
                                      BL_TO_FORTRAN_ANYD(S_new[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_old[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                                     ZFILL(dx),&dt_old,&dt);
+                                     AMREX_REAL_ANYD(dx), AMREX_MFITER_REDUCE_MIN(&dt));
 
                 } else {
 
-                    ca_estdt_burning(ARLIM_3D(box.loVect()),ARLIM_3D(box.hiVect()),
+#pragma gpu box(box)
+                    ca_estdt_burning(AMREX_INT_ANYD(box.loVect()), AMREX_INT_ANYD(box.hiVect()),
                                      BL_TO_FORTRAN_ANYD(S_new[mfi]),
                                      BL_TO_FORTRAN_ANYD(S_new[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_new[mfi]),
                                      BL_TO_FORTRAN_ANYD(R_new[mfi]),
-                                     ZFILL(dx),&dt_old,&dt);
+                                     AMREX_REAL_ANYD(dx), AMREX_MFITER_REDUCE_MIN(&dt));
 
                 }
 
