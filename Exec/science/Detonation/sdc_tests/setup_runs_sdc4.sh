@@ -16,7 +16,8 @@ helm_table.dat"
 
 NZONES="
 256
-512"
+512
+1024"
 
 CFL="
 0.1
