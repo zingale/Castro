@@ -187,6 +187,10 @@ Castro::do_sdc_update(int m_start, int m_end, Real dt) {
       ca_normalize_species(AMREX_INT_ANYD(bx1.loVect()), AMREX_INT_ANYD(bx1.hiVect()),
                            BL_TO_FORTRAN_ANYD(U_center));
 
+      // sometimes the Laplacian can make the species go negative near discontinuities
+      ca_normalize_species(AMREX_INT_ANYD(bx1.loVect()), AMREX_INT_ANYD(bx1.hiVect()),
+                           BL_TO_FORTRAN_ANYD(U_center));
+
       // convert the C source to cell-centers
       C_center.resize(bx1, NUM_STATE);
       ca_make_cell_center(BL_TO_FORTRAN_BOX(bx1),
