@@ -44,7 +44,7 @@ subroutine amrex_probinit (init,name,namlen,problo,probhi) bind(c)
      if (.not. burn_state_out % success) then
         print *, "burning failed for zone ", k
      else
-        print *, "zone, enuc = ", k, burn_state_out % e / burn_dt
+        print *, k, burn_state_out % e / burn_dt
      end if
 
   end do
