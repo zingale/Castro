@@ -31,6 +31,9 @@ do_reflux                    int           1
 # drivers
 update_sources_after_reflux  int           1
 
+# should we apply the sources one by one or all at once?
+apply_sources_consecutively  int           0
+
 # should we have state data for custom load-balancing weighting?
 use_custom_knapsack_weights  int           0
 
@@ -141,10 +144,6 @@ cg_blend                     int           2                  y
 # thermodynamic consistency?
 use_eos_in_riemann           int           0                  y
 
-# Limit the Riemann velocity used for flux construction to
-# this speed limit.
-riemann_speed_limit          Real          2.99792458e10      y
-
 # flatten the reconstructed profiles around shocks to prevent them
 # from becoming too thin
 use_flattening               int           1                  y
@@ -179,6 +178,12 @@ use_pslope                   int           1                  y
 
 # Should we limit the density fluxes so that we do not create small densities?
 limit_fluxes_on_small_dens   int           0                  y
+
+# Should we limit the momentum fluxes so that we do not create large velocities?
+limit_fluxes_on_large_vel    int           0                  y
+
+# If we're limiting the fluxes to avoid large velocities, this is the speed limit.
+speed_limit                  Real          2.99792458e10      y
 
 # Which method to use when resetting a negative/small density
 # 1 = Reset to characteristics of adjacent zone with largest density
@@ -671,3 +676,34 @@ mlmg_nsolve                  int           0                  n
 
 # Use MLMG as the operator
 mlmg_maxorder                int           4                  n
+
+@namespace: radsolve RadSolve static
+
+# the linear solver option to use
+level_solver_flag            int           1                  n
+
+use_hypre_nonsymmetric_terms int           0                  n
+
+reltol                       Real          1.e-10             n
+
+abstol                       Real          1.e-10             n
+
+maxiter                      int           40                 n
+
+alpha                        Real          1.0                n
+
+beta                         Real          1.0                n
+
+(v, verbose)                 int           0                  n
+
+@namespace: radiation Radiation static
+
+do_real_eos                  int           1                  y
+
+const_c_v                    Real         -1.0                y
+
+c_v_exp_m                    Real          0.0                y
+
+c_v_exp_n                    Real          0.0                y
+
+prop_temp_floor              Real          0.0                y

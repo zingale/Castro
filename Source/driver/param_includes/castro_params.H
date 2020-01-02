@@ -8,6 +8,7 @@ static int lin_limit_state_interp;
 static int state_nghost;
 static int do_reflux;
 static int update_sources_after_reflux;
+static int apply_sources_consecutively;
 static int use_custom_knapsack_weights;
 static amrex::Real difmag;
 static amrex::Real small_dens;
@@ -33,7 +34,6 @@ static int cg_maxiter;
 static amrex::Real cg_tol;
 static int cg_blend;
 static int use_eos_in_riemann;
-static amrex::Real riemann_speed_limit;
 static int use_flattening;
 static int transverse_use_eos;
 static int transverse_reset_density;
@@ -42,6 +42,8 @@ static amrex::Real dual_energy_eta1;
 static amrex::Real dual_energy_eta2;
 static int use_pslope;
 static int limit_fluxes_on_small_dens;
+static int limit_fluxes_on_large_vel;
+static amrex::Real speed_limit;
 static int density_reset_method;
 static int allow_small_energy;
 static int do_sponge;
@@ -129,6 +131,9 @@ static int use_point_mass;
 static amrex::Real point_mass;
 static int point_mass_fix_solution;
 #endif
+#ifdef AMREX_PARTICLES
+static int do_tracer_particles;
+#endif
 #ifdef ROTATION
 static amrex::Real rotational_period;
 static amrex::Real rotational_dPdt;
@@ -145,7 +150,4 @@ static int diffuse_temp;
 static amrex::Real diffuse_cutoff_density;
 static amrex::Real diffuse_cutoff_density_hi;
 static amrex::Real diffuse_cond_scale_fac;
-#endif
-#ifdef AMREX_PARTICLES
-static int do_tracer_particles;
 #endif

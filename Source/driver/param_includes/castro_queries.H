@@ -8,6 +8,7 @@ pp.query("lin_limit_state_interp", lin_limit_state_interp);
 pp.query("state_nghost", state_nghost);
 pp.query("do_reflux", do_reflux);
 pp.query("update_sources_after_reflux", update_sources_after_reflux);
+pp.query("apply_sources_consecutively", apply_sources_consecutively);
 pp.query("use_custom_knapsack_weights", use_custom_knapsack_weights);
 pp.query("difmag", difmag);
 pp.query("small_dens", small_dens);
@@ -33,7 +34,6 @@ pp.query("cg_maxiter", cg_maxiter);
 pp.query("cg_tol", cg_tol);
 pp.query("cg_blend", cg_blend);
 pp.query("use_eos_in_riemann", use_eos_in_riemann);
-pp.query("riemann_speed_limit", riemann_speed_limit);
 pp.query("use_flattening", use_flattening);
 pp.query("transverse_use_eos", transverse_use_eos);
 pp.query("transverse_reset_density", transverse_reset_density);
@@ -42,6 +42,8 @@ pp.query("dual_energy_eta1", dual_energy_eta1);
 pp.query("dual_energy_eta2", dual_energy_eta2);
 pp.query("use_pslope", use_pslope);
 pp.query("limit_fluxes_on_small_dens", limit_fluxes_on_small_dens);
+pp.query("limit_fluxes_on_large_vel", limit_fluxes_on_large_vel);
+pp.query("speed_limit", speed_limit);
 pp.query("density_reset_method", density_reset_method);
 pp.query("allow_small_energy", allow_small_energy);
 pp.query("do_sponge", do_sponge);
@@ -129,6 +131,9 @@ pp.query("use_point_mass", use_point_mass);
 pp.query("point_mass", point_mass);
 pp.query("point_mass_fix_solution", point_mass_fix_solution);
 #endif
+#ifdef AMREX_PARTICLES
+pp.query("do_tracer_particles", do_tracer_particles);
+#endif
 #ifdef ROTATION
 pp.query("rotational_period", rotational_period);
 pp.query("rotational_dPdt", rotational_dPdt);
@@ -145,7 +150,4 @@ pp.query("diffuse_temp", diffuse_temp);
 pp.query("diffuse_cutoff_density", diffuse_cutoff_density);
 pp.query("diffuse_cutoff_density_hi", diffuse_cutoff_density_hi);
 pp.query("diffuse_cond_scale_fac", diffuse_cond_scale_fac);
-#endif
-#ifdef AMREX_PARTICLES
-pp.query("do_tracer_particles", do_tracer_particles);
 #endif
