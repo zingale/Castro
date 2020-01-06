@@ -121,19 +121,10 @@ static int track_grid_losses;
 static int sum_interval;
 static amrex::Real sum_per;
 static int show_center_of_mass;
-static int hard_cfl_limit;
 static std::string job_name;
 static int output_at_completion;
 static amrex::Real reset_checkpoint_time;
 static int reset_checkpoint_step;
-#ifdef GRAVITY
-static int use_point_mass;
-static amrex::Real point_mass;
-static int point_mass_fix_solution;
-#endif
-#ifdef AMREX_PARTICLES
-static int do_tracer_particles;
-#endif
 #ifdef ROTATION
 static amrex::Real rotational_period;
 static amrex::Real rotational_dPdt;
@@ -144,6 +135,14 @@ static int state_in_rotating_frame;
 static int rot_source_type;
 static int implicit_rotation_update;
 static int rot_axis;
+#endif
+#ifdef GRAVITY
+static int use_point_mass;
+static amrex::Real point_mass;
+static int point_mass_fix_solution;
+#endif
+#ifdef AMREX_PARTICLES
+static int do_tracer_particles;
 #endif
 #ifdef DIFFUSION
 static int diffuse_temp;

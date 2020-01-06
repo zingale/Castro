@@ -121,19 +121,10 @@ pp.query("track_grid_losses", track_grid_losses);
 pp.query("sum_interval", sum_interval);
 pp.query("sum_per", sum_per);
 pp.query("show_center_of_mass", show_center_of_mass);
-pp.query("hard_cfl_limit", hard_cfl_limit);
 pp.query("job_name", job_name);
 pp.query("output_at_completion", output_at_completion);
 pp.query("reset_checkpoint_time", reset_checkpoint_time);
 pp.query("reset_checkpoint_step", reset_checkpoint_step);
-#ifdef GRAVITY
-pp.query("use_point_mass", use_point_mass);
-pp.query("point_mass", point_mass);
-pp.query("point_mass_fix_solution", point_mass_fix_solution);
-#endif
-#ifdef AMREX_PARTICLES
-pp.query("do_tracer_particles", do_tracer_particles);
-#endif
 #ifdef ROTATION
 pp.query("rotational_period", rotational_period);
 pp.query("rotational_dPdt", rotational_dPdt);
@@ -144,6 +135,14 @@ pp.query("state_in_rotating_frame", state_in_rotating_frame);
 pp.query("rot_source_type", rot_source_type);
 pp.query("implicit_rotation_update", implicit_rotation_update);
 pp.query("rot_axis", rot_axis);
+#endif
+#ifdef GRAVITY
+pp.query("use_point_mass", use_point_mass);
+pp.query("point_mass", point_mass);
+pp.query("point_mass_fix_solution", point_mass_fix_solution);
+#endif
+#ifdef AMREX_PARTICLES
+pp.query("do_tracer_particles", do_tracer_particles);
 #endif
 #ifdef DIFFUSION
 pp.query("diffuse_temp", diffuse_temp);
