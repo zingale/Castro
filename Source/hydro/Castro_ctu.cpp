@@ -107,45 +107,27 @@ Castro::consup_hydro(const Box& bx,
 void
 Castro::consup_rad(const Box& bx,
                    Array4<Real> const shk,
-                   Array4<Real> const update,
-                   Array4<Real> const flux0,
-#if AMREX_SPACEDIM >= 2
-                   Array4<Real> const flux1,
-#endif
-#if AMREX_SPACEDIM == 3
-                   Array4<Real> const flux2,
-#endif
-#ifdef RADIATION
                    Array4<Real> const Erin,
                    Array4<Real> const uout,
                    Array4<Real> const Erout,
+                   Array4<Real> const update,
                    Array4<Real> const radflux0,
-#if AMREX_SPACEDIM >= 2
-                   Array4<Real> const radflux1,
-#endif
-#if AMREX_SPACEDIM == 3
-                   Array4<Real> const radflux2,
-#endif
-                   int nstep_fsp, &
-#endif
                    Array4<Real> const qx,
-#if AMREX_SPACEDIM >= 2
-                   Array4<Real> const qy,
-#endif
-#if AMREX_SPACEDIM == 3
-                   Array4<Real> const qz,
-#endif
                    Array4<Real> const area0,
 #if AMREX_SPACEDIM >= 2
+                   Array4<Real> const radflux1,
+                   Array4<Real> const qy,
                    Array4<Real> const area1,
 #endif
 #if AMREX_SPACEDIM == 3
+                   Array4<Real> const radflux2,
+                   Array4<Real> const qz,
                    Array4<Real> const area2,
 #endif
+                   int nstep_fsp, &
                    Array4<Real> const vol,
-                   Real dx, Real dt)
+                   const Real* dx, const Real dt)
 {
-
 
   if (Radiation::nGroups > 1) {
     if (fspace_type == 1) {
@@ -172,155 +154,154 @@ Castro::consup_rad(const Box& bx,
   // Add gradp term to momentum equation -- only for axisymmetry coords
   // (and only for the radial flux);  also add the radiation pressure gradient
   // to the momentum for all directions
+  AMREX_PARALLEL_FOR_3D(bx, i, j, k,
+  {
+   // pgdnv from the Riemann solver is only the gas contribution, not
+   // the radiation contribution.  Note that we've already included
+   // the gas pressure in the momentum flux for all Cartesian
+   // coordinate directions
+    if (! mom_flux_has_p[0][0]) {
+      Real dpdx = ( qx(i+1,j,k,GDPRES) - qx(i,j,k,GDPRES))/ dx[0];
+      update(i,j,k,Xmom) += - dpdx;
+    }
 
-    do k = lo(3), hi(3)
-       do j = lo(2), hi(2)
-          do i = lo(1), hi(1)
+    // radiation contribution -- this is sum{lambda E_r}
+    Real dprdx = 0.0;
+    Real dprdy = 0.0;
+    Real dprdz = 0.0;
 
-              // ! pgdnv from the Riemann solver is only the gas contribution,
-             // not the radiation contribution.  Note that we've already included
-             // the gas pressure in the momentum flux for all Cartesian coordinate
-             // directions
-             if (.not. mom_flux_has_p(1)%comp(UMX)) then
-                dpdx = ( qx(i+1,j,k,GDPRES) - qx(i,j,k,GDPRES))/ dx(1)
-                update(i,j,k,UMX) = update(i,j,k,UMX) - dpdx
-             endif
-
-             // radiation contribution -- this is sum{lambda E_r}
-             dprdx = ZERO
-             dprdy = ZERO
-             dprdz = ZERO
-
-             do g = 0, ngroups-1
-#if AMREX_SPACEDIM == 1
-                lamc = HALF*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g))
-#endif
-#if AMREX_SPACEDIM == 2
-                lamc = FOURTH*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) +
-                     qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g))
-#endif
-#if AMREX_SPACEDIM == 3
-                lamc = (qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) + 
-                     qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g) + 
-                     qz(i,j,k,GDLAMS+g) + qz(i,j,k+1,GDLAMS+g) ) / 6.e0_rt
-#endif
-
-                dprdx = dprdx + lamc*(qx(i+1,j,k,GDERADS+g) - qx(i,j,k,GDERADS+g))/dx(1)
-#if AMREX_SPACEDIM >= 2
-                dprdy = dprdy + lamc*(qy(i,j+1,k,GDERADS+g) - qy(i,j,k,GDERADS+g))/dx(2)
-#endif
-#if AMREX_SPACEDIM == 3
-                dprdz = dprdz + lamc*(qz(i,j,k+1,GDERADS+g) - qz(i,j,k,GDERADS+g))/dx(3)
-#endif
-             end do
-
-             // we now want to compute the change in the kinetic energy -- we
-             // base this off of uout, since that has the source terms in it.
-             // But note that this does not have the fluxes (since we are
-             // using update)
-
-             // note, we need to include the Z component here too (even
-             // for 1- and 2-d), since rotation might be in play
-
-             urho_new = uout(i,j,k,URHO) + dt * update(i,j,k,URHO)
-
-             // this update includes the hydro fluxes and grad{p} from hydro
-             umx_new1 = uout(i,j,k,UMX) + dt * update(i,j,k,UMX)
-             umy_new1 = uout(i,j,k,UMY) + dt * update(i,j,k,UMY)
-             umz_new1 = uout(i,j,k,UMZ) + dt * update(i,j,k,UMZ)
-
-             ek1 = (umx_new1**2 + umy_new1**2 + umz_new1**2) / (TWO*urho_new)
-
-             // now add the radiation pressure gradient
-             update(i,j,k,UMX) = update(i,j,k,UMX) - dprdx
-             update(i,j,k,UMY) = update(i,j,k,UMY) - dprdy
-             update(i,j,k,UMZ) = update(i,j,k,UMZ) - dprdz
-
-             umx_new2 = umx_new1 - dt * dprdx
-             umy_new2 = umy_new1 - dt * dprdy
-             umz_new2 = umz_new1 - dt * dprdz
-
-             ek2 = (umx_new2**2 + umy_new2**2 + umz_new2**2) / (TWO*urho_new)
-
-             dek = ek2 - ek1
-
-             // the update is a source / dt, so scale accordingly
-             update(i,j,k,UEDEN) = update(i,j,k,UEDEN) + dek/dt
-
-             if (.not. comoving) then ! mixed-frame (single group only)
-                Erout(i,j,k,0) = Erout(i,j,k,0) - dek
-             end if
-
-          end do
-       end do
-    end do
-
-    // Add radiation source terms to rho*u, rhoE, and Er
-    if (comoving) then
-       do k = lo(3), hi(3)
-          do j = lo(2), hi(2)
-             do i = lo(1), hi(1)
-
-                ux = HALF*(qx(i,j,k,GDU) + qx(i+1,j,k,GDU))
-#if AMREX_SPACEDIM >= 2
-                uy = HALF*(qy(i,j,k,GDV) + qy(i,j+dg(2),k,GDV))
-#endif
-#if AMREX_SPACEDIM == 3
-                uz = HALF*(qz(i,j,k,GDW) + qz(i,j,k+dg(3),GDW))
-#endif
-
-                dudx(:) = ZERO
-                dudy(:) = ZERO
-                dudz(:) = ZERO
-
-                dudx(1) = (qx(i+1,j,k,GDU) - qx(i,j,k,GDU))/dx(1)
-                dudx(2) = (qx(i+1,j,k,GDV) - qx(i,j,k,GDV))/dx(1)
-                dudx(3) = (qx(i+1,j,k,GDW) - qx(i,j,k,GDW))/dx(1)
-
-#if AMREX_SPACEDIM >= 2
-                dudy(1) = (qy(i,j+1,k,GDU) - qy(i,j,k,GDU))/dx(2)
-                dudy(2) = (qy(i,j+1,k,GDV) - qy(i,j,k,GDV))/dx(2)
-                dudy(3) = (qy(i,j+1,k,GDW) - qy(i,j,k,GDW))/dx(2)
-#endif
-
-#if AMREX_SPACEDIM == 3
-                dudz(1) = (qz(i,j,k+1,GDU) - qz(i,j,k,GDU))/dx(3)
-                dudz(2) = (qz(i,j,k+1,GDV) - qz(i,j,k,GDV))/dx(3)
-                dudz(3) = (qz(i,j,k+1,GDW) - qz(i,j,k,GDW))/dx(3)
-#endif
-
-                divu = dudx(1) + dudy(2) + dudz(3)
-
-                // Note that for single group, fspace_type is always 1
-                do g=0, ngroups-1
-
-                   nhat(:) = ZERO
-
-                   nhat(1) = (qx(i+1,j,k,GDERADS+g) - qx(i,j,k,GDERADS+g))/dx(1)
-#if AMREX_SPACEDIM >= 2
-                   nhat(2) = (qy(i,j+1,k,GDERADS+g) - qy(i,j,k,GDERADS+g))/dx(2)
-#endif
-#if AMREX_SPACEDIM == 3
-                   nhat(3) = (qz(i,j,k+1,GDERADS+g) - qz(i,j,k,GDERADS+g))/dx(3)
-#endif
-
-                   GnDotu(1) = dot_product(nhat, dudx)
-                   GnDotu(2) = dot_product(nhat, dudy)
-                   GnDotu(3) = dot_product(nhat, dudz)
-
-                   nnColonDotGu = dot_product(nhat, GnDotu) / (dot_product(nhat,nhat)+1.e-50_rt)
+    for (int g = 0, g < Radiation::nGroups; g++) {
 
 #if AMREX_SPACEDIM == 1
-                   lamc = HALF*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g))
+      Real lamc = 0.5*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g));
 #endif
 #if AMREX_SPACEDIM == 2
-                   lamc = 0.25e0_rt*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) +
-                        qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g))
+      Real lamc = 0.25*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) +
+                        qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g));
 #endif
 #if AMREX_SPACEDIM == 3
-                   lamc = (qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) +
-                        qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g) +
-                        qz(i,j,k,GDLAMS+g) + qz(i,j,k+1,GDLAMS+g) ) / 6.e0_rt
+      Real lamc = (qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) +
+                   qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g) +
+                   qz(i,j,k,GDLAMS+g) + qz(i,j,k+1,GDLAMS+g) ) / 6.0;
+#endif
+
+      dprdx += lamc*(qx(i+1,j,k,GDERADS+g) - qx(i,j,k,GDERADS+g))/dx[0];
+#if AMREX_SPACEDIM >= 2
+      dprdy += lamc*(qy(i,j+1,k,GDERADS+g) - qy(i,j,k,GDERADS+g))/dx[1];
+#endif
+#if AMREX_SPACEDIM == 3
+      dprdz += lamc*(qz(i,j,k+1,GDERADS+g) - qz(i,j,k,GDERADS+g))/dx[2];
+#endif
+    }
+
+    // we now want to compute the change in the kinetic energy -- we
+    // base this off of uout, since that has the source terms in it.
+    // But note that this does not have the fluxes (since we are using
+    // update)
+
+    // note, we need to include the Z component here too (even
+    // for 1- and 2-d), since rotation might be in play
+
+    Real urho_new = uout(i,j,k,Density) + dt * update(i,j,k,Density);
+
+    // this update includes the hydro fluxes and grad{p} from hydro
+    Real umx_new1 = uout(i,j,k,Xmom) + dt * update(i,j,k,Xmom);
+    Real umy_new1 = uout(i,j,k,Ymom) + dt * update(i,j,k,Ymom);
+    Real umz_new1 = uout(i,j,k,Zmom) + dt * update(i,j,k,Zmom);
+
+    Real ek1 = (umx_new1*umx_new1 +
+                umy_new1*umy_new1 +
+                umz_new1*umz_new1) / (2.0*urho_new);
+
+    // now add the radiation pressure gradient
+    update(i,j,k,Xmom) += -dprdx;
+    update(i,j,k,Ymom) += -dprdy;
+    update(i,j,k,Zmom) += -dprdz;
+
+    Real umx_new2 = umx_new1 - dt * dprdx;
+    Real umy_new2 = umy_new1 - dt * dprdy;
+    Real umz_new2 = umz_new1 - dt * dprdz;
+
+    Real ek2 = (umx_new2*umx_new2 +
+                umy_new2*umy_new2 +
+                umz_new2*umz_new2) / (2.0*urho_new);
+
+    Real dek = ek2 - ek1;
+
+    // the update is a source / dt, so scale accordingly
+    update(i,j,k,UEDEN) += dek/dt;
+
+    if (! comoving) {
+      // mixed-frame (single group only)
+      Erout(i,j,k,0) += -dek;
+
+    } else {
+
+      // Add radiation source terms to rho*u, rhoE, and Er
+
+      Real ux = 0.5*(qx(i,j,k,GDU) + qx(i+1,j,k,GDU));
+#if AMREX_SPACEDIM >= 2
+      Real uy = 0.5*(qy(i,j,k,GDV) + qy(i,j+1,k,GDV));
+#endif
+#if AMREX_SPACEDIM == 3
+      Real uz = 0.5*(qz(i,j,k,GDW) + qz(i,j,k+1,GDW));
+#endif
+
+      std::Vector<Real> dudx(3, 0.0);
+      std::Vector<Real> dudy(3, 0.0);
+      std::Vector<Real> dudz(3, 0.0);
+
+      dudx[0] = (qx(i+1,j,k,GDU) - qx(i,j,k,GDU))/dx[0];
+      dudx[1] = (qx(i+1,j,k,GDV) - qx(i,j,k,GDV))/dx[1];
+      dudx[2] = (qx(i+1,j,k,GDW) - qx(i,j,k,GDW))/dx[2];
+
+#if AMREX_SPACEDIM >= 2
+      dudy[0] = (qy(i,j+1,k,GDU) - qy(i,j,k,GDU))/dx[1];
+      dudy[1] = (qy(i,j+1,k,GDV) - qy(i,j,k,GDV))/dx[1];
+      dudy[2] = (qy(i,j+1,k,GDW) - qy(i,j,k,GDW))/dx[1];
+#endif
+
+#if AMREX_SPACEDIM == 3
+      dudz[0] = (qz(i,j,k+1,GDU) - qz(i,j,k,GDU))/dx[2];
+      dudz[1] = (qz(i,j,k+1,GDV) - qz(i,j,k,GDV))/dx[2];
+      dudz[2] = (qz(i,j,k+1,GDW) - qz(i,j,k,GDW))/dx[2];
+#endif
+
+      Real divu = dudx[0] + dudy[1] + dudz[2];
+
+      // Note that for single group, fspace_type is always 1
+      for (int g = 0; g < Radiation::nGroups; g++) {
+
+        std::Vector<Real> nhat(3, 0.0);
+
+        nhat[0] = (qx(i+1,j,k,GDERADS+g) - qx(i,j,k,GDERADS+g))/dx[0];
+#if AMREX_SPACEDIM >= 2
+        nhat[1] = (qy(i,j+1,k,GDERADS+g) - qy(i,j,k,GDERADS+g))/dx[1];
+#endif
+#if AMREX_SPACEDIM == 3
+        nhat[2] = (qz(i,j,k+1,GDERADS+g) - qz(i,j,k,GDERADS+g))/dx[2];
+#endif
+
+        std::Vector<Real> GnDotu(3, 0.0);
+
+        GnDotu[0] = nhat[0]*dudx[0] + nhat[1]*dudx[1] + nhat[2]*dudx[2];
+        GnDotu[1] = nhat[0]*dudy[0] + nhat[1]*dudy[1] + nhat[2]*dudy[2];
+        GnDotu[2] = nhat[0]*dudz[0] + nhat[1]*dudz[1] + nhat[2]*dudz[2];
+
+        Real nnColonDotGu = std::inner_product(nhat.begin(), nhat.end(), GnDotu.begin(), 0.0) /
+          (std::inner_product(nhat.begin(), nhat.end(), nhat.begin(), 0.0) + 1.e-50);
+
+#if AMREX_SPACEDIM == 1
+        Real lamc = 0.5*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g));
+#endif
+#if AMREX_SPACEDIM == 2
+        Real lamc = 0.25*(qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) +
+                          qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g));
+#endif
+#if AMREX_SPACEDIM == 3
+        Real lamc = (qx(i,j,k,GDLAMS+g) + qx(i+1,j,k,GDLAMS+g) +
+                     qy(i,j,k,GDLAMS+g) + qy(i,j+1,k,GDLAMS+g) +
+                     qz(i,j,k,GDLAMS+g) + qz(i,j,k+1,GDLAMS+g) ) / 6.0;
 #endif
 
                    Eddf = Edd_factor(lamc)
@@ -385,7 +366,7 @@ Castro::consup_rad(const Box& bx,
 
                 if (ngroups.gt.1) then
                    ustar = Erout(i,j,k,:) / Erscale
-                   call advect_in_fspace(ustar, af, dt, nstep_fsp)
+                   call advect_in_fspace(ustar, a,f dt, nstep_fsp)
                    Erout(i,j,k,:) = ustar * Erscale
                 end if
              enddo
