@@ -5,3 +5,7 @@
 [submodule "Microphysics"]
 	path = external/Microphysics
 	url = https://github.com/starkiller-astro/Microphysics.git
+
+[submodule "hypre"]
+	path = external/hypre
+	url = https://github.com/hypre-space/hypre.git
