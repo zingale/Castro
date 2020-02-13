@@ -1,8 +1,5 @@
 CASTRO_HOME ?= /path/to/Castro
 
-# radiation needs hypre
-HYPRE_DIR ?= /path/to/Hypre
-
 # system blas
 BLAS_LIBRARY ?= -lopenblas
 
@@ -43,6 +40,8 @@ AMREX_HOME ?= $(TOP)/external/amrex
 ifeq ("$(wildcard $(AMREX_HOME)/Tools/GNUMake/Make.defs)","")
   $(error AMReX has not been downloaded. Please run "git submodule update --init" from the top level of the code)
 endif
+
+HYPRE_DIR ?= $(TOP)/external/hypre
 
 # default integrator
 INTEGRATOR_DIR ?= VODE90
@@ -222,11 +221,25 @@ ifeq ($(USE_RAD), TRUE)
   DEFINES += -DRAD_INTERP
   USE_HYPRE := TRUE
   DEFINES += -DHYPRE
+  all: hypre
 
   DEFINES += -DNGROUPS=$(NGROUPS)
 
   EXTERN_CORE += $(TOP)/Util/LAPACK
+else
+  HYPRE_TARGET :=
 endif
+
+HYPRE_TMP_SOURCE_DIR = $(TmpBuildDir)/hypre_source
+HYPRE_TMP_BUILD_DIR = $(TmpBuildDir)/hypre_build
+
+hypre_configure:
+	@$(SHELL) mkdir -p $(HYPRE_TMP_SOURCE_DIR)
+	@$(SHELL) cp -r $(HYPRE_DIR) cd $(HYPRE_TMP_SOURCE_DIR)
+	@$(SHELL) cd $(HYPRE_TMP_SOURCE_DIR); CC=$(CC) CXX=$(CXX) FC=$(F90) ./configure --prefix=$(HYPRE_TMP_BUILD_DIR) --with-MPI
+	@$(SHELL) cd $(HYPRE_TMP_SOURCE_DIR); make -j install
+
+hypre: hypre_configure
 
 ifeq ($(USE_MAESTRO_INIT), TRUE)
    DEFINES +=  -DBL_NOLINEVALUES -DBL_PARALLEL_IO -DMAESTRO_INIT
