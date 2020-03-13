@@ -348,9 +348,18 @@ Castro::initialize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle
     // value of the "new-time" sources to the old-time sources to get a
     // time-centered value.
 
+//    if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
+//        AmrLevel::FillPatch(*this, sources_for_hydro, NUM_GROW, time, Source_Type, 0, NSRC);
+//    }
+
+#ifdef SIMPLIFIED_SDC
+#ifdef REACTIONS
     if (time_integration_method == SimplifiedSpectralDeferredCorrections) {
-        AmrLevel::FillPatch(*this, sources_for_hydro, NUM_GROW, time, Source_Type, 0, NSRC);
+        MultiFab& SDC_react_new = get_new_data(Simplified_SDC_React_Type);
+        SDC_react_new.setVal(0.0, SDC_react_new.nGrow());
     }
+#endif
+#endif
 
     // Swap the new data from the last timestep into the old state data.
 
