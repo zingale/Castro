@@ -516,7 +516,7 @@ Castro::variableSetUp ()
                         URHO,
                         name,
                         bcs,
-                        BndryFunc(ca_denfill,ca_hypfill));
+                        BndryFunc(ca_statefill));
 
 #ifdef GRAVITY
   set_scalar_bc(bc,phys_bc);

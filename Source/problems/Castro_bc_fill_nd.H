@@ -8,17 +8,12 @@ extern "C"
 {
 #endif
 
-    void ca_hypfill
-    (BL_FORT_FAB_ARG_3D(state),
-     const int* dlo, const int* dhi,
-     const amrex::Real* dx, const amrex::Real* glo,
-     const amrex::Real* time, const int* bc);
-
-    void ca_denfill
-    (BL_FORT_FAB_ARG_3D(state),
-     const int* dlo, const int* dhi,
-     const amrex::Real* dx, const amrex::Real* glo,
-     const amrex::Real* time, const int* bc);
+    void ca_statefill
+    (amrex::Box const& bx, amrex::FArrayBox& data,
+     const int dcomp, const int numcomp,
+     amrex::Geometry const& geom, const amrex::Real time,
+     const amrex::Vector<BCRec>& bcr, const int bcomp,
+     const int scomp);
 
 #ifdef GRAVITY
     void ca_phigravfill
