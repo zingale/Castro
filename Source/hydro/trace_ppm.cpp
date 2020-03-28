@@ -327,7 +327,7 @@ Castro::trace_ppm(const Box& bx,
 
         qp(i,j,k,n) = Im[n][1];
 #ifdef PRIM_SPECIES_HAVE_SOURCES
-        qp(i,j,k,n) += 0.5_rt * dt * Im_src[n][1];
+        qp(i,j,k,n) += dt * Im_src[n][1];
 #endif
       }
 
@@ -335,19 +335,19 @@ Castro::trace_ppm(const Box& bx,
       if (idir == 0 && i <= vhi[0]) {
         qm(i+1,j,k,n) = Ip[n][1];
 #ifdef PRIM_SPECIES_HAVE_SOURCES
-        qm(i+1,j,k,n) += 0.5_rt * dt * Ip_src[n][1];
+        qm(i+1,j,k,n) += dt * Ip_src[n][1];
 #endif
 
       } else if (idir == 1 && j <= vhi[1]) {
         qm(i,j+1,k,n) = Ip[n][1];
 #ifdef PRIM_SPECIES_HAVE_SOURCES
-        qm(i,j+1,k,n) += 0.5_rt * dt * Ip_src[n][1];
+        qm(i,j+1,k,n) += dt * Ip_src[n][1];
 #endif
 
       } else if (idir == 2 && k <= vhi[2]) {
         qm(i,j,k+1,n) = Ip[n][1];
 #ifdef PRIM_SPECIES_HAVE_SOURCES
-        qm(i,j,k+1,n) += 0.5_rt * dt * Ip_src[n][1];
+        qm(i,j,k+1,n) += dt * Ip_src[n][1];
 #endif
       }
     }
@@ -389,15 +389,15 @@ Castro::trace_ppm(const Box& bx,
 
 
       // we also add the sources here so they participate in the tracing
-      Real dum = un_ref - Im[QUN][0] - hdt*Im_src[QUN][0];
-      Real dptotm = p_ref - Im[QPRES][0] - hdt*Im_src[QPRES][0];
+      Real dum = un_ref - Im[QUN][0] - dt*Im_src[QUN][0];
+      Real dptotm = p_ref - Im[QPRES][0] - dt*Im_src[QPRES][0];
 
-      Real drho = rho_ref - Im[QRHO][1] - hdt*Im_src[QRHO][1];
-      Real dptot = p_ref - Im[QPRES][1] - hdt*Im_src[QPRES][1];
-      Real drhoe_g = rhoe_g_ref - Im[QREINT][1] - hdt*Im_src[QREINT][1];
+      Real drho = rho_ref - Im[QRHO][1] - dt*Im_src[QRHO][1];
+      Real dptot = p_ref - Im[QPRES][1] - dt*Im_src[QPRES][1];
+      Real drhoe_g = rhoe_g_ref - Im[QREINT][1] - dt*Im_src[QREINT][1];
 
-      Real dup = un_ref - Im[QUN][2] - hdt*Im_src[QUN][2];
-      Real dptotp = p_ref - Im[QPRES][2] - hdt*Im_src[QPRES][2];
+      Real dup = un_ref - Im[QUN][2] - dt*Im_src[QUN][2];
+      Real dptotp = p_ref - Im[QPRES][2] - dt*Im_src[QPRES][2];
 
       // {rho, u, p, (rho e)} eigensystem
 
@@ -430,8 +430,8 @@ Castro::trace_ppm(const Box& bx,
       // Recall that I already takes the limit of the parabola
       // in the event that the wave is not moving toward the
       // interface
-      qp(i,j,k,QUT) = Im[QUT][1] + hdt*Im_src[QUT][1];
-      qp(i,j,k,QUTT) = Im[QUTT][1] + hdt*Im_src[QUTT][1];
+      qp(i,j,k,QUT) = Im[QUT][1] + dt*Im_src[QUT][1];
+      qp(i,j,k,QUTT) = Im[QUTT][1] + dt*Im_src[QUTT][1];
 
     }
 
@@ -464,15 +464,15 @@ Castro::trace_ppm(const Box& bx,
       // *m are the jumps carried by u-c
       // *p are the jumps carried by u+c
 
-      Real dum = un_ref - Ip[QUN][0] - hdt*Ip_src[QUN][0];
-      Real dptotm  = p_ref - Ip[QPRES][0] - hdt*Ip_src[QPRES][0];
+      Real dum = un_ref - Ip[QUN][0] - dt*Ip_src[QUN][0];
+      Real dptotm  = p_ref - Ip[QPRES][0] - dt*Ip_src[QPRES][0];
 
-      Real drho = rho_ref - Ip[QRHO][1] - hdt*Ip_src[QRHO][1];
-      Real dptot = p_ref - Ip[QPRES][1] - hdt*Ip_src[QPRES][1];
-      Real drhoe_g = rhoe_g_ref - Ip[QREINT][1] - hdt*Ip_src[QREINT][1];
+      Real drho = rho_ref - Ip[QRHO][1] - dt*Ip_src[QRHO][1];
+      Real dptot = p_ref - Ip[QPRES][1] - dt*Ip_src[QPRES][1];
+      Real drhoe_g = rhoe_g_ref - Ip[QREINT][1] - dt*Ip_src[QREINT][1];
 
-      Real dup = un_ref - Ip[QUN][2] - hdt*Ip_src[QUN][2];
-      Real dptotp = p_ref - Ip[QPRES][2] - hdt*Ip_src[QPRES][2];
+      Real dup = un_ref - Ip[QUN][2] - dt*Ip_src[QUN][2];
+      Real dptotp = p_ref - Ip[QPRES][2] - dt*Ip_src[QPRES][2];
 
       // {rho, u, p, (rho e)} eigensystem
 
@@ -500,8 +500,8 @@ Castro::trace_ppm(const Box& bx,
         qm(i+1,j,k,QPRES) = amrex::max(lsmall_pres, p_ref + (alphap + alpham)*csq_ref);
 
         // transverse velocities
-        qm(i+1,j,k,QUT) = Ip[QUT][1] + hdt*Ip_src[QUT][1];
-        qm(i+1,j,k,QUTT) = Ip[QUTT][1] + hdt*Ip_src[QUTT][1];
+        qm(i+1,j,k,QUT) = Ip[QUT][1] + dt*Ip_src[QUT][1];
+        qm(i+1,j,k,QUTT) = Ip[QUTT][1] + dt*Ip_src[QUTT][1];
 
       } else if (idir == 1) {
         qm(i,j+1,k,QRHO) = amrex::max(lsmall_dens, rho_ref +  alphap + alpham + alpha0r);
@@ -510,8 +510,8 @@ Castro::trace_ppm(const Box& bx,
         qm(i,j+1,k,QPRES) = amrex::max(lsmall_pres, p_ref + (alphap + alpham)*csq_ref);
 
         // transverse velocities
-        qm(i,j+1,k,QUT) = Ip[QUT][1] + hdt*Ip_src[QUT][1];
-        qm(i,j+1,k,QUTT) = Ip[QUTT][1] + hdt*Ip_src[QUTT][1];
+        qm(i,j+1,k,QUT) = Ip[QUT][1] + dt*Ip_src[QUT][1];
+        qm(i,j+1,k,QUTT) = Ip[QUTT][1] + dt*Ip_src[QUTT][1];
 
       } else if (idir == 2) {
         qm(i,j,k+1,QRHO) = amrex::max(lsmall_dens, rho_ref +  alphap + alpham + alpha0r);
@@ -520,8 +520,8 @@ Castro::trace_ppm(const Box& bx,
         qm(i,j,k+1,QPRES) = amrex::max(lsmall_pres, p_ref + (alphap + alpham)*csq_ref);
 
         // transverse velocities
-        qm(i,j,k+1,QUT) = Ip[QUT][1] + hdt*Ip_src[QUT][1];
-        qm(i,j,k+1,QUTT) = Ip[QUTT][1] + hdt*Ip_src[QUTT][1];
+        qm(i,j,k+1,QUT) = Ip[QUT][1] + dt*Ip_src[QUT][1];
+        qm(i,j,k+1,QUTT) = Ip[QUTT][1] + dt*Ip_src[QUTT][1];
       }
 
     }
