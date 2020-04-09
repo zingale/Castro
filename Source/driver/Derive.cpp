@@ -4,6 +4,9 @@
 #include "Derive_F.H"
 #include "Castro.H"
 #include "Castro_F.H"
+#ifdef DIFFUSION
+#include "Castro_diffusion.H"
+#endif
 
 using namespace amrex;
 
@@ -249,26 +252,15 @@ extern "C"
     }
 
 #ifdef DIFFUSION
-    void ca_dercond(Real* der, const int* der_lo, const int* der_hi, const int* nvar,
-                    const Real* data, const int* data_lo, const int* data_hi, const int* ncomp,
-                    const int* lo, const int* hi,
-                    const int* domain_lo, const int* domain_hi,
-                    const Real* delta, const Real* xlo,
-                    const Real* time, const Real* dt, const int* bcrec, 
-                    const int* level, const int* grid_no)
+    void ca_dercond(const Box& bx, FArrayBox& condfab, int dcomp, int /*ncomp*/,
+                    const FArrayBox& datfab, const Geometry& geomdata,
+                    Real time, const int* bcrec, int level)
     {
 
-        IntVect ilo(D_DECL(lo[0], lo[1], lo[2]));
-        IntVect ihi(D_DECL(hi[0], hi[1], hi[2]));
+      Array4<Real const> const dat = datfab.array();
+      Array4<Real> const cond = condfab.array();
 
-        Box bx(ilo, ihi);
-
-#pragma gpu box(bx)
-        dercond(AMREX_INT_ANYD(lo), AMREX_INT_ANYD(hi),
-                der, AMREX_INT_ANYD(der_lo), AMREX_INT_ANYD(der_hi), *nvar,
-                data, AMREX_INT_ANYD(data_lo), AMREX_INT_ANYD(data_hi), *ncomp,
-                AMREX_INT_ANYD(domain_lo), AMREX_INT_ANYD(domain_hi),
-                AMREX_REAL_ANYD(delta));
+      fill_temp_cond(bx, dat, cond);
 
     }
 

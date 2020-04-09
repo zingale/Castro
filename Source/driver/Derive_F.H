@@ -78,13 +78,6 @@ extern "C"
      const amrex::Real* delta);
 
 #ifdef DIFFUSION
-  void dercond
-    (const int* lo, const int* hi,
-     BL_FORT_FAB_ARG_3D(der), const int nvar,
-     const BL_FORT_FAB_ARG_3D(data), const int ncomp,
-     const int* domain_lo, const int* domain_hi,
-     const amrex::Real* delta);
-
   void derdiffcoeff
     (const int* lo, const int* hi,
      BL_FORT_FAB_ARG_3D(der), const int nvar,
