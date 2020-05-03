@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Gravity" href="../gravity_files.html" />
+    <link rel="next" title="File castro_limits.H" href="castro__limits_8H.html" />
     <link rel="prev" title="File Derive.H" href="Derive_8H.html" /> 
 </head>
 
@@ -140,10 +140,12 @@
 <li class="toctree-l3"><a class="reference internal" href="Castro__util_8H.html">File Castro_util.H</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Derive_8H.html">File Derive.H</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">File MGutils.H</a></li>
+<li class="toctree-l3"><a class="reference internal" href="castro__limits_8H.html">File castro_limits.H</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../gravity_files.html">Gravity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hydro_files.html">Hydro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mhd_files.html">Mhd</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../particles_files.html">Particles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../problems_files.html">Problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../radiation_files.html">Radiation</a></li>
@@ -231,24 +233,24 @@
 <h1>File MGutils.H<a class="headerlink" href="#file-mgutils-h" title="Permalink to this headline">¶</a></h1>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Functions</p>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv412apply_metricRK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxPK4RealKi">
-<span id="_CPPv312apply_metricRK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxPK4RealKi"></span><span id="_CPPv212apply_metricRK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxPK4RealKi"></span><span id="apply_metric__BoxCR.Array4:Real:C.BoxCR.Array4:Real:C.BoxCR.Array4:Real:C.BoxCR.RealCP.iC"></span><span class="target" id="MGutils_8H_1aa9c6d0d8d195334a09bead93b49d8161"></span>void <code class="sig-name descname">apply_metric</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt;<em class="property">const</em>  <em>rhs</em>, <em class="property">const</em> Box &amp;<em>rbx</em>, Array4&lt;Real&gt;<em class="property">const</em>  <em>ecx</em>, <em class="property">const</em> Box &amp;<em>xbx</em>, Array4&lt;Real&gt;<em class="property">const</em>  <em>ecy</em>, <em class="property">const</em> Box &amp;<em>ybx</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412apply_metricRK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv312apply_metricRK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxPK4RealKi"></span><span id="_CPPv212apply_metricRK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxPK4RealKi"></span><span id="apply_metric__BoxCR.Array4:Real:C.BoxCR.Array4:Real:C.BoxCR.Array4:Real:C.BoxCR.RealCP.iC"></span><span class="target" id="MGutils_8H_1aa9c6d0d8d195334a09bead93b49d8161"></span>void <code class="sig-name descname">apply_metric</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt; <em class="property">const</em> <em>rhs</em>, <em class="property">const</em> Box &amp;<em>rbx</em>, Array4&lt;Real&gt; <em class="property">const</em> <em>ecx</em>, <em class="property">const</em> Box &amp;<em>xbx</em>, Array4&lt;Real&gt; <em class="property">const</em> <em>ecy</em>, <em class="property">const</em> Box &amp;<em>ybx</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412apply_metricRK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxK6Array4I4RealERK3BoxPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv412do_weight_ccRK3BoxK6Array4I4RealEPK4RealKi">
-<span id="_CPPv312do_weight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="_CPPv212do_weight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="do_weight_cc__BoxCR.Array4:Real:C.RealCP.iC"></span><span class="target" id="MGutils_8H_1afc1dfb686620ed8abfbb1647660a9bdb"></span>void <code class="sig-name descname">do_weight_cc</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt;<em class="property">const</em>  <em>cc</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412do_weight_ccRK3BoxK6Array4I4RealEPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv312do_weight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="_CPPv212do_weight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="do_weight_cc__BoxCR.Array4:Real:C.RealCP.iC"></span><span class="target" id="MGutils_8H_1afc1dfb686620ed8abfbb1647660a9bdb"></span>void <code class="sig-name descname">do_weight_cc</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt; <em class="property">const</em> <em>cc</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412do_weight_ccRK3BoxK6Array4I4RealEPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv414do_unweight_ccRK3BoxK6Array4I4RealEPK4RealKi">
-<span id="_CPPv314do_unweight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="_CPPv214do_unweight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="do_unweight_cc__BoxCR.Array4:Real:C.RealCP.iC"></span><span class="target" id="MGutils_8H_1a44515a9775fec3711dc7ce6d4b60077e"></span>void <code class="sig-name descname">do_unweight_cc</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt;<em class="property">const</em>  <em>cc</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414do_unweight_ccRK3BoxK6Array4I4RealEPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv314do_unweight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="_CPPv214do_unweight_ccRK3BoxK6Array4I4RealEPK4RealKi"></span><span id="do_unweight_cc__BoxCR.Array4:Real:C.RealCP.iC"></span><span class="target" id="MGutils_8H_1a44515a9775fec3711dc7ce6d4b60077e"></span>void <code class="sig-name descname">do_unweight_cc</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt; <em class="property">const</em> <em>cc</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414do_unweight_ccRK3BoxK6Array4I4RealEPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv417do_unweight_edgesRK3BoxK6Array4I4RealEKiPK4RealKi">
-<span id="_CPPv317do_unweight_edgesRK3BoxK6Array4I4RealEKiPK4RealKi"></span><span id="_CPPv217do_unweight_edgesRK3BoxK6Array4I4RealEKiPK4RealKi"></span><span id="do_unweight_edges__BoxCR.Array4:Real:C.iC.RealCP.iC"></span><span class="target" id="MGutils_8H_1acd8a784653a92e7cabc1462041a76212"></span>void <code class="sig-name descname">do_unweight_edges</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt;<em class="property">const</em>  <em>ec</em>, <em class="property">const</em> int <em>idir</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417do_unweight_edgesRK3BoxK6Array4I4RealEKiPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv317do_unweight_edgesRK3BoxK6Array4I4RealEKiPK4RealKi"></span><span id="_CPPv217do_unweight_edgesRK3BoxK6Array4I4RealEKiPK4RealKi"></span><span id="do_unweight_edges__BoxCR.Array4:Real:C.iC.RealCP.iC"></span><span class="target" id="MGutils_8H_1acd8a784653a92e7cabc1462041a76212"></span>void <code class="sig-name descname">do_unweight_edges</code><span class="sig-paren">(</span><em class="property">const</em> Box &amp;<em>bx</em>, Array4&lt;Real&gt; <em class="property">const</em> <em>ec</em>, <em class="property">const</em> int <em>idir</em>, <em class="property">const</em> Real *<em>dx</em>, <em class="property">const</em> int <em>coord_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417do_unweight_edgesRK3BoxK6Array4I4RealEKiPK4RealKi" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -262,7 +264,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../gravity_files.html" class="btn btn-neutral float-right" title="Gravity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="castro__limits_8H.html" class="btn btn-neutral float-right" title="File castro_limits.H" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="Derive_8H.html" class="btn btn-neutral float-left" title="File Derive.H" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
