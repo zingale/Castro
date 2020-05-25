@@ -472,8 +472,6 @@
 </li>
       <li><a href="runtime_parameters.html#index-1">castro.clamp_ambient_temp</a>
 </li>
-      <li><a href="runtime_parameters.html#index-1">castro.density_reset_method</a>
-</li>
       <li><a href="runtime_parameters.html#index-4">castro.diffuse_cond_scale_fac</a>
 </li>
       <li><a href="runtime_parameters.html#index-4">castro.diffuse_cutoff_density</a>
@@ -772,10 +770,10 @@
 </li>
       <li><a href="class/classCastro.html#_CPPv4N6Castro15build_fine_maskEv">Castro::build_fine_mask (C++ function)</a>, <a href="file/Castro_8H.html#_CPPv4N6Castro15build_fine_maskEv">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="class/classCastro.html#_CPPv4N6Castro28build_interior_boundary_maskEi">Castro::build_interior_boundary_mask (C++ function)</a>, <a href="file/Castro_8H.html#_CPPv4N6Castro28build_interior_boundary_maskEi">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="class/classCastro.html#_CPPv4N6Castro12buildMetricsEv">Castro::buildMetrics (C++ function)</a>, <a href="file/Castro_8H.html#_CPPv4N6Castro12buildMetricsEv">[1]</a>
 </li>
       <li><a href="class/classCastro.html#_CPPv4N6Castro10Bx_old_tmpE">Castro::Bx_old_tmp (C++ member)</a>, <a href="file/Castro_8H.html#_CPPv4N6Castro10Bx_old_tmpE">[1]</a>
@@ -1330,10 +1328,10 @@
 </li>
       <li><a href="file/diffusion__util_8H.html#_CPPv414fill_temp_condRKN5amrex3BoxERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE">fill_temp_cond (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="file/diffusion__util_8H.html#_CPPv420fill_temp_diff_coeffRKN5amrex3BoxERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE">fill_temp_diff_coeff (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="file/Castro__sources_8H.html#_CPPv418fill_thermo_sourceN5amrex4RealEN5amrex4RealERN5amrex8MultiFabERN5amrex8MultiFabE">fill_thermo_source (C++ function)</a>
 </li>
       <li><a href="file/Castro_8H.html#_CPPv48FirstAdv">FirstAdv (C++ member)</a>
@@ -1341,6 +1339,8 @@
       <li><a href="file/Castro_8H.html#_CPPv48FirstAux">FirstAux (C++ member)</a>
 </li>
       <li><a href="file/Castro_8H.html#_CPPv49FirstSpec">FirstSpec (C++ member)</a>
+</li>
+      <li><a href="file/Castro__hydro_8H.html#_CPPv417fourth_interfacesRKN5amrex3BoxEKiKiRKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE">fourth_interfaces (C++ function)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1564,6 +1564,8 @@
 </li>
       <li><a href="file/Castro__hydro_8H.html#_CPPv44HLLCRKN5amrex3BoxERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEEKi">HLLC (C++ function)</a>
 </li>
+      <li><a href="file/Castro__mhd_8H.html#_CPPv44hlldRKN5amrex3BoxERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEEKi">hlld (C++ function)</a>
+</li>
       <li><a href="file/Castro__hydro_8H.html#_CPPv425hybrid_to_linear_momentumRN5amrex8MultiFabEi">hybrid_to_linear_momentum (C++ function)</a>
 </li>
       <li><a href="class/classHypreABec.html#_CPPv49HypreABec">HypreABec (C++ class)</a>, <a href="file/HypreABec_8H.html#_CPPv49HypreABec">[1]</a>
@@ -1624,10 +1626,10 @@
 </li>
       <li><a href="class/classHypreABec.html#_CPPv4N9HypreABec8setBndryERK7NGBndryi">HypreABec::setBndry (C++ function)</a>, <a href="file/HypreABec_8H.html#_CPPv4N9HypreABec8setBndryERK7NGBndryi">[1]</a>
 </li>
-      <li><a href="class/classHypreABec.html#_CPPv4N9HypreABec10setScalarsEN5amrex4RealEN5amrex4RealE">HypreABec::setScalars (C++ function)</a>, <a href="file/HypreABec_8H.html#_CPPv4N9HypreABec10setScalarsEN5amrex4RealEN5amrex4RealE">[1]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="class/classHypreABec.html#_CPPv4N9HypreABec10setScalarsEN5amrex4RealEN5amrex4RealE">HypreABec::setScalars (C++ function)</a>, <a href="file/HypreABec_8H.html#_CPPv4N9HypreABec10setScalarsEN5amrex4RealEN5amrex4RealE">[1]</a>
+</li>
       <li><a href="class/classHypreABec.html#_CPPv4N9HypreABec11setupSolverEN5amrex4RealEN5amrex4RealEi">HypreABec::setupSolver (C++ function)</a>, <a href="file/HypreABec_8H.html#_CPPv4N9HypreABec11setupSolverEN5amrex4RealEN5amrex4RealEi">[1]</a>
 </li>
       <li><a href="class/classHypreABec.html#_CPPv4N9HypreABec10setVerboseEi">HypreABec::setVerbose (C++ function)</a>, <a href="file/HypreABec_8H.html#_CPPv4N9HypreABec10setVerboseEi">[1]</a>
@@ -2438,14 +2440,14 @@
 </li>
       <li><a href="file/sponge__params_8H.html#_CPPv419sponge_lower_radius">sponge_lower_radius (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sponge.html#index-0">sponge_timescale</a>
 
       <ul>
         <li><a href="file/sponge__params_8H.html#_CPPv416sponge_timescale">(C++ member)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="file/sponge__params_8H.html#_CPPv420sponge_upper_density">sponge_upper_density (C++ member)</a>
 </li>
       <li><a href="file/sponge__params_8H.html#_CPPv419sponge_upper_factor">sponge_upper_factor (C++ member)</a>
@@ -2459,6 +2461,8 @@
       <li><a href="build_system.html#index-17">state_indices.F90</a>
 </li>
       <li><a href="build_system.html#index-17">state_indices.H</a>
+</li>
+      <li><a href="file/Castro__hydro_8H.html#_CPPv46statesRKN5amrex3BoxEKiKiRKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IKN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE">states (C++ function)</a>
 </li>
       <li><a href="file/Castro_8H.html#_CPPv49StateType">StateType (C++ enum)</a>
 </li>
