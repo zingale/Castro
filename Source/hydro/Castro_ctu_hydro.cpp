@@ -66,6 +66,8 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
 #ifdef _OPENMP
 #ifdef RADIATION
 #pragma omp parallel reduction(max:nstep_fsp)
+#else
+#pragma omp parallel
 #endif
 #endif
   {
@@ -1469,32 +1471,6 @@ Castro::construct_ctu_hydro_source(Real time, Real dt)
      });
 #endif
   }
-#else
-  // Flush Fortran output
-
-  if (verbose)
-    flush_output();
-
-  if (print_update_diagnostics)
-    {
-
-      bool local = true;
-      Vector<Real> hydro_update = evaluate_source_change(hydro_source, dt, local);
-
-#ifdef BL_LAZY
-      Lazy::QueueReduction( [=] () mutable {
-#endif
-         ParallelDescriptor::ReduceRealSum(hydro_update.dataPtr(), hydro_update.size(), ParallelDescriptor::IOProcessorNumber());
-
-         if (ParallelDescriptor::IOProcessor())
-           std::cout << std::endl << "  Contributions to the state from the hydro source:" << std::endl;
-
-         print_source_change(hydro_update);
-
-#ifdef BL_LAZY
-      });
-#endif
-    }
 #endif
 
   if (verbose && ParallelDescriptor::IOProcessor())
