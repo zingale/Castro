@@ -85,12 +85,12 @@ evecx(Array2D<Real, 0, NEIGN-1, 0, NEIGN-1>& leig,
 
   Real alf;
   Real als;
- 
+
   if (std::abs(cfx-csx) <= 1e-14){
     alf = 1.0_rt;
     als = 0.0_rt;
   }
-  
+
   if (as - csx < 0.0) {
     alf = 0.0_rt;
   } else {
@@ -102,8 +102,8 @@ evecx(Array2D<Real, 0, NEIGN-1, 0, NEIGN-1>& leig,
   } else {
     als = std::sqrt((cfx - as)/(cfx - csx));
   }
-  
-  
+
+
 
   Real bety;
   Real betz;
@@ -286,7 +286,7 @@ evecy(Array2D<Real, 0, NEIGN-1, 0, NEIGN-1>& leig,
 
   Real alf;
   Real als;
-  
+
   if (std::abs(cfy-csy) <= 1e-14){
     alf = 1.0_rt;
     als = 0.0_rt;
@@ -658,6 +658,8 @@ check_evecs(Array2D<Real, 0, NEIGN-1, 0, NEIGN-1>& leig,
 
   // this checks if the eigenvectors are properly orthornomal
 
+  bool is_ortho = true;
+
   for (int n = 0; n < NEIGN; n++) {
     for (int m = 0; m < NEIGN; m++) {
 
@@ -668,9 +670,22 @@ check_evecs(Array2D<Real, 0, NEIGN-1, 0, NEIGN-1>& leig,
         dot += leig(m, p) * reig(p, n);
       }
 
-      std::cout << "l(" << m << ") . r(" << n << ") = " << dot << std::endl;
+      if (n == m && std::abs(dot - 1.0_rt) > 1.e-15_rt) {
+        std::cout << "not orthonormal " << dot << std::endl;
+        is_ortho = false;
+      }
+
+      if (n != m && std::abs(dot) > 1.e-15_rt) {
+        std::cout << "not zero " << dot << std::endl;
+        is_ortho = false;
+      }
+      //std::cout << "l(" << m << ") . r(" << n << ") = " << dot << std::endl;
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
+  }
+
+  if (!is_ortho) {
+    amrex::Error("error: not orthonormal");
   }
 }
 #endif
