@@ -107,7 +107,7 @@ several main data structures that hold the state.
    are “gas” only and those with the “tot” subscript are “gas + radiation”.
 
    .. _table:primlist:
-   .. table:: The integer variable keys for accessing the primitive state vector.
+   .. table:: Primitive State Vector Integer Keys
 
       +-----------------------+------------------------+-----------------------+
       | **variable**          | **quantity**           | **note**              |
@@ -125,8 +125,6 @@ several main data structures that hold the state.
       | ``QREINT``            | :math:`\rho e`         |                       |
       +-----------------------+------------------------+-----------------------+
       | ``QTEMP``             | :math:`T`              |                       |
-      +-----------------------+------------------------+-----------------------+
-      | ``QGAME``             | :math:`p/(\rho e) + 1` |                       |
       +-----------------------+------------------------+-----------------------+
       | ``QFA``               | :math:`A_1`            | the first advected    |
       |                       |                        | quantity              |
@@ -168,15 +166,6 @@ several main data structures that hold the state.
       +-----------------------+-----------------------+-----------------------+
       | ``QC``                | :math:`c_s`           | the sound speed, as   |
       |                       |                       | returned from the EOS |
-      +-----------------------+-----------------------+-----------------------+
-      | ``QCSML``             |                       | a small sound speed   |
-      |                       |                       | used for cutoffs      |
-      +-----------------------+-----------------------+-----------------------+
-      | ``QDPDR``             | :math:`\partial p/    | computed via the EOS  |
-      |                       | \partial \rho |_e`    |                       |
-      +-----------------------+-----------------------+-----------------------+
-      | ``QDPDE``             | :math:`\partial p/    | computed via the EOS  |
-      |                       | \partial e|_\rho`     |                       |
       +-----------------------+-----------------------+-----------------------+
       | ``QGAMCG``            | :math:`{\Gamma_1      | includes radiation    |
       |                       | }_\mathrm{tot}`       | components (defined   |
@@ -224,12 +213,6 @@ several main data structures that hold the state.
       |                       |                       | this is always just   |
       |                       |                       | the gas pressure      |
       +-----------------------+-----------------------+-----------------------+
-      | ``QDGAME``            | :math:`\gamma_e = p/( | regardless of whether |
-      |                       | \rho e) + 1`          | ``RADIATION`` is      |
-      |                       |                       | defined,              |
-      |                       |                       | this is always just   |
-      |                       |                       | the gas contribution  |
-      +-----------------------+-----------------------+-----------------------+
       | ``QDLAMS``            | :math:`{\lambda_f}`   | the starting index    |
       |                       |                       | for the flux          |
       |                       |                       | limiter—there are     |
@@ -275,7 +258,7 @@ associated production rate, :math:`\dot\omega_k`, and energy release,
 user-specified source terms. :math:`A_k` is an advected quantity,
 i.e., a tracer. We also carry around auxiliary variables, :math:`Y_k`,
 which have a user-defined evolution equation, but by default are
-treated as advected quantities.
+treated as advected quantities.  These are meant to be defined in the network.
 
 In the code we also carry around :math:`T` and :math:`\rho e` in the conservative
 state vector even though they are derived from the other conserved
@@ -303,7 +286,9 @@ Some notes:
 -  There are ``NAUX`` auxiliary variables, from ``UFX:UFX+naux-1``. The
    auxiliary variables are passed into the equation of state routines
    along with the species. An example of an auxiliary variable is the
-   electron fraction, :math:`Y_e`, in core collapse simulations.
+   electron fraction, :math:`Y_e`, in core collapse simulations.  The
+   number and names of the auxiliary variables are defined in the
+   network.
 
 
 Source Terms

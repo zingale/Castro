@@ -1,16 +1,19 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Setting Up Your Own Problem &mdash; Castro 20.04
- documentation</title>
+  <title>Setting Up Your Own Problem &mdash; Castro  documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
 
   
   
@@ -18,7 +21,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -26,17 +31,12 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Outputting" href="io.html" />
@@ -55,7 +55,7 @@
 
 
           
-            <a href="index.html" class="icon icon-home"> Castro
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Castro
           
 
           
@@ -66,11 +66,6 @@
 
           
             
-            
-              <div class="version">
-                20.04
-
-              </div>
             
           
 
@@ -85,11 +80,12 @@
 
           
     <div class="branch">
-        Branch: <a href="./creating_a_problem.html">master</a> | <a href="./dev/creating_a_problem.html">development</a>
+        Branch: <a href="./creating_a_problem.html">main</a> | <a href="./dev/creating_a_problem.html">development</a>
     </div>
 
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -107,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mpi_plus_x.html">Running Options: CPUs and GPUs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FlowChart.html">Flowchart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setting Up Your Own Problem</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#runtime-parameters">Runtime parameters</a></li>
@@ -126,6 +123,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gpu_porting.html">Offloading a routine to GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gravity.html">Gravity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="diffusion.html">Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rotation.html">Rotation</a></li>
@@ -154,6 +152,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -192,7 +191,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Setting Up Your Own Problem</li>
     
@@ -359,8 +358,8 @@ version of Castro.</p></li>
 from the zone indices, <code class="docutils literal notranslate"><span class="pre">i</span></code>, <code class="docutils literal notranslate"><span class="pre">j</span></code>, and <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
 </div>
 <div class="section" id="boundary-conditions">
-<h2>Boundary conditions<a class="headerlink" href="#boundary-conditions" title="Permalink to this headline">¶</a></h2>
-<p>Standard boundary conditions, including outflow (zero-gradient), periodic,
+<span id="create-bcs"></span><h2>Boundary conditions<a class="headerlink" href="#boundary-conditions" title="Permalink to this headline">¶</a></h2>
+<p id="index-2">Standard boundary conditions, including outflow (zero-gradient), periodic,
 and symmetry (reflect) are handled by AMReX directly.  Castro has a special
 hydrostatic boundary condition that can be used for the lower boundary.  It
 is accessed by setting the <code class="docutils literal notranslate"><span class="pre">castro.lo_bc</span></code> flag to 1 in the vertical coordinate
@@ -376,12 +375,35 @@ hydrostatic boundary condition here, we set:</p>
 <span class="n">castro</span><span class="o">.</span><span class="n">hse_reflect_vels</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>The first parameter tells Castro to use the HSE boundary condition.  The next two
-control how the temperature and velocity are treated.</p>
-<p>A different special boundary condition, <code class="docutils literal notranslate"><span class="pre">&quot;interp&quot;</span></code> is available at
+<p>The first parameter tells Castro to use the HSE boundary condition.
+In filling the ghost cells, hydrostatic equilibrum will be integrated
+from the last interior zone into the boundary.  We need one more
+equation for this integration, so we either interpolate the density or
+temperature into the ghost cells, depending on the value of
+<code class="docutils literal notranslate"><span class="pre">castro.hse_interp_temp</span></code>.  Finally, <code class="docutils literal notranslate"><span class="pre">castro.hse_reflect_vels</span></code>
+determines how we treat the velocity.  The default is to give is a
+zero gradient, but in tests we’ve found that reflecting the velocity
+while integrating the HSE profile can be better.  For modeling a
+plane-parallel hydrostatic atmosphere, using the hydrostatic boundary
+conditions instead of a simple symmetry boundary is essential when
+using the standard CTU PPM solver.</p>
+<p>A different special boundary condition, based on outflow, is available at
 the upper boundary.  This works together with the <code class="docutils literal notranslate"><span class="pre">model_parser</span></code>
 module to fill the ghost cells at the upper boundary with the initial
-model data.</p>
+model data.  You set this as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">castro</span><span class="o">.</span><span class="n">hi_bc</span> <span class="o">=</span> <span class="mi">2</span> <span class="mi">2</span>
+
+<span class="n">castro</span><span class="o">.</span><span class="n">fill_ambient_bc</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">castro</span><span class="o">.</span><span class="n">ambient_fill_dir</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">castro</span><span class="o">.</span><span class="n">ambient_outflow_vel</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">ambient_fill_dir</span></code> is the 0-based direction to fill using an
+ambient state defined by the problem setup.  In this example, we will
+override the outflow (2) boundary condition in the y-direction.  That
+problem setup needs to fill the <code class="docutils literal notranslate"><span class="pre">ambient_state(:)</span></code> array defined in
+<code class="docutils literal notranslate"><span class="pre">ambient_module</span></code>.  An example of using this boundary is in the
+<code class="docutils literal notranslate"><span class="pre">flame_wave</span></code> problem.</p>
 <p>The implementations of these boundary conditions is found in
 <code class="docutils literal notranslate"><span class="pre">Castro/Source/problems/bc_ext_fill_nd.F90</span></code>.</p>
 <p>If a problem requires different initial conditions, then they should
@@ -461,11 +483,19 @@ the grid.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2018-2020, Castro development tem
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -476,7 +506,6 @@ the grid.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

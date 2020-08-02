@@ -1,16 +1,19 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Preface &mdash; Castro 20.04
- documentation</title>
+  <title>Preface &mdash; Castro  documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
 
   
   
@@ -18,7 +21,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -26,17 +31,12 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Introduction to Castro" href="Introduction.html" />
@@ -55,7 +55,7 @@
 
 
           
-            <a href="index.html" class="icon icon-home"> Castro
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Castro
           
 
           
@@ -66,11 +66,6 @@
 
           
             
-            
-              <div class="version">
-                20.04
-
-              </div>
             
           
 
@@ -85,11 +80,12 @@
 
           
     <div class="branch">
-        Branch: <a href="./Preface.html">master</a> | <a href="./dev/Preface.html">development</a>
+        Branch: <a href="./Preface.html">main</a> | <a href="./dev/Preface.html">development</a>
     </div>
 
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -110,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mpi_plus_x.html">Running Options: CPUs and GPUs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FlowChart.html">Flowchart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="creating_a_problem.html">Setting Up Your Own Problem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">Outputting</a></li>
@@ -123,6 +120,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gpu_porting.html">Offloading a routine to GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gravity.html">Gravity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="diffusion.html">Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rotation.html">Rotation</a></li>
@@ -151,6 +149,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -189,7 +188,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Preface</li>
     
@@ -247,8 +246,18 @@ Hydrodynamics</em>, W. Zhang, L. Howell, A. Almgren, A. Burrows, J. Dolence,
 <li><p><em>Double White Dwarf Mergers on Adaptive Meshes I. Methodology and
 Code
 Verification</em>, M. P. Katz, M. Zingale, A. C. Calder, F. D. Swesty,
-A. S. Almgren, W. Zhang 2016, ApJ, 819, 94.
+A. S. Almgren, &amp; W. Zhang, 2016, ApJ, 819, 94.
 <a class="reference external" href="http://dx.doi.org/10.3847/0004-637X/819/2/94">http://dx.doi.org/10.3847/0004-637X/819/2/94</a></p></li>
+</ul>
+</div></blockquote>
+<p>The 4th order reactive hydrodynamics spectral deferred corrections solver
+was described in:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Improved Coupling of Hydrodynamics and Nuclear Reactions via Spectral Deferred Corrections</em>
+M. Zingale, M. P. Katz, J. B. Bell, M. L. Minion, A. J. Nonaka, &amp; W. Zhang,
+2019, ApJ, 886, 105.
+<a class="reference external" href="https://ui.adsabs.harvard.edu/link_gateway/2019ApJ...886..105Z/doi:10.3847/1538-4357/ab4e1d">https://ui.adsabs.harvard.edu/link_gateway/2019ApJ…886..105Z/doi:10.3847/1538-4357/ab4e1d</a></p></li>
 </ul>
 </div></blockquote>
 <p>The development of AMReX library is led by the
@@ -257,7 +266,7 @@ National Laboratory. Castro development is done collaboratively,
 including the CCSE and Stony Brook University.</p>
 <p>Castro <em>core developers</em> are those who have made substantial
 contributions to the code. The process for becoming a core developer
-is described in the <a class="reference external" href="https://github.com/AMReX-Astro/Castro/blob/master/README.md">README.md</a> in the Castro root directory.
+is described in the <a class="reference external" href="https://github.com/AMReX-Astro/Castro/blob/main/README.md">README.md</a> in the Castro root directory.
 Current Castro core developers are:</p>
 <blockquote>
 <div><ul class="simple">
@@ -280,14 +289,14 @@ Current Castro core developers are:</p>
 page, <a class="reference external" href="https://github.com/AMReX-Astro/Castro">https://github.com/AMReX-Astro/Castro</a></p>
 <p>External contributions are welcomed. Fork the Castro repo, modify your
 local copy, and issue a pull-request to the AMReX-Astro/Castro
-project. Further guidelines are given in the <a class="reference external" href="https://github.com/AMReX-Astro/Castro/blob/master/README.md">README.md</a> file.</p>
+project. Further guidelines are given in the <a class="reference external" href="https://github.com/AMReX-Astro/Castro/blob/main/README.md">README.md</a> file.</p>
 <p>To get help, subscribe to the <em>castro-help</em> google group mailing list:
 <a class="reference external" href="https://groups.google.com/forum/#!forum/castro-help">https://groups.google.com/forum/#!forum/castro-help</a></p>
 <div class="section" id="acknowledging-and-citing-castro">
 <h2>Acknowledging and Citing Castro<a class="headerlink" href="#acknowledging-and-citing-castro" title="Permalink to this headline">¶</a></h2>
 <p>If you use Castro in your research, we would appreciate it if you
 cited the relevant code papers describing its design, features, and
-testing. A list of these can be found in the <a class="reference external" href="https://github.com/AMReX-Astro/Castro/blob/master/CITATION">CITATION</a> file in
+testing. A list of these can be found in the <a class="reference external" href="https://github.com/AMReX-Astro/Castro/blob/main/CITATION">CITATION</a> file in
 the root <code class="docutils literal notranslate"><span class="pre">Castro/</span></code> directory.</p>
 <p>The development Castro is supported by the science application
 interests of the contributors. There is a lot of effort behind the
@@ -321,11 +330,19 @@ developer(s) for co-authorship on any science paper that results.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2018-2020, Castro development tem
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -336,7 +353,6 @@ developer(s) for co-authorship on any science paper that results.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

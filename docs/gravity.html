@@ -1,16 +1,19 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Gravity &mdash; Castro 20.04
- documentation</title>
+  <title>Gravity &mdash; Castro  documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
 
   
   
@@ -18,7 +21,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -26,21 +31,16 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Diffusion" href="diffusion.html" />
-    <link rel="prev" title="Hydrodynamics" href="Hydrodynamics.html" /> 
+    <link rel="prev" title="MHD" href="mhd.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -55,7 +55,7 @@
 
 
           
-            <a href="index.html" class="icon icon-home"> Castro
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Castro
           
 
           
@@ -66,11 +66,6 @@
 
           
             
-            
-              <div class="version">
-                20.04
-
-              </div>
             
           
 
@@ -85,11 +80,12 @@
 
           
     <div class="branch">
-        Branch: <a href="./gravity.html">master</a> | <a href="./dev/gravity.html">development</a>
+        Branch: <a href="./gravity.html">main</a> | <a href="./dev/gravity.html">development</a>
     </div>
 
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -107,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mpi_plus_x.html">Running Options: CPUs and GPUs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FlowChart.html">Flowchart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="creating_a_problem.html">Setting Up Your Own Problem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">Outputting</a></li>
@@ -120,6 +117,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gpu_porting.html">Offloading a routine to GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Gravity</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gravity-types">Gravity Types</a></li>
@@ -170,6 +168,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -208,7 +207,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Gravity</li>
     
@@ -282,7 +281,7 @@ interfaces, the data from the coarse levels acts as Dirichlet
 boundary conditions for the current-level-solve.</p></li>
 </ul>
 <p>The overall integration strategy is as follows, and is similar to
-the discussion in <a class="bibtex reference internal" href="zreferences.html#castro-i" id="id1">[6]</a>. Briefly:</p>
+the discussion in <a class="bibtex reference internal" href="zreferences.html#castro-i" id="id1">[12]</a>. Briefly:</p>
 <ul>
 <li><p>At the beginning of a simulation, we do a multilevel composite
 solve (if <code class="docutils literal notranslate"><span class="pre">gravity.no_composite</span></code> = 0).</p>
@@ -327,7 +326,7 @@ all time.</p>
 of the full Poisson solve / multigrid solver is controlled by
 <code class="docutils literal notranslate"><span class="pre">gravity.no_sync</span></code> and <code class="docutils literal notranslate"><span class="pre">gravity.no_composite</span></code>.</p></li>
 <li><p>For isolated boundary conditions, and when
-<code class="docutils literal notranslate"><span class="pre">gravity.gravity_type``=</span>&#160; <span class="pre">``PoissonGrav</span></code>, the parameters
+<code class="docutils literal notranslate"><span class="pre">gravity.gravity_type</span></code> = <code class="docutils literal notranslate"><span class="pre">PoissonGrav</span></code>, the parameters
 <code class="docutils literal notranslate"><span class="pre">gravity.max_multipole_order</span></code> and
 <code class="docutils literal notranslate"><span class="pre">gravity.direct_sum_bcs</span></code> control the accuracy of
 the Dirichlet boundary conditions. These are described in
@@ -358,11 +357,11 @@ reasonable default value), and then the absolute tolerance used by
 the multigrid solve is <code class="docutils literal notranslate"><span class="pre">abs_tol</span></code> <span class="math notranslate nohighlight">\(\times 4\pi G\,
 \rho_{\text{max}}\)</span> where <span class="math notranslate nohighlight">\(\rho_{\text{max}}\)</span> is the maximum
 value of the density on the domain. On fine levels, this absolute
-tolerance is multiplied by (<code class="docutils literal notranslate"><span class="pre">ref_ratio</span></code>):sup:<cite>2</cite> to account
+tolerance is multiplied by <span class="math notranslate nohighlight">\((\mathtt{ref\_ratio})^2\)</span> to account
 for the change in the absolute scale of the Laplacian operator. You
 can also specify an array of values for <code class="docutils literal notranslate"><span class="pre">abs_tol</span></code>, one for each
 possible level in the simulation, and then the scaling by
-(<code class="docutils literal notranslate"><span class="pre">ref_ratio</span></code>):sup:<cite>2</cite> is not applied.</p></li>
+<span class="math notranslate nohighlight">\((\mathtt{ref\_ratio})^2\)</span> is not applied.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">gravity.rel_tol</span></code> : if <code class="docutils literal notranslate"><span class="pre">gravity.gravity_type</span></code> = <code class="docutils literal notranslate"><span class="pre">PoissonGrav</span></code>,
 this is the relative tolerance for the Poisson solve. By default it
 is zero. You can specify a single value for this tolerance and it
@@ -501,7 +500,7 @@ outwards from the center to get <span class="math notranslate nohighlight">\(\ph
 <span id="sec-poisson-3d-bcs"></span><h4>Poisson Boundary Conditions: 3D<a class="headerlink" href="#poisson-boundary-conditions-3d" title="Permalink to this headline">¶</a></h4>
 <p>The following describes methods for doing isolated boundary
 conditions. The best reference for Castro’s implementation of this
-is <a class="bibtex reference internal" href="zreferences.html#katz-2016" id="id2">[31]</a>.</p>
+is <a class="bibtex reference internal" href="zreferences.html#katz-2016" id="id2">[43]</a>.</p>
 <ul>
 <li><p><strong>Multipole Expansion</strong></p>
 <p>In 3D, by default, we use a multipole expansion to estimate the value
@@ -640,8 +639,8 @@ GR-correction term for Newtonian gravity.  The correction term is
 applied to the monopole approximation only when <code class="docutils literal notranslate"><span class="pre">USE_GR</span></code> = TRUE is
 set in the <code class="docutils literal notranslate"><span class="pre">GNUmakefile</span></code>.</p>
 <p>The formulae of GR-correction here are based on
-<a class="bibtex reference internal" href="zreferences.html#grbk1" id="id5">[33]</a>. For detailed physics, please refer to
-<a class="bibtex reference internal" href="zreferences.html#grbk2" id="id6">[45]</a>. For describing very strong gravitational
+<a class="bibtex reference internal" href="zreferences.html#grbk1" id="id5">[45]</a>. For detailed physics, please refer to
+<a class="bibtex reference internal" href="zreferences.html#grbk2" id="id6">[62]</a>. For describing very strong gravitational
 field, we need to use Einstein field equations</p>
 <div class="math notranslate nohighlight" id="equation-field">
 <span class="eqno">(6)<a class="headerlink" href="#equation-field" title="Permalink to this equation">¶</a></span>\[R_{ik}-\frac{1}{2}g_{ik}R=\frac{\kappa}{c^{2}}T_{ik} \quad , \quad
@@ -760,7 +759,7 @@ of the source term at the cell center, but this method evaluates the
 change in energy at cell edges, using the hydrodynamical mass
 fluxes, permitting total energy to be conserved (excluding possible
 losses at open domain boundaries). See
-<a class="bibtex reference internal" href="zreferences.html#katzthesis" id="id7">[30]</a> for some more details.</p></li>
+<a class="bibtex reference internal" href="zreferences.html#katzthesis" id="id7">[42]</a> for some more details.</p></li>
 </ul>
 <dl class="footnote brackets">
 <dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
@@ -788,7 +787,7 @@ Minnesota.</p>
         <a href="diffusion.html" class="btn btn-neutral float-right" title="Diffusion" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Hydrodynamics.html" class="btn btn-neutral float-left" title="Hydrodynamics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mhd.html" class="btn btn-neutral float-left" title="MHD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -797,11 +796,19 @@ Minnesota.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2018-2020, Castro development tem
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -812,7 +819,6 @@ Minnesota.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
