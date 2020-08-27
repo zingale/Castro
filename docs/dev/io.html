@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -31,11 +37,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Regridding" href="regridding.html" />
@@ -54,7 +55,7 @@
 
 
           
-            <a href="index.html" class="icon icon-home"> Castro
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Castro
           
 
           
@@ -79,11 +80,12 @@
 
           
     <div class="branch">
-        Branch: <a href="../io.html">master</a> | <a href="./io.html">development</a>
+        Branch: <a href="../io.html">main</a> | <a href="./io.html">development</a>
     </div>
 
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -101,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mpi_plus_x.html">Running Options: CPUs and GPUs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FlowChart.html">Flowchart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="software.html">Software Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="creating_a_problem.html">Setting Up Your Own Problem</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Outputting</a><ul>
@@ -156,6 +159,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -194,7 +198,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Outputting</li>
     
@@ -433,8 +437,8 @@ variables to include in the small plotfile.</p></li>
 <p>These variables come directly from the <code class="docutils literal notranslate"><span class="pre">StateData</span></code>, either the
 <code class="docutils literal notranslate"><span class="pre">State_Type</span></code> (for the hydrodynamic variables), <code class="docutils literal notranslate"><span class="pre">Reactions_Type</span></code>
 (for the nuclear energy generation quantities). <code class="docutils literal notranslate"><span class="pre">PhiGrav_Type</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Gravity_Type</span></code> (for the gravity quantities), <code class="docutils literal notranslate"><span class="pre">PhiRot_Type</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Rotation_Type</span></code> (for the rotation quantities) and <code class="docutils literal notranslate"><span class="pre">Rad_Type</span></code> (for
+<code class="docutils literal notranslate"><span class="pre">Gravity_Type</span></code> (for the gravity quantities), <code class="docutils literal notranslate"><span class="pre">PhiRot_Type</span></code>
+(for the rotation quantities) and <code class="docutils literal notranslate"><span class="pre">Rad_Type</span></code> (for
 radiation quantities).</p>
 <table class="docutils align-default">
 <colgroup>
@@ -511,30 +515,26 @@ defined in the network)</p></td>
 <td><p>Effective centrifugal potential</p></td>
 <td><p><span class="math notranslate nohighlight">\({\rm erg~g^{-1}}\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rot_x</span></code>. <code class="docutils literal notranslate"><span class="pre">rot_y</span></code>, <code class="docutils literal notranslate"><span class="pre">rot_z</span></code></p></td>
-<td><p>Rotational acceleration</p></td>
-<td><p><span class="math notranslate nohighlight">\({\rm cm~s^{-2}}\)</span></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rmom</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rmom</span></code></p></td>
 <td><p>Radial momentum (defined for
 <code class="docutils literal notranslate"><span class="pre">HYBRID_MOMENTUM</span></code>)</p></td>
 <td><p><span class="math notranslate nohighlight">\({\rm g~cm^{-2}~s^{-1}}\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lmom</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lmom</span></code></p></td>
 <td><p>Angular momentum (<span class="math notranslate nohighlight">\(\theta\)</span>; defined for
 <code class="docutils literal notranslate"><span class="pre">HYBRID_MOMENTUM</span></code>)</p></td>
 <td><p><span class="math notranslate nohighlight">\({\rm g~cm^{-2}~s^{-1}}\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pmom</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pmom</span></code></p></td>
 <td><p>z-momentum (defined for <code class="docutils literal notranslate"><span class="pre">HYBRID_MOMENTUM</span></code>)</p></td>
 <td><p><span class="math notranslate nohighlight">\({\rm g~cm^{-2}~s^{-1}}\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Shock</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Shock</span></code></p></td>
 <td><p>Shock flag (= 1 if a zone has a shock;
 defined for <code class="docutils literal notranslate"><span class="pre">SHOCK</span></code>)</p></td>
 <td><p>–</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rad</span></code>, <code class="docutils literal notranslate"><span class="pre">rad0</span></code>, <code class="docutils literal notranslate"><span class="pre">rad1</span></code>,
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rad</span></code>, <code class="docutils literal notranslate"><span class="pre">rad0</span></code>, <code class="docutils literal notranslate"><span class="pre">rad1</span></code>,
 …</p></td>
 <td><p>Radiation energy density
 (for multigroup radiation, each group has its
@@ -957,11 +957,19 @@ create a very large number of files, which can lead to inode issues.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2018-2020, Castro development tem
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -972,7 +980,6 @@ create a very large number of files, which can lead to inode issues.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

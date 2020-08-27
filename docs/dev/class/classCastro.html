@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,19 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -31,11 +37,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Class Diffusion" href="classDiffusion.html" />
@@ -54,7 +55,7 @@
 
 
           
-            <a href="../index.html" class="icon icon-home"> Castro
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Castro
           
 
           
@@ -79,11 +80,12 @@
 
           
     <div class="branch">
-        Branch: <a href="../../class/classCastro.html">master</a> | <a href="../class/classCastro.html">development</a>
+        Branch: <a href="../../class/classCastro.html">main</a> | <a href="../class/classCastro.html">development</a>
     </div>
 
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -101,6 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../mpi_plus_x.html">Running Options: CPUs and GPUs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../FlowChart.html">Flowchart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../software.html">Software Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../creating_a_problem.html">Setting Up Your Own Problem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io.html">Outputting</a></li>
@@ -159,6 +162,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -197,7 +201,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../classlist.html">Class list</a> &raquo;</li>
         
@@ -586,15 +590,12 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6Castro17retry_advance_ctuERN5amrex4RealEN5amrex4RealEii14advance_status">
-<span id="_CPPv3N6Castro17retry_advance_ctuERN5amrex4RealEN5amrex4RealEii14advance_status"></span><span id="_CPPv2N6Castro17retry_advance_ctuERN5amrex4RealEN5amrex4RealEii14advance_status"></span><span id="Castro::retry_advance_ctu__amrex::RealR.amrex::Real.i.i.advance_status"></span><span class="target" id="classCastro_1a6f55e31535399f787fcae2e8c053cf11"></span>bool <code class="sig-name descname">retry_advance_ctu</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real &amp;<em>time</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt</em>, int <em>amr_iteration</em>, int <em>amr_ncycle</em>, <a class="reference internal" href="../file/Castro_8H.html#_CPPv414advance_status" title="advance_status">advance_status</a> <em>status</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro17retry_advance_ctuERN5amrex4RealEN5amrex4RealEii14advance_status" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6Castro17retry_advance_ctuEN5amrex4RealE14advance_status">
+<span id="_CPPv3N6Castro17retry_advance_ctuEN5amrex4RealE14advance_status"></span><span id="_CPPv2N6Castro17retry_advance_ctuEN5amrex4RealE14advance_status"></span><span id="Castro::retry_advance_ctu__amrex::Real.advance_status"></span><span class="target" id="classCastro_1a110f286221cf998dd4ad1ce8a3f8dfa2"></span>bool <code class="sig-name descname">retry_advance_ctu</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt</em>, <a class="reference internal" href="../file/Castro_8H.html#_CPPv414advance_status" title="advance_status">advance_status</a> <em>status</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro17retry_advance_ctuEN5amrex4RealE14advance_status" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Should we retry advancing the simulation? By default, we don’t do a retry unless the criteria are violated. This is used only for the CTU advance.</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: the current simulation time </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: the timestep to advance (e.g., go from time to time + dt) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_iteration</span></code>: where we are in the current AMR subcycle. Each level will take a number of steps to reach the final time of the coarser level below it. This counter starts at 1 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_ncycle</span></code>: the number of subcycles at this level </p></li>
 <li><p><code class="docutils literal notranslate"><a class="reference internal" href="../file/Castro_8H.html#structadvance__status"><span class="std std-ref"><span class="pre">advance_status</span></span></a></code>: was the advance successful? </p></li>
 </ul>
 </dd>
@@ -635,31 +636,18 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6Castro16finalize_advanceEN5amrex4RealEN5amrex4RealEii">
-<span id="_CPPv3N6Castro16finalize_advanceEN5amrex4RealEN5amrex4RealEii"></span><span id="_CPPv2N6Castro16finalize_advanceEN5amrex4RealEN5amrex4RealEii"></span><span id="Castro::finalize_advance__amrex::Real.amrex::Real.i.i"></span><span class="target" id="classCastro_1a87c03e2e81eed5f3ec44111edc0ed5f6"></span>void <code class="sig-name descname">finalize_advance</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt</em>, int <em>amr_iteration</em>, int <em>amr_ncycle</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro16finalize_advanceEN5amrex4RealEN5amrex4RealEii" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>If required, adds material lost in timestep to cumulative losses, does refluxing, and clears arrays/data containers initialized at start of the level’s advance.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: the current simulation time </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: the timestep to advance (e.g., go from time to time + dt) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_iteration</span></code>: where we are in the current AMR subcycle. Each level will take a number of steps to reach the final time of the coarser level below it. This counter starts at 1 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_ncycle</span></code>: the number of subcycles at this level </p></li>
-</ul>
-</dd>
-</dl>
-</p>
+<dt id="_CPPv4N6Castro16finalize_advanceEv">
+<span id="_CPPv3N6Castro16finalize_advanceEv"></span><span id="_CPPv2N6Castro16finalize_advanceEv"></span><span id="Castro::finalize_advance"></span><span class="target" id="classCastro_1a68e6a604b5072e6349871d78b9dca1e8"></span>void <code class="sig-name descname">finalize_advance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro16finalize_advanceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>If required, adds material lost in timestep to cumulative losses, does refluxing, and clears arrays/data containers initialized at start of the level’s advance. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6Castro21initialize_do_advanceEN5amrex4RealEN5amrex4RealEii">
-<span id="_CPPv3N6Castro21initialize_do_advanceEN5amrex4RealEN5amrex4RealEii"></span><span id="_CPPv2N6Castro21initialize_do_advanceEN5amrex4RealEN5amrex4RealEii"></span><span id="Castro::initialize_do_advance__amrex::Real.amrex::Real.i.i"></span><span class="target" id="classCastro_1a97609e81bb39cb77605b524a7aa0c297"></span>void <code class="sig-name descname">initialize_do_advance</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt</em>, int <em>amr_iteration</em>, int <em>amr_ncycle</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro21initialize_do_advanceEN5amrex4RealEN5amrex4RealEii" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N6Castro21initialize_do_advanceEN5amrex4RealE">
+<span id="_CPPv3N6Castro21initialize_do_advanceEN5amrex4RealE"></span><span id="_CPPv2N6Castro21initialize_do_advanceEN5amrex4RealE"></span><span id="Castro::initialize_do_advance__amrex::Real"></span><span class="target" id="classCastro_1af5557df72b1ea7e96b9e13bd6a1e8d44"></span>void <code class="sig-name descname">initialize_do_advance</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro21initialize_do_advanceEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Performed at the start of ::do_advance, resets flags and ensures required ghost zones are filled.</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: the current simulation time </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: the timestep to advance (e.g., go from time to time + dt) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_iteration</span></code>: where we are in the current AMR subcycle. Each level will take a number of steps to reach the final time of the coarser level below it. This counter starts at 1 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_ncycle</span></code>: the number of subcycles at this level </p></li>
 </ul>
 </dd>
 </dl>
@@ -667,19 +655,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6Castro19finalize_do_advanceEN5amrex4RealEN5amrex4RealEii">
-<span id="_CPPv3N6Castro19finalize_do_advanceEN5amrex4RealEN5amrex4RealEii"></span><span id="_CPPv2N6Castro19finalize_do_advanceEN5amrex4RealEN5amrex4RealEii"></span><span id="Castro::finalize_do_advance__amrex::Real.amrex::Real.i.i"></span><span class="target" id="classCastro_1a383beb5d9db6bd4844776de69fba7d29"></span>void <code class="sig-name descname">finalize_do_advance</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt</em>, int <em>amr_iteration</em>, int <em>amr_ncycle</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro19finalize_do_advanceEN5amrex4RealEN5amrex4RealEii" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Performed at the end of ::do_advance, cleans up temporary data created by ::initialize_do_advance</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: the current simulation time </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: the timestep to advance (e.g., go from time to time + dt) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_iteration</span></code>: where we are in the current AMR subcycle. Each level will take a number of steps to reach the final time of the coarser level below it. This counter starts at 1 </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_ncycle</span></code>: the number of subcycles at this level </p></li>
-</ul>
-</dd>
-</dl>
-</p>
+<dt id="_CPPv4N6Castro19finalize_do_advanceEv">
+<span id="_CPPv3N6Castro19finalize_do_advanceEv"></span><span id="_CPPv2N6Castro19finalize_do_advanceEv"></span><span id="Castro::finalize_do_advance"></span><span class="target" id="classCastro_1a858ab43bc6c9aa537856ff19b152cb39"></span>void <code class="sig-name descname">finalize_do_advance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro19finalize_do_advanceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Performed at the end of ::do_advance, cleans up temporary data created by ::initialize_do_advance </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -697,16 +675,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv4N6Castro11estTimeStepEN5amrex4RealE">
-<span id="_CPPv3N6Castro11estTimeStepEN5amrex4RealE"></span><span id="_CPPv2N6Castro11estTimeStepEN5amrex4RealE"></span><span id="Castro::estTimeStep__amrex::Real"></span><span class="target" id="classCastro_1ac51826f3009f1c7b919ce7fafc680424"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <code class="sig-name descname">estTimeStep</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt_old</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro11estTimeStepEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Estimate time step.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dt_old</span></code>: previous timestep </p></li>
-</ul>
-</dd>
-</dl>
-</p>
+<dt id="_CPPv4N6Castro11estTimeStepEv">
+<span id="_CPPv3N6Castro11estTimeStepEv"></span><span id="_CPPv2N6Castro11estTimeStepEv"></span><span id="Castro::estTimeStep"></span><span class="target" id="classCastro_1a5b21a100e92b95c96cc97d7292140a3b"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <code class="sig-name descname">estTimeStep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro11estTimeStepEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Estimate time step. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -735,14 +706,14 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE">
-<span id="_CPPv3N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE"></span><span id="_CPPv2N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE"></span><span id="Castro::computeInitialDt__i.i.amrex::Vector:i:R.amrex::Vector:amrex::IntVect:CR.amrex::Vector:amrex::Real:R.amrex::Real"></span><span class="target" id="classCastro_1a2bc5ebd07a0771b76924c0e5f4995876"></span>void <code class="sig-name descname">computeInitialDt</code><span class="sig-paren">(</span>int <em>finest_level</em>, int <em>sub_cycle</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;int&gt; &amp;<em>n_cycle</em>, <em class="property">const</em> <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::IntVect&gt; &amp;<em>ref_ratio</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real&gt; &amp;<em>dt_level</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>stop_time</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE"></span><span id="_CPPv2N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE"></span><span id="Castro::computeInitialDt__i.i.amrex::Vector:i:R.amrex::Vector:amrex::IntVect:CR.amrex::Vector:amrex::Real:R.amrex::Real"></span><span class="target" id="classCastro_1a77f71b20dd1bf977a183ae8d203c851c"></span>void <code class="sig-name descname">computeInitialDt</code><span class="sig-paren">(</span>int <em>finest_level</em>, int, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;int&gt; &amp;<em>n_cycle</em>, <em class="property">const</em> <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::IntVect&gt;&amp;, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real&gt; &amp;<em>dt_level</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>stop_time</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Compute initial <code class="docutils literal notranslate"><span class="pre">dt</span></code>.</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">finest_level</span></code>: Index of finest level </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sub_cycle</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subcycle</span></code>: unused </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">n_cycle</span></code>: the number of subcycles at this level </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ref_ratio</span></code>: Vector of refinement ratios between levels </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_ratio</span></code>: unused </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dt_level</span></code>: Real Vector, will contain initial timestep at each level. </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stop_time</span></code>: End time of simulation </p></li>
 </ul>
@@ -753,14 +724,14 @@
 
 <dl class="cpp function">
 <dt id="_CPPv4N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi">
-<span id="_CPPv3N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi"></span><span id="_CPPv2N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi"></span><span id="Castro::computeNewDt__i.i.amrex::Vector:i:R.amrex::Vector:amrex::IntVect:CR.amrex::Vector:amrex::Real:R.amrex::Vector:amrex::Real:R.amrex::Real.i"></span><span class="target" id="classCastro_1a951082f7dee3d8d429d64118b485f902"></span>void <code class="sig-name descname">computeNewDt</code><span class="sig-paren">(</span>int <em>finest_level</em>, int <em>sub_cycle</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;int&gt; &amp;<em>n_cycle</em>, <em class="property">const</em> <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::IntVect&gt; &amp;<em>ref_ratio</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real&gt; &amp;<em>dt_min</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real&gt; &amp;<em>dt_level</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>stop_time</em>, int <em>post_regrid_flag</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi"></span><span id="_CPPv2N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi"></span><span id="Castro::computeNewDt__i.i.amrex::Vector:i:R.amrex::Vector:amrex::IntVect:CR.amrex::Vector:amrex::Real:R.amrex::Vector:amrex::Real:R.amrex::Real.i"></span><span class="target" id="classCastro_1a5176cd062384c8a87edbc8e9c13d2402"></span>void <code class="sig-name descname">computeNewDt</code><span class="sig-paren">(</span>int <em>finest_level</em>, int, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;int&gt; &amp;<em>n_cycle</em>, <em class="property">const</em> <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::IntVect&gt;&amp;, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real&gt; &amp;<em>dt_min</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Vector&lt;<a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real&gt; &amp;<em>dt_level</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>stop_time</em>, int <em>post_regrid_flag</em><span class="sig-paren">)</span> <em class="property">override</em><a class="headerlink" href="#_CPPv4N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Compute new <code class="docutils literal notranslate"><span class="pre">dt</span></code>.</p>
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">finest_level</span></code>: Index of finest level </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sub_cycle</span></code>: </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subcycle</span></code>: unused </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">n_cycle</span></code>: the number of subcycles at this level </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ref_ratio</span></code>: Vector of refinement ratios between levels </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_ratio</span></code>: unused </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dt_min</span></code>: </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dt_level</span></code>: </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stop_time</span></code>: End time of simulation </p></li>
@@ -821,19 +792,6 @@
 <p><dl class="simple">
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cumtime</span></code>: </p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Castro21check_for_post_regridEN5amrex4RealE">
-<span id="_CPPv3N6Castro21check_for_post_regridEN5amrex4RealE"></span><span id="_CPPv2N6Castro21check_for_post_regridEN5amrex4RealE"></span><span id="Castro::check_for_post_regrid__amrex::Real"></span><span class="target" id="classCastro_1a959bbb3703fe7e32aff345c749d8fc0d"></span>void <code class="sig-name descname">check_for_post_regrid</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro21check_for_post_regridEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Check whether we want to do a regrid.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: current time </p></li>
 </ul>
 </dd>
 </dl>
@@ -1005,6 +963,36 @@
 <dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">bx</span></code>: Box to update </p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">u</span></code>: Current state (Fab) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Castro14add_magnetic_eERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE">
+<span id="_CPPv3N6Castro14add_magnetic_eERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"></span><span id="_CPPv2N6Castro14add_magnetic_eERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"></span><span id="Castro::add_magnetic_e__amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR"></span><span class="target" id="classCastro_1a2e950ea131bbe11045b67f35926d3935"></span>void <code class="sig-name descname">add_magnetic_e</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>Bx</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>By</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>Bz</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>state</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro14add_magnetic_eERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add magnetic contribution to energy density <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Bx</span></code>: magnetic field in x </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">By</span></code>: magnetic field in y </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Bz</span></code>: magnetic field in z </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code>: the state to operate on </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6Castro11check_div_BERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE">
+<span id="_CPPv3N6Castro11check_div_BERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"></span><span id="_CPPv2N6Castro11check_div_BERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"></span><span id="Castro::check_div_B__amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR"></span><span class="target" id="classCastro_1a5bf793c2b91ad3a30e0deb6b91348a2a"></span>void <code class="sig-name descname">check_div_B</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>Bx</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>By</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>Bz</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>state</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro11check_div_BERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if divergence of B is zero at initialization <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Bx</span></code>: magnetic field in x </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">By</span></code>: magnetic field in y </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Bz</span></code>: magnetic field in z </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code>: the state to operate on </p></li>
 </ul>
 </dd>
 </dl>
@@ -1272,6 +1260,20 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt id="_CPPv4N6Castro19enforce_speed_limitERN5amrex8MultiFabEi">
+<span id="_CPPv3N6Castro19enforce_speed_limitERN5amrex8MultiFabEi"></span><span id="_CPPv2N6Castro19enforce_speed_limitERN5amrex8MultiFabEi"></span><span id="Castro::enforce_speed_limit__amrex::MultiFabR.i"></span><span class="target" id="classCastro_1a5a5adfaec71edd224afe9923cdf603e4"></span>void <code class="sig-name descname">enforce_speed_limit</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>state</em>, int <em>ng</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro19enforce_speed_limitERN5amrex8MultiFabEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Ensure the magnitude of the velocity is not larger than <code class="docutils literal notranslate"><span class="pre">castro.speed_limit</span></code> in any zone.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code>: state </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ng</span></code>: number of ghost cells </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt id="_CPPv4N6Castro11clean_stateERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEi">
 <span id="_CPPv3N6Castro11clean_stateERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEi"></span><span id="_CPPv2N6Castro11clean_stateERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEi"></span><span id="Castro::clean_state__amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR.amrex::Real.i"></span><span class="target" id="classCastro_1a64f583ffe103a22b5116b026f6d46ff3"></span>void <code class="sig-name descname">clean_state</code><span class="sig-paren">(</span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>Bx</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>By</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>Bz</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>state</em>, <a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em>, int <em>ng</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro11clean_stateERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEi" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Given <code class="docutils literal notranslate"><span class="pre">State_Type</span></code> state data, perform a number of cleaning steps to make sure the data is sensible.</p>
@@ -1462,17 +1464,6 @@
 <span id="_CPPv3N6Castro11theTracerPCEv"></span><span id="_CPPv2N6Castro11theTracerPCEv"></span><span id="Castro::theTracerPC"></span><span class="target" id="classCastro_1abd88ee4a3cb9cace54cfbe692c6e7f94"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::AmrTracerParticleContainer *<code class="sig-name descname">theTracerPC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro11theTracerPCEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
-<dt>
-<span class="target" id="classCastro_1a01f599073a5e24c90775f310f76a2d05"></span><code class="sig-name descname">int numBCThreadsMin (\3\)</code></dt>
-<dd><p>Minimum CUDA threadblock size for BC fills. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt id="_CPPv4N6Castro12minBCThreadsEi">
-<span id="_CPPv3N6Castro12minBCThreadsEi"></span><span id="_CPPv2N6Castro12minBCThreadsEi"></span><span id="Castro::minBCThreads__i"></span><span class="target" id="classCastro_1a40ef8d943b0be650fa6293c41be5d533"></span>int <code class="sig-name descname">minBCThreads</code><span class="sig-paren">(</span>int <em>dir</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Castro12minBCThreadsEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
@@ -1520,16 +1511,6 @@
 <dl class="cpp function">
 <dt>
 <span class="target" id="classCastro_1a4e1556a32449cd5576c5c373f58c1350"></span><code class="sig-name descname">amrex::MultiFab dLogArea (\1\)</code></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt>
-<span class="target" id="classCastro_1aa25af2330c4023e1e88d4c43d59036f2"></span><code class="sig-name descname">amrex::Real material_lost_through_boundary_cumulative (\n_lost\)</code></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt>
-<span class="target" id="classCastro_1af18cb55a67616bcb8aeb58dd922daece"></span><code class="sig-name descname">amrex::Real material_lost_through_boundary_temp (\n_lost\)</code></dt>
 <dd></dd></dl>
 
 </div>
@@ -1854,6 +1835,12 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
+<dt id="_CPPv4N6Castro18do_init_probparamsE">
+<span id="_CPPv3N6Castro18do_init_probparamsE"></span><span id="_CPPv2N6Castro18do_init_probparamsE"></span><span id="Castro::do_init_probparams__i"></span><span class="target" id="classCastro_1a61f314d668aab4bc8cfbd62a00ba3518"></span>int <code class="sig-name descname">do_init_probparams</code><a class="headerlink" href="#_CPPv4N6Castro18do_init_probparamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>For initialization of the C++ values of the runtime parameters. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt id="_CPPv4N6Castro13signalStopJobE">
 <span id="_CPPv3N6Castro13signalStopJobE"></span><span id="_CPPv2N6Castro13signalStopJobE"></span><span id="Castro::signalStopJob__b"></span><span class="target" id="classCastro_1a9b5f37579a9dd073787abfe85b582ab4"></span>bool <code class="sig-name descname">signalStopJob</code><a class="headerlink" href="#_CPPv4N6Castro13signalStopJobE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -1897,12 +1884,6 @@
 <dt id="_CPPv4N6Castro24lastDtBeforePlotLimitingE">
 <span id="_CPPv3N6Castro24lastDtBeforePlotLimitingE"></span><span id="_CPPv2N6Castro24lastDtBeforePlotLimitingE"></span><span id="Castro::lastDtBeforePlotLimiting__amrex::Real"></span><span class="target" id="classCastro_1a12581f946964d26a720e1bfb1868f39a"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <code class="sig-name descname">lastDtBeforePlotLimiting</code><a class="headerlink" href="#_CPPv4N6Castro24lastDtBeforePlotLimitingE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp var">
-<dt id="_CPPv4N6Castro6n_lostE">
-<span id="_CPPv3N6Castro6n_lostE"></span><span id="_CPPv2N6Castro6n_lostE"></span><span id="Castro::n_lost__iC"></span><span class="target" id="classCastro_1a1d8d1cdcaee43783ae6b665f05f3b16b"></span><em class="property">const</em> int <code class="sig-name descname">n_lost</code> = 8<a class="headerlink" href="#_CPPv4N6Castro6n_lostE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>For keeping track of fluid quantities lost at physical grid boundaries. This should persist through restarts, but right now only on level 0. </p>
-</dd></dl>
 
 <dl class="cpp var">
 <dt id="_CPPv4N6Castro19previousCPUTimeUsedE">
@@ -2003,11 +1984,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2018-2020, Castro development tem
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2018,7 +2007,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
