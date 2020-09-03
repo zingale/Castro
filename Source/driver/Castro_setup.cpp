@@ -250,9 +250,6 @@ Castro::variableSetUp ()
 
   // some consistency checks on the parameters
 #ifdef REACTIONS
-  int abort_on_failure;
-  ca_get_abort_on_failure(&abort_on_failure);
-
 #ifdef TRUE_SDC
   // for TRUE_SDC, we don't support retry, so we need to ensure that abort_on_failure = T
   if (use_retry) {
@@ -450,7 +447,7 @@ Castro::variableSetUp ()
   // advance, so it behaves the same way as CTU here.
 
   store_in_checkpoint = true;
-  int source_ng;
+  int source_ng = 0;
   if (time_integration_method == CornerTransportUpwind || time_integration_method == SimplifiedSpectralDeferredCorrections) {
       source_ng = NUM_GROW;
   }
@@ -575,6 +572,7 @@ Castro::variableSetUp ()
       name[UFS+i] = "rho_" + short_spec_names_cxx[i];
     }
 
+#if NAUX_NET > 0
   // Get the auxiliary names from the network model.
   std::vector<std::string> aux_names;
   for (int i = 0; i < NumAux; i++) {
@@ -596,6 +594,7 @@ Castro::variableSetUp ()
       bcs[UFX+i] = bc;
       name[UFX+i] = "rho_" + aux_names[i];
     }
+#endif
 
 #ifdef SHOCK_VAR
   set_scalar_bc(bc, phys_bc);
@@ -662,7 +661,7 @@ Castro::variableSetUp ()
 
 #ifdef REACTIONS
   std::string name_react;
-  for (int i=0; i<NumSpec; ++i)
+  for (int i = 0; i < NumSpec; ++i)
     {
       set_scalar_bc(bc,phys_bc);
       replace_inflow_bc(bc);
@@ -675,7 +674,7 @@ Castro::variableSetUp ()
       set_scalar_bc(bc,phys_bc);
       replace_inflow_bc(bc);
       name_aux = "rho_auxdot_" + short_aux_names_cxx[i];
-      desc_lst.setComponent(Reactions_Type, i, name_aux, bc, genericBndryFunc);
+      desc_lst.setComponent(Reactions_Type, NumSpec+i, name_aux, bc, genericBndryFunc);
   }
 #endif
   desc_lst.setComponent(Reactions_Type, NumSpec+NumAux, "rho_enuc", bc, genericBndryFunc);
@@ -1041,12 +1040,13 @@ Castro::variableSetUp ()
 #endif 
 
 
+#if NAUX_NET > 0
   for (int i = 0; i < NumAux; i++)  {
     derive_lst.add(aux_names[i],IndexType::TheCellType(),1,ca_derspec,the_same_box);
     derive_lst.addComponent(aux_names[i],desc_lst,State_Type,URHO,1);
     derive_lst.addComponent(aux_names[i],desc_lst,State_Type,UFX+i,1);
   }
-
+#endif
 
   //
   // Problem-specific adds

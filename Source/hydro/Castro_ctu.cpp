@@ -11,7 +11,9 @@ using namespace amrex;
 
 void
 Castro::consup_hydro(const Box& bx,
+#ifdef SHOCK_VAR
                      Array4<Real const> const& shk,
+#endif
                      Array4<Real> const& update,
                      Array4<Real> const& flux0,
                      Array4<Real const> const& qx,
@@ -471,9 +473,11 @@ Castro::src_to_prim(const Box& bx,
       for (int n = 0; n < NumSpec; n++) {
         eos_state.xn[n]  = q_arr(i,j,k,QFS+n);
       }
+#if NAUX_NET > 0
       for (int n = 0; n < NumAux; n++) {
         eos_state.aux[n] = q_arr(i,j,k,QFX+n);
       }
+#endif
 
       eos(eos_input_re, eos_state);
 
