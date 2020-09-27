@@ -1,5 +1,32 @@
 # 20.10
 
+   * Automatic problem parameter configuration is now available to every
+     problem by placing a _prob_params file in your problem directory.
+     Examples can be found in most of the problems in Castro/Exec, and you
+     can look at the "Setting Up Your Own Problem" section of the documentation
+     for more information. This functionality is optional, however note that
+     a file containing a Fortran module named "probdata_module" is now
+     automatically generated, so if you have a legacy probdata.F90 file
+     containing a module with that name it should be renamed. (#1210)
+
+   * The variable "center" (in the `problem` namespace) is now part of this
+     automatically generated probdata module; at the present time, the only
+     valid way to change the problem center to a value other than zero is in
+     amrex_probinit(). (#1222)
+
+   * Initialization of these problem parameters is now done automatically for
+     you, so a call to probdata_init() is no longer required in amrex_probinit(). (#1226)
+
+   * Problems may now be initialized in C++ instead of Fortran. Instead of implementing
+     amrex_probinit() and ca_initdata(), the problem should implement the analogous
+     functions initialize_problem() and initialize_problem_state_data(). If you switch to
+     the new C++ initialization, be sure to delete your Prob_nd.F90 file. By default both
+     implementations do nothing, so you can pick either one but do not pick both. (#1227)
+
+   * The external heat source term routines have been ported to C++
+     (#1191).  Any problem using an external heat source should look
+     convert the code over to C++.
+
    * The interpolate_nd.F90 file has been moved to Util/interpolate and
      is only compiled into Castro if you set USE_INTERPOLATE=TRUE
 

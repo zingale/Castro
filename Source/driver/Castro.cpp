@@ -22,8 +22,8 @@
 #include <AMReX_ParmParse.H>
 
 #ifdef RADIATION
-#include "Radiation.H"
-#include "RAD_F.H"
+#include <Radiation.H>
+#include <RAD_F.H>
 #endif
 
 #ifdef AMREX_PARTICLES
@@ -31,11 +31,11 @@
 #endif
 
 #ifdef GRAVITY
-#include "Gravity.H"
+#include <Gravity.H>
 #endif
 
 #ifdef DIFFUSION
-#include "Diffusion.H"
+#include <Diffusion.H>
 #endif
 
 #ifdef _OPENMP
@@ -47,11 +47,11 @@
 #endif
 
 #include <extern_parameters.H>
-#ifdef PROB_PARAMS
 #include <prob_parameters.H>
-#endif
 
-#include "microphysics_F.H"
+#include <microphysics_F.H>
+
+#include <problem_setup.H>
 
 using namespace amrex;
 
@@ -492,12 +492,16 @@ Castro::Castro (Amr&            papa,
     buildMetrics();
 
     // initialize the C++ values of the runtime parameters
-#ifdef PROB_PARAMS
     if (do_init_probparams == 0) {
       init_prob_parameters();
       do_init_probparams = 1;
+
+      // If we're doing C++ problem initialization, do it here. We have to make
+      // sure it's done after the above call to init_prob_parameters() in case
+      // any changes are made to the problem parameters.
+
+      problem_initialize();
     }
-#endif
 
     initMFs();
 
@@ -987,6 +991,17 @@ Castro::initData ()
           const Box& box     = mfi.validbox();
           const int* lo      = box.loVect();
           const int* hi      = box.hiVect();
+
+          auto s = S_new[mfi].array();
+          auto geomdata = geom.data();
+
+          amrex::ParallelFor(box,
+          [=] AMREX_GPU_HOST_DEVICE (int i, int j, int k) noexcept
+          {
+              // C++ problem initialization; has no effect if not implemented
+              // by a problem setup (defaults to an empty routine).
+              problem_initialize_state_data(i, j, k, s, geomdata);
+          });
 
 #ifdef GPU_COMPATIBLE_PROBLEM
 
@@ -4058,7 +4073,6 @@ Castro::define_new_center(MultiFab& S, Real time)
 {
     BL_PROFILE("Castro::define_new_center()");
 
-    Real center[3];
     const Real* dx = geom.CellSize();
 
     IntVect max_index = S.maxIndex(URHO,0);
@@ -4080,17 +4094,17 @@ Castro::define_new_center(MultiFab& S, Real time)
     // Find the position of the "center" by interpolating from data at cell centers
     for (MFIter mfi(mf); mfi.isValid(); ++mfi)
     {
-        ca_find_center(mf[mfi].dataPtr(),&center[0],ARLIM_3D(mi),ZFILL(dx),ZFILL(geom.ProbLo()));
+        ca_find_center(mf[mfi].dataPtr(),&problem::center[0],ARLIM_3D(mi),ZFILL(dx),ZFILL(geom.ProbLo()));
     }
     // Now broadcast to everyone else.
-    ParallelDescriptor::Bcast(&center[0], BL_SPACEDIM, owner);
+    ParallelDescriptor::Bcast(&problem::center[0], BL_SPACEDIM, owner);
 
     // Make sure if R-Z that center stays exactly on axis
     if ( Geom().IsRZ() ) {
-      center[0] = 0;
+      problem::center[0] = 0;
     }
 
-    ca_set_center(ZFILL(center));
+    set_f90_center(problem::center);
 }
 
 void
@@ -4105,9 +4119,6 @@ Castro::write_center ()
        int nstep = parent->levelSteps(0);
        Real time = state[State_Type].curTime();
 
-       Real center[3];
-       ca_get_center(center);
-
        if (time == 0.0) {
            data_logc << std::setw( 8) <<  "   nstep";
            data_logc << std::setw(14) <<  "         time  ";
@@ -4116,12 +4127,12 @@ Castro::write_center ()
 
            data_logc << std::setw( 8) <<  nstep;
            data_logc << std::setw(14) <<  std::setprecision(6) <<  time;
-           data_logc << std::setw(14) <<  std::setprecision(6) << center[0];
+           data_logc << std::setw(14) <<  std::setprecision(6) << problem::center[0];
 #if (BL_SPACEDIM >= 2)
-           data_logc << std::setw(14) <<  std::setprecision(6) << center[1];
+           data_logc << std::setw(14) <<  std::setprecision(6) << problem::center[1];
 #endif
 #if (BL_SPACEDIM == 3)
-           data_logc << std::setw(14) <<  std::setprecision(6) << center[2];
+           data_logc << std::setw(14) <<  std::setprecision(6) << problem::center[2];
 #endif
            data_logc << std::endl;
     }
