@@ -18,6 +18,7 @@ using namespace castro;
 #include <particles_params.H>
 #endif
 
+#include <fundamental_constants.H>
 
 constexpr int HISTORY_SIZE=40;
 constexpr int PSTAR_BISECT_FACTOR = 5;
@@ -45,7 +46,7 @@ constexpr int Shock = USHK;
 #include <AMReX_FluxRegister.H>
 #include <network.H>
 #include <eos.H>
-#ifdef CXX_REACTIONS
+#ifdef REACTIONS
 #include <burner.H>
 #endif
 
@@ -66,8 +67,6 @@ constexpr int Shock = USHK;
 
 using std::istream;
 using std::ostream;
-
-#define AMREX_ARR4_TO_FORTRAN_ANYD(a) a.p,&((a).begin.x),amrex::GpuArray<int,3>{(a).end.x-1,(a).end.y-1,(a).end.z-1}.data()
 
 enum StateType { State_Type = 0,
 #ifdef RADIATION
@@ -589,6 +588,13 @@ public:
 ///
     amrex::Real estdt_temp_diffusion();
 
+#ifdef REACTIONS
+///
+/// Reactions-limited timestep
+///
+    amrex::Real estdt_burning();
+#endif
+
 ///
 /// Compute initial time step.
 ///
@@ -750,6 +756,15 @@ public:
 /// @param time         current time
 ///
     void apply_problem_tags (amrex::TagBoxArray& tags, amrex::Real time);
+
+
+///
+/// Apply any tagging restrictions that must be satisfied by all problems.
+///
+/// @param tags         TagBoxArray of tags
+/// @param time         current time
+///
+    void apply_tagging_restrictions (amrex::TagBoxArray& tags, amrex::Real time);
 
 
 ///
@@ -1249,6 +1264,8 @@ protected:
 #endif
 
 
+
+#ifdef TRUE_SDC
 ///
 /// A state array for the some reaction stuff with SDC
 ///
@@ -1258,16 +1275,12 @@ protected:
 ///
 /// The primitive variable state array.
 ///
-#ifdef TRUE_SDC
     amrex::MultiFab q;
-#endif
-
 
 ///
 /// we need a second version when doing fourth order
 ///
     amrex::MultiFab q_bar;
-
 
 ///
 /// for diffusion in fourth order we need the cell-center temperature
@@ -1279,10 +1292,9 @@ protected:
 ///
 /// The auxiliary primitive variable state array.
 ///
-#ifdef TRUE_SDC
     amrex::MultiFab qaux;
-#endif
     amrex::MultiFab qaux_bar;
+#endif
 
 
 ///
