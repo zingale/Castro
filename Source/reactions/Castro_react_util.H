@@ -121,7 +121,7 @@ AMREX_GPU_HOST_DEVICE AMREX_INLINE
 void
 single_zone_jac(GpuArray<Real, NUM_STATE> const& state,
                 burn_t burn_state,
-                Array2D<Real, 0, NumSpec+2, 0, NumSpec+2>& dRdw) {
+                Array2D<Real, 0, NumSpec+1, 0, NumSpec+1>& dRdw) {
 
 #ifdef SIMPLIFIED_SDC
 #ifndef AMREX_USE_GPU
@@ -129,26 +129,21 @@ single_zone_jac(GpuArray<Real, NUM_STATE> const& state,
 #endif
 #else
 
-    Array1D<Real, 1, VODE_NEQS> ydot;
-    Array1D<Real, 1, VODE_NEQS> ydot_pert;
-    RArray2D Jac;
+    Array1D<Real, 1, neqs> ydot;
+    Array1D<Real, 1, neqs> ydot_pert;
+    JacNetArray2D Jac;
 
-#if defined(SDC_EVOLVE_ENERGY)
-    constexpr int iwrho = 1;
-    constexpr int iwfs = 2;
-    constexpr int iwK = iwfs+NumSpec;
-    constexpr int iwT = iwK+1;
-    constexpr int iwvar = 3+NumSpec;
-#else
-    constexpr int iwrho = 1;
-    constexpr int iwfs=2;
-    constexpr int iwT = iwfs+NumSpec;
-    constexpr int iwvar = 2+NumSpec;
-#endif
+    constexpr int iwrho = 0;
+    constexpr int iwfs = 1;
+    constexpr int iwT = NumSpec+1;
 
     const auto eps = 1.e-8_rt;
 
     actual_rhs(burn_state, ydot);
+
+    // Jac has the derivatives with respect to the native
+    // network variables, X, T. e.  It does not have derivatives with
+    // respect to density, so we'll have to compute those ourselves.
 
     if (sdc_use_analytic_jac == 0) {
         // note the numerical Jacobian will be returned in terms of X
@@ -158,10 +153,15 @@ single_zone_jac(GpuArray<Real, NUM_STATE> const& state,
 
         // The Jacobian from the nets is in terms of dYdot/dY, but we want
         // it was dXdot/dX, so convert here.
-        for (int n = 0; n < NumSpec; ++n) {
-            for (int m = 0; m < VODE_NEQS; ++m) {
-                Jac(n+1,m) = Jac(n+1,m) * aion[n];
-                Jac(m,n+1) = Jac(m,n+1) * aion_inv[n];
+        for (int n = 1; n <= NumSpec; n++) {
+            for (int m = 1; m <= neqs; m++) {
+                Jac(n,m) = Jac(n,m) * aion[n-1];
+            }
+        }
+
+        for (int m = 1; m <= neqs; m++) {
+            for (int n = 1; n <= NumSpec; n++) {
+                Jac(m,n) = Jac(m,n) * aion_inv[n-1];
             }
         }
     }
@@ -226,7 +226,7 @@ single_zone_jac(GpuArray<Real, NUM_STATE> const& state,
     // fill the columns of dRdw corresponding to each derivative
     // with respect to species mass fraction
     for (int n = 1; n <= NumSpec; ++n) {
-       dRdw(0, iwfs+n) = 0.0_rt;  // density source
+       dRdw(0, iwfs-1+n) = 0.0_rt;  // density source
 
        for (int m = 1; m <= NumSpec; ++m) {
           // d( d(rho X_m)/dt)/dX_n
