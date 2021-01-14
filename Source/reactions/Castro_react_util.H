@@ -3,13 +3,9 @@
 
 #include <Castro.H>
 #include <burn_type.H>
-// #include <actual_rhs.H>
+#include <numerical_jacobian.H>
 
-AMREX_GPU_HOST_DEVICE AMREX_INLINE
-void 
-numerical_jac(burn_t& state, RArray2D& jac) {
-    return;
-}
+// #include <actual_rhs.H>
 
 AMREX_GPU_HOST_DEVICE AMREX_INLINE
 bool
