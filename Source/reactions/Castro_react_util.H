@@ -48,7 +48,10 @@ AMREX_GPU_HOST_DEVICE AMREX_INLINE
 void
 single_zone_react_source(GpuArray<Real, NUM_STATE> const& state,
                          GpuArray<Real, NUM_STATE>& R,
-                         burn_t burn_state) {
+                         burn_t& burn_state) {
+
+    // note: we want this burn_state to come out of here so we can
+    // reuse it elsewhere
 
     auto rhoInv = 1.0_rt / state[URHO];
 
@@ -101,7 +104,7 @@ void
 single_zone_react_source(const int i, const int j, const int k,
                          Array4<const Real> const& state,
                          Array4<Real> const& R,
-                         burn_t burn_state) {
+                         burn_t& burn_state) {
     GpuArray<Real, NUM_STATE> state_arr;
     GpuArray<Real, NUM_STATE> R_arr; 
 
