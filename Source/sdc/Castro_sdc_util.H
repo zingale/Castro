@@ -215,6 +215,7 @@ f_sdc_jac(const Real dt_m,
             Jac(n+1, m+1) -= dt_m * dRdU(n,m);
         }
     }
+
 }
 
 
@@ -343,7 +344,7 @@ sdc_newton_solve(const Real dt_m,
         }
 
         for (int n = 1; n <= NumSpec+2; ++n) {
-            f_rhs(n) = -f[n];
+            f_rhs(n) = -f[n-1];
         }
 
         dgesl<NumSpec+2>(Jac, ipvt, f_rhs);
