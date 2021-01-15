@@ -158,12 +158,14 @@ single_zone_jac(GpuArray<Real, NUM_STATE> const& state,
         // it was dXdot/dX, so convert here.
         for (int n = 1; n <= NumSpec; n++) {
             for (int m = 1; m <= neqs; m++) {
+                // d(X_n)/dq_m
                 Jac(n,m) = Jac(n,m) * aion[n-1];
             }
         }
 
         for (int m = 1; m <= neqs; m++) {
             for (int n = 1; n <= NumSpec; n++) {
+                // d RHS_m / dX_n
                 Jac(m,n) = Jac(m,n) * aion_inv[n-1];
             }
         }
