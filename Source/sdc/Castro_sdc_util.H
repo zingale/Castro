@@ -5,6 +5,8 @@
 #ifdef REACTIONS
 #include <Castro_react_util.H>
 #endif
+#include <vode_dvode.H>
+#include <linpack.H>
 
 // error codes
 constexpr int NEWTON_SUCCESS = 0;
@@ -59,10 +61,6 @@ f_sdc_jac(const Real dt_m,
     GpuArray<Real, NUM_STATE> U_full;
     GpuArray<Real, NUM_STATE> R_full;
     GpuArray<Real, NumSpec+2> R_react;
-
-    constexpr int iwrho = 0;
-    constexpr int iwfs = 1;
-    constexpr int iwT = NumSpec + 1;
 
     Array2D<Real, 0, NumSpec+1, 0, NumSpec+1> dRdw = {0.0_rt};
     Array2D<Real, 0, NumSpec+1, 0, NumSpec+1> dwdU = {0.0_rt};

@@ -11,13 +11,14 @@
 #else
 #include <fortran_to_cxx_actual_rhs.H>
 #endif
+#include <Castro_react_util.H>
 
 // The f_rhs routine provides the right-hand-side for the DVODE solver.
 // This is a generic interface that calls the specific RHS routine in the
 // network you're actually using.
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void rhs(const Real time, burn_t& state, dvode_t& vode_state, RArray1D& dUdt)
+void rhs(const Real time, burn_t& burn_state, dvode_t& vode_state, RArray1D& dUdt)
 {
 
     // note: dUdt is 1-based
@@ -32,125 +33,152 @@ void rhs(const Real time, burn_t& state, dvode_t& vode_state, RArray1D& dUdt)
     // we are not solving the momentum equations
     // create a full state -- we need this for some interfaces
     // note: vode_state % y(:) is 1-based
-    U_full(URHO) = vode_state % y(1)
-    U_full(UFS:UFS-1+nspec) = vode_state % y(2:nspec+1)
-    U_full(UEINT) = vode_state % y(nspec+2)
-    U_full(UEDEN) = vode_state % rpar(irp_evar)
 
-    U_full(UMX:UMZ) = vode_state % rpar(irp_mom:irp_mom+2)
+    U_full[URHO] = vode_state.y(1);
+    for (int n = 0; n < NumSpec; n++) {
+        U_full[UFS+n] = vode_state.y(2+n);
+    }
+    U_full[UEINT] = vode_state.y(NumSpec+2);
+    U_full[UEDEN] = burn_state.E_var;
 
-    ! initialize the temperature -- a better value will be found when we do the EOS
-    ! call in single_zone_react_source
-    U_full(UTEMP) = vode_state % rpar(irp_temp)
+    U_full[UMX] = burn_state.mom[0];
+    U_full[UMY] = burn_state.mom[1];
+    U_full[UMZ] = burn_state.mom[2];
+
+    // initialize the temperature -- a better value will be found when we do the EOS
+    // call in single_zone_react_source
+
+    U_full[UTEMP] = burn_state.T;
 
     // create a temporary burn_t for this call.  It is just going to
     // get loaded up with U_full
+
     burn_t burn_state_pass;
-    call single_zone_react_source(U_full, R_full, burn_state_pass);
+    single_zone_react_source(U_full, R_full, burn_state_pass);
 
-    ! update our temperature for next time
-    vode_state % rpar(irp_temp) = burn_state % T
+    // update our temperature for next time
 
-    R_react(0) = R_full(URHO)
-    R_react(1:nspec) = R_full(UFS:UFS-1+nspec)
-    R_react(nspec+1) = R_full(UEINT)
+    burn_state.T = burn_state_pass.T;
 
-    ! create the RHS
-    dUdt(:) = R_react(:) + vode_state % rpar(irp_f_source:irp_f_source-1+nspec+2)
+    R_react[0] = R_full[URHO];
+    for (int n = 0; n < NumSpec; n++) {
+        R_react[1+n] = R_full[UFS+n];
+    }
+    R_react[NumSpec+1] = R_full[UEINT];
 
-  end subroutine f_rhs
+    // create the RHS -- this is 1-based
 
-  subroutine jac(time, vode_state, ml, mu, Jacobian, nrowpd)
-    ! this is the Jacobian function for use with VODE
+    for (int n = 1; n <= NumSpec+2; n++) {
+        dUdt(n) = R_react[n-1] + burn_state.f_source[n-1];
+    }
+}
 
-    use amrex_constants_module, only : ZERO, ONE
-    use meth_params_module, only : nvar, URHO, UFS, UFX, UEDEN, UTEMP, UMX, UMZ, UEINT
-    use burn_type_module
-    use eos_type_module, only : eos_t, eos_input_re
-    use eos_composition_module, only : eos_xderivs_t, composition_derivatives
-    use eos_module, only : eos
-    use vode_rpar_indices
-    use react_util_module
-    use cuvode_parameters_module
 
-    implicit none
+template<class MatrixType>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+void jac (burn_t& burn_state, dvode_t& vode_state, MatrixType& pd)
+{
+    // NOTE: the time at which to evaluate the Jacobian is not
+    // explicitly passed. VODE always evaluates the analytic
+    // Jacobian at vode_state.tn, and we pass vode_state.
 
-    integer   , intent(IN   ) :: ml, mu, nrowpd
-    real(rt), intent(IN) :: time
-    type(dvode_t), intent(inout) :: vode_state
-    real(rt), intent(  OUT) :: Jacobian(0:VODE_NEQS-1, 0:VODE_NEQS-1)
+    // Call the specific network routine to get the Jacobian.
 
-    type(burn_t) :: burn_state
-    type(eos_t) :: eos_state
-    type(eos_xderivs_t) :: eos_xderivs
+    // note the Jacobian is 1-based at the moment
 
-    real(rt) :: U_full(nvar),  R_full(nvar)
+    Array2D<Real, 0, NumSpec+1, 0, NumSpec+1> dRdw = {0.0_rt};
+    Array2D<Real, 0, NumSpec+1, 0, NumSpec+1> dwdU = {0.0_rt};
 
-    real(rt) :: denom
-    real(rt) :: dRdw(0:nspec+1, 0:nspec+1), dwdU(0:nspec+1, 0:nspec+1)
+    GpuArray<Real, NUM_STATE> U_full;
+    GpuArray<Real, NUM_STATE> R_full;
+    GpuArray<Real, NumSpec+2> R_react;
 
-    integer :: m
+    // we are not solving the momentum equations
+    // create a full state -- we need this for some interfaces
 
-    ! we are not solving the momentum equations
-    ! create a full state -- we need this for some interfaces
-    U_full(URHO) = vode_state % y(1)
-    U_full(UFS:UFS-1+nspec_evolve) = vode_state % y(2:nspec+1)
-    U_full(UEINT) = vode_state % y(nspec+2)
-    U_full(UEDEN) = vode_state % rpar(irp_evar)
+    U_full[URHO] = vode_state.y(1);
+    for (int n = 0; n < NumSpec; n++) {
+        U_full[UFS+n] = vode_state.y(2+n);
+    }
+    U_full[UEINT] = vode_state.y(NumSpec+2);
+    U_full[UEDEN] = burn_state.E_var;
 
-    U_full(UMX:UMZ) = vode_state % rpar(irp_mom:irp_mom+2)
+    U_full[UMX] = burn_state.mom[0];
+    U_full[UMY] = burn_state.mom[1];
+    U_full[UMZ] = burn_state.mom[2];
 
-    ! compute the temperature and species derivatives --
-    ! maybe this should be done using the burn_state
-    ! returned by single_zone_react_source, since it is
-    ! more consistent T from e
-    eos_state % rho = U_full(URHO)
-    eos_state % T = vode_state % rpar(irp_temp)   ! initial guess
-    eos_state % xn(:) = U_full(UFS:UFS-1+nspec)/U_full(URHO)
-    eos_state % aux(:) = U_full(UFX:UFX-1+naux)/U_full(URHO)
-    eos_state % e = U_full(UEINT)/U_full(URHO)  !(U_full(UEDEN) - HALF*sum(U_full(UMX:UMZ))/U_full(URHO))/U_full(URHO)
+    // compute the temperature and species derivatives --
+    // maybe this should be done using the burn_state
+    // returned by single_zone_react_source, since it is
+    // more consistent T from e
+
+    eos_t eos_state;
+    eos_state.rho = U_full[URHO];
+    eos_state.T = burn_state.T; // initial guess
+    for (int n = 0; n < NumSpec; n++) {
+        eos_state.xn[n] = U_full[UFS+n] / U_full[URHO];
+    }
+#if NAUX_NET > 0
+    for (int n = 0; n < NumAux; n++) {
+        eos_state.aux[n] = U_full[UFX+n] / U_full[URHO];
+    }
+#endif
+    eos_state.e = U_full[UEINT] / U_full[URHO];  //(U_full(UEDEN) - HALF*sum(U_full(UMX:UMZ))/U_full(URHO))/U_full(URHO)
 
     // I think that this is not needed because we call the EOS in
     // single_zone_react_source
 
-    call eos(eos_input_re, eos_state)
+    eos(eos_input_re, eos_state);
 
-    U_full(UTEMP) = eos_state % T
+    U_full[UTEMP] = eos_state.T;
 
-    call single_zone_react_source(U_full, R_full, 0,0,0, burn_state)
+    burn_t burn_state_pass;
+    single_zone_react_source(U_full, R_full, burn_state_pass);
 
-    call single_zone_jac(U_full, burn_state, dRdw)
+    single_zone_jac(U_full, burn_state_pass, dRdw);
 
-    ! construct dwdU
-    dwdU(:, :) = ZERO
+    // construct dwdU
 
-    ! the density row
-    dwdU(0, 0) = ONE
+    // the density row
 
-    ! the X_k rows
-    do m = 1, nspec
-       dwdU(m,0) = -vode_state % y(m+1)/ vode_state % y(1)**2
-       dwdU(m,m) = ONE/vode_state % y(1)
-    enddo
+    dwdU(iwrho, 0) = 1.0_rt;
 
-    call composition_derivatives(eos_state, eos_xderivs)
+    // the X_k rows
 
-    ! now the T row -- this depends on whether we are evolving (rho E) or (rho e)
-    denom = ONE/(eos_state % rho * eos_state % dedT)
-    dwdU(nspec+1,0) = denom*(sum(eos_state % xn(1:nspec) * eos_xderivs % dedX(1:nspec)) - &
-                                    eos_state % rho * eos_state % dedr - eos_state % e)
+    for (int m = 1; m < NumSpec+1; m++) {
+       dwdU(iwfs-1+m, 0) = -vode_state.y(m+1) / (vode_state.y(1) * vode_state.y(1));
+       dwdU(iwfs-1+m, m) = 1.0_rt / vode_state.y(1);
+    }
 
-    do m = 1, nspec
-       dwdU(nspec+1,m) = -denom * eos_xderivs % dedX(m)
-    enddo
+    auto eos_xderivs = composition_derivatives(eos_state);
 
-    dwdU(nspec+1, nspec+1) = denom
+    // now the T row -- this depends on whether we are evolving (rho E) or (rho e)
 
-    ! construct the Jacobian -- we can get most of the
-    ! terms from the network itself, but we do not rely on
-    ! it having derivative wrt density
-    Jacobian(:,:) = matmul(dRdw, dwdU)
+    Real denom = 1.0_rt / (eos_state.rho * eos_state.dedT);
+    Real xn_sum = 0.0_rt;
+    for (int n = 0; n < NumSpec; ++n) {
+        xn_sum += eos_state.xn[n] * eos_xderivs.dedX[n];
+    }
 
-  end subroutine jac
+    dwdU(iwT, 0) = denom * (xn_sum - eos_state.rho * eos_state.dedr - eos_state.e);
 
-end module sdc_vode_rhs_module
+    for (int m = 0; m < NumSpec; m++) {
+        dwdU(iwT, m+1) = -denom * eos_xderivs.dedX[m];
+    }
+
+    dwdU(iwT, iwT) = denom;
+
+    // construct the Jacobian -- note: the Jacobian is 1-based
+
+    for (int n = 0; n <= NumSpec+1; ++n) {
+        for (int m = 0; m <= NumSpec+1; ++m) {
+            pd(n, m) = 0.0_rt;
+            for (int l = 0; l <= NumSpec+1; ++l) {
+                pd(n+1, m+1) = dRdw(n,l) * dwdU(l,m);
+            }
+        }
+    }
+
+}
+#endif
+
