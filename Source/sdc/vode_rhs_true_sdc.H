@@ -1,38 +1,37 @@
-module sdc_vode_rhs_module
+#ifndef VODE_RHS_TRUE_SDC_H
+#define VODE_RHS_TRUE_SDC_H
 
-  use amrex_fort_module, only : rt => amrex_real
-  use castro_error_module, only : castro_error
-  use cuvode_types_module, only : dvode_t
+#include <network.H>
+#include <burn_type.H>
+#include <extern_parameters.H>
 
-  implicit none
+#ifdef NETWORK_HAS_CXX_IMPLEMENTATION
+#include <actual_network.H>
+#include <actual_rhs.H>
+#else
+#include <fortran_to_cxx_actual_rhs.H>
+#endif
 
-contains
+// The f_rhs routine provides the right-hand-side for the DVODE solver.
+// This is a generic interface that calls the specific RHS routine in the
+// network you're actually using.
 
-  subroutine f_rhs(t, vode_state, dUdt)
-    ! this is the righthand side for the ODE system that we will use
-    ! with VODE
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+void rhs(const Real time, burn_t& state, dvode_t& vode_state, RArray1D& dUdt)
+{
 
-    use meth_params_module, only : nvar, URHO, UFS, UFX, UEDEN, UTEMP, UMX, UMZ, UEINT
-    use burn_type_module
-    use vode_rpar_indices
-    use react_util_module
-    use cuvode_parameters_module
+    // note: dUdt is 1-based
 
-    implicit none
+    GpuArray<Real, NUM_STATE> U_full;
+    GpuArray<Real, NUM_STATE> R_full;
 
-    real(rt), intent(in) :: t
-    type(dvode_t), intent(inout) :: vode_state
-    real(rt), intent(out) :: dUdt(0:VODE_NEQS-1)
+    GpuArray<Real, NumSpec+2> R_react;
 
-    real(rt) :: U_full(nvar),  R_full(nvar)
-    real(rt) :: R_react(0:VODE_NEQS-1), C_react(0:VODE_NEQS-1)
-    type(burn_t) :: burn_state
+    // evaluate R
 
-    ! evaluate R
-
-    ! we are not solving the momentum equations
-    ! create a full state -- we need this for some interfaces
-    ! note: vode_state % y(:) is 1-based
+    // we are not solving the momentum equations
+    // create a full state -- we need this for some interfaces
+    // note: vode_state % y(:) is 1-based
     U_full(URHO) = vode_state % y(1)
     U_full(UFS:UFS-1+nspec) = vode_state % y(2:nspec+1)
     U_full(UEINT) = vode_state % y(nspec+2)
@@ -44,7 +43,10 @@ contains
     ! call in single_zone_react_source
     U_full(UTEMP) = vode_state % rpar(irp_temp)
 
-    call single_zone_react_source(U_full, R_full, 0,0,0, burn_state)
+    // create a temporary burn_t for this call.  It is just going to
+    // get loaded up with U_full
+    burn_t burn_state_pass;
+    call single_zone_react_source(U_full, R_full, burn_state_pass);
 
     ! update our temperature for next time
     vode_state % rpar(irp_temp) = burn_state % T
@@ -53,11 +55,8 @@ contains
     R_react(1:nspec) = R_full(UFS:UFS-1+nspec)
     R_react(nspec+1) = R_full(UEINT)
 
-    ! C comes in through rpar
-    C_react(:) = vode_state % rpar(irp_f_source:irp_f_source-1+nspec+2)
-
     ! create the RHS
-    dUdt(:) = R_react(:) + C_react(:)
+    dUdt(:) = R_react(:) + vode_state % rpar(irp_f_source:irp_f_source-1+nspec+2)
 
   end subroutine f_rhs
 
@@ -110,6 +109,9 @@ contains
     eos_state % xn(:) = U_full(UFS:UFS-1+nspec)/U_full(URHO)
     eos_state % aux(:) = U_full(UFX:UFX-1+naux)/U_full(URHO)
     eos_state % e = U_full(UEINT)/U_full(URHO)  !(U_full(UEDEN) - HALF*sum(U_full(UMX:UMZ))/U_full(URHO))/U_full(URHO)
+
+    // I think that this is not needed because we call the EOS in
+    // single_zone_react_source
 
     call eos(eos_input_re, eos_state)
 

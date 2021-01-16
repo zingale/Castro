@@ -530,32 +530,25 @@ sdc_vode_solve(const Real dt_m,
     C_react[NumSpec+1] = C[UEINT];
 
     dvode_t dvode_state;
+
     burn_t burn_state;
 
-    burn_state.rho = C_react[0];
-    for (int n = 0; n < NumSpec; ++n) {
-        burn_state.xn[n] = C_react[1+n];
+    for (int n = 0; n < NumSpec+1; n++) {
+        burn_state.f_source[n] = C_react[n];
     }
 
-    // set the momenta to be U_new
-    GpuArray<Real, AMREX_SPACEDIM> mom_source;
-    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-        mom_source[n] = U_new[UMX+n];
+    for (int n = 0; n < 3; n++) {
+        burn_state.mom[n] = U_new[UMX+n];
     }
-
-#if defined(SDC_EVOLVE_ENERGY)
-    burn_state.umx_orig = U_new[UMX];
-    burn_state.umy_orig = U_new[UMY];
-    burn_state.umz_orig = U_new[UMZ];
-#endif
-
-    // temperature will be used as an initial guess in the EOS
-    burn_state.T = U_old[UTEMP];
 
     // we are always solving for rhoe with the VODE predict
     burn_state.e = U_new[UEDEN];
 
-    burn_state.self_heat = false; // NOTE: this is a guess
+    burn_state.E_var = U_old[UEDEN];
+
+    // temperature will be used as an initial guess in the EOS
+    burn_state.T = U_old[UTEMP];
+
 
     // store the subset for the nonlinear solve. We only
     // consider (rho e), not (rho E). This is because at
@@ -595,11 +588,7 @@ sdc_vode_solve(const Real dt_m,
         atol[1+n] = sdc_solver_atol * U_old[URHO]; // this way, atol is the minimum x
     }
 
-    if (sdc_solve_for_rhoe == 1) {
-        atol[NumSpec+1] = sdc_solver_atol * U_old[UEINT];
-    } else {
-        atol[NumSpec+1] = sdc_solver_atol * U_old[UEDEN];
-    }
+    atol[NumSpec+1] = sdc_solver_atol * U_old[UEINT];
 
     for (int n = 1; n <= NumSpec+2; ++n) {
         dvode_state.atol(n) = atol[n];
