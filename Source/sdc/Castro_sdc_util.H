@@ -589,8 +589,8 @@ sdc_vode_solve(const Real dt_m,
     atol[NumSpec+1] = sdc_solver_atol * U_old[UEINT];
 
     for (int n = 1; n <= NumSpec+2; ++n) {
-        dvode_state.atol(n) = atol[n];
-        dvode_state.rtol(n) = rtol[n];
+        dvode_state.atol(n) = atol[n-1];
+        dvode_state.rtol(n) = rtol[n-1];
     }
 
     int istate = dvode(burn_state, dvode_state);
