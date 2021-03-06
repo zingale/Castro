@@ -60,7 +60,9 @@ Castro::do_advance_sdc (Real time,
   // we loop over all nodes, even the last, since we need to compute
   // the advective update source at each node
 
-  for (int m=0; m < SDC_NODES; m++) {
+  for (int m = 0; m < SDC_NODES; m++) {
+
+      amrex::Print() << "... start of SDC iteration " << sdc_iteration << " starting node = " << m << std::endl;
 
     current_sdc_node = m;
 
@@ -216,12 +218,12 @@ Castro::do_advance_sdc (Real time,
     // update to
     if (m < SDC_NODES-1) {
 
-      amrex::Print() << "... doing the SDC update, iteration = " << sdc_iteration << " from node " << m << " to " << m+1 << std::endl;
+      amrex::Print() << "... doing the final SDC update, iteration = " << sdc_iteration << " from node " << m << " to " << m+1 << std::endl << std::endl;
 
       do_sdc_update(m, m+1, dt); //(dt_sdc[m+1] - dt_sdc[m])*dt);
 
       // we now have a new value of k_new[m+1], do a clean_state on it
-      clean_state(S_new, cur_time, 0);
+      clean_state(*(k_new[m+1]), cur_time, 0);
 
     }
 
