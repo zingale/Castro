@@ -242,6 +242,7 @@ Castro::do_advance_ctu(Real time,
     }
 
 
+#ifndef SIMPLIFIED_SDC
     // Sync up state after old sources and hydro source.
     clean_state(
 #ifdef MHD
@@ -253,6 +254,7 @@ Castro::do_advance_ctu(Real time,
     // Check for NaN's.
 
     check_for_nan(S_new);
+#endif
 #endif
 
     // if we are done with the update do the source correction and
