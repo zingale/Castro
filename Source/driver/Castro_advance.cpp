@@ -213,7 +213,7 @@ Castro::finalize_do_advance()
     if (!do_hydro && Radiation::rad_hydro_combined) {
         MultiFab& Er_old = get_old_data(Rad_Type);
         MultiFab& Er_new = get_new_data(Rad_Type);
-        Er_new.copy(Er_old);
+        MultiFab::Copy(Er_new, Er_old, 0, 0, Er_old.nComp(), 0);
     }
 #endif
 
@@ -286,13 +286,13 @@ Castro::initialize_advance(Real time, Real dt, int amr_iteration, int amr_ncycle
     // This array holds the sum of all source terms that affect the
     // hydrodynamics.
 
-    sources_for_hydro.define(grids, dmap, NSRC, NUM_GROW);
-    sources_for_hydro.setVal(0.0, NUM_GROW);
+    sources_for_hydro.define(grids, dmap, NSRC, NUM_GROW_SRC);
+    sources_for_hydro.setVal(0.0, NUM_GROW_SRC);
 
     // This array holds the source term corrector.
 
-    source_corrector.define(grids, dmap, NSRC, NUM_GROW);
-    source_corrector.setVal(0.0, NUM_GROW);
+    source_corrector.define(grids, dmap, NSRC, NUM_GROW_SRC);
+    source_corrector.setVal(0.0, NUM_GROW_SRC);
 
     // Swap the new data from the last timestep into the old state data.
 

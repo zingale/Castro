@@ -596,6 +596,13 @@ public:
     amrex::Real estdt_burning();
 #endif
 
+#ifdef RADIATION
+///
+/// Radiation hydro timestep
+///
+    amrex::Real estdt_rad ();
+#endif
+
 ///
 /// Compute initial time step.
 ///
@@ -790,8 +797,6 @@ public:
                  amrex::Real               time,
                  amrex::MultiFab&          mf,
                  int                dcomp) override;
-
-    static int numGrow();
 
 
 #ifdef REACTIONS
@@ -1449,6 +1454,7 @@ protected:
     static int              num_err_list_default;
     static amrex::BCRec     phys_bc;
     static int       NUM_GROW;
+    static int       NUM_GROW_SRC;
 
     static int         lastDtPlotLimited;
     static amrex::Real lastDtBeforePlotLimiting;
@@ -1546,13 +1552,6 @@ public:
 //
 // Inlines.
 //
-
-inline
-int
-Castro::numGrow()
-{
-    return NUM_GROW;
-}
 
 inline
 amrex::MultiFab*

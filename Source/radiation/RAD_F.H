@@ -78,14 +78,6 @@ extern "C" {
     BL_FORT_FAB_ARG(dterm_face), 
     const amrex::Real* dx, const int* idir);
 
-  void ca_face2center
-    (const int lo[], const int hi[], 
-     const int& scomp, const int& dcomp, const int& ncomp, const int& nf, const int& nc,
-     D_DECL(const BL_FORT_FAB_ARG(foox),
-            const BL_FORT_FAB_ARG(fooy),
-            const BL_FORT_FAB_ARG(fooz)),
-     BL_FORT_FAB_ARG(fooc));
-
   void ca_correct_dterm
     (D_DECL(BL_FORT_FAB_ARG(dfx),
             BL_FORT_FAB_ARG(dfy),
@@ -114,14 +106,6 @@ extern "C"
      amrex::Real time, int igroup);
 
 }
-
-BL_FORT_PROC_DECL(CA_STATE_UPDATE, ca_state_update)
-   (const int lo[], const int hi[],
-    BL_FORT_FAB_ARG(state),
-    const BL_FORT_FAB_ARG(rhoe),
-    const BL_FORT_FAB_ARG(temp),
-    const BL_FORT_FAB_ARG(msk),
-    amrex::Real* derat, amrex::Real* dTrat);
 
 #ifdef __cplusplus
 extern "C" {
