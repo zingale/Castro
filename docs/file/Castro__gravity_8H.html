@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>File Castro_gravity.H &mdash; Castro  documentation</title>
   
@@ -17,7 +17,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -27,12 +30,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -55,7 +56,7 @@
 
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Castro
+            <a href="../index.html" class="icon icon-home"> Castro
           
 
           
@@ -115,7 +116,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../build_system.html">Build System Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../debugging.html">Debugging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gpu_porting.html">Offloading a routine to GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Hydrodynamics.html">Hydrodynamics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gravity.html">Gravity</a></li>
@@ -201,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -216,7 +218,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/file/Castro__gravity_8H.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -233,68 +235,68 @@
   <div class="section" id="file-castro-gravity-h">
 <h1>File Castro_gravity.H<a class="headerlink" href="#file-castro-gravity-h" title="Permalink to this headline">¶</a></h1>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt id="_CPPv421construct_old_gravityiiN5amrex4RealE">
-<span id="_CPPv321construct_old_gravityiiN5amrex4RealE"></span><span id="_CPPv221construct_old_gravityiiN5amrex4RealE"></span><span id="construct_old_gravity__i.i.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1afcd7d1dbdfa82d1f9ae76ceec57811a1"></span>void <code class="sig-name descname">construct_old_gravity</code><span class="sig-paren">(</span>int <em>amr_iteration</em>, int <em>amr_ncycle</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421construct_old_gravityiiN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv421construct_old_gravityiiN5amrex4RealE">
+<span id="_CPPv321construct_old_gravityiiN5amrex4RealE"></span><span id="_CPPv221construct_old_gravityiiN5amrex4RealE"></span><span id="construct_old_gravity__i.i.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1afcd7d1dbdfa82d1f9ae76ceec57811a1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct_old_gravity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">amr_iteration</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">amr_ncycle</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421construct_old_gravityiiN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Construct gravitational field at old timestep</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_iteration</span></code>: where we are in the current AMR subcycle </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_ncycle</span></code>: the number of subcycles at this level </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: current time </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>amr_iteration</strong> – where we are in the current AMR subcycle </p></li>
+<li><p><strong>amr_ncycle</strong> – the number of subcycles at this level </p></li>
+<li><p><strong>time</strong> – current time </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv421construct_new_gravityiiN5amrex4RealE">
-<span id="_CPPv321construct_new_gravityiiN5amrex4RealE"></span><span id="_CPPv221construct_new_gravityiiN5amrex4RealE"></span><span id="construct_new_gravity__i.i.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1aeb26f7eec81943d692c0a7fe7086c249"></span>void <code class="sig-name descname">construct_new_gravity</code><span class="sig-paren">(</span>int <em>amr_iteration</em>, int <em>amr_ncycle</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421construct_new_gravityiiN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv421construct_new_gravityiiN5amrex4RealE">
+<span id="_CPPv321construct_new_gravityiiN5amrex4RealE"></span><span id="_CPPv221construct_new_gravityiiN5amrex4RealE"></span><span id="construct_new_gravity__i.i.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1aeb26f7eec81943d692c0a7fe7086c249"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct_new_gravity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">amr_iteration</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">amr_ncycle</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421construct_new_gravityiiN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Construct gravitational field at new timestep</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_iteration</span></code>: where we are in the current AMR subcycle </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">amr_ncycle</span></code>: the number of subcycles at this level </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: current time </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>amr_iteration</strong> – where we are in the current AMR subcycle </p></li>
+<li><p><strong>amr_ncycle</strong> – the number of subcycles at this level </p></li>
+<li><p><strong>time</strong> – current time </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv428construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE">
-<span id="_CPPv328construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="_CPPv228construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="construct_old_gravity_source__amrex::MultiFabR.amrex::MultiFabR.amrex::Real.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1a0ce7cc4b28e661c45a457e93e6a22627"></span>void <code class="sig-name descname">construct_old_gravity_source</code><span class="sig-paren">(</span><a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>source</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>state</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv428construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE">
+<span id="_CPPv328construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="_CPPv228construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="construct_old_gravity_source__amrex::MultiFabR.amrex::MultiFabR.amrex::Real.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1a0ce7cc4b28e661c45a457e93e6a22627"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct_old_gravity_source</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">MultiFab</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">MultiFab</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428construct_old_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Construct gravitational source terms at old timestep</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code>: MultiFab to save sources to </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code>: Old state </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: current time </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: timestep </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – MultiFab to save sources to </p></li>
+<li><p><strong>state</strong> – Old state </p></li>
+<li><p><strong>time</strong> – current time </p></li>
+<li><p><strong>dt</strong> – timestep </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv428construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE">
-<span id="_CPPv328construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="_CPPv228construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="construct_new_gravity_source__amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR.amrex::Real.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1a2870f09223e8dea12812a2b780263d86"></span>void <code class="sig-name descname">construct_new_gravity_source</code><span class="sig-paren">(</span><a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>source</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>state_old</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::MultiFab &amp;<em>state_new</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>time</em>, <a class="reference internal" href="Castro__ext__src_8H.html#_CPPv45amrex" title="amrex">amrex</a>::Real <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv428construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE">
+<span id="_CPPv328construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="_CPPv228construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE"></span><span id="construct_new_gravity_source__amrex::MultiFabR.amrex::MultiFabR.amrex::MultiFabR.amrex::Real.amrex::Real"></span><span class="target" id="Castro__gravity_8H_1a2870f09223e8dea12812a2b780263d86"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct_new_gravity_source</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">MultiFab</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">MultiFab</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state_old</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">MultiFab</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state_new</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428construct_new_gravity_sourceRN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEN5amrex4RealE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Construct gravitational source terms at new timestep</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code>: MultiFab to save sources to </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">state_old</span></code>: Old state </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">state_new</span></code>: New state </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: current time </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: timestep </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – MultiFab to save sources to </p></li>
+<li><p><strong>state_old</strong> – Old state </p></li>
+<li><p><strong>state_new</strong> – New state </p></li>
+<li><p><strong>time</strong> – current time </p></li>
+<li><p><strong>dt</strong> – timestep </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>
@@ -305,37 +307,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="Gravity_8H.html" class="btn btn-neutral float-right" title="File Gravity.H" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../gravity_files.html" class="btn btn-neutral float-left" title="Gravity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="Gravity_8H.html" class="btn btn-neutral float-right" title="File Gravity.H" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../gravity_files.html" class="btn btn-neutral float-left" title="Gravity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2018-2020, Castro development tem
+        &#169; Copyright 2018-2020, Castro development tem.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

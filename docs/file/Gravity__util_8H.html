@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>File Gravity_util.H &mdash; Castro  documentation</title>
   
@@ -17,7 +17,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -27,12 +30,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -55,7 +56,7 @@
 
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Castro
+            <a href="../index.html" class="icon icon-home"> Castro
           
 
           
@@ -115,7 +116,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../build_system.html">Build System Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../debugging.html">Debugging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gpu_porting.html">Offloading a routine to GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Hydrodynamics.html">Hydrodynamics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gravity.html">Gravity</a></li>
@@ -201,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -216,7 +218,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/file/Gravity__util_8H.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -233,35 +235,35 @@
   <div class="section" id="file-gravity-util-h">
 <h1>File Gravity_util.H<a class="headerlink" href="#file-gravity-util-h" title="Permalink to this headline">¶</a></h1>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt>
-<span class="target" id="Gravity__util_8H_1af41729f990479415af473f88237ea621"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_INLINE Real factorial (int n)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="Gravity__util_8H_1af41729f990479415af473f88237ea621"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_INLINE</span> <span class="pre">Real</span> <span class="pre">factorial</span> <span class="pre">(int</span> <span class="pre">n)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="Gravity__util_8H_1aaa0c1acc52106931e26d6cdc8ee243a2"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_INLINE void calcAssocLegPolyLM (int l, int m, Real &amp;assocLegPolyLM, Real &amp;assocLegPolyLM1, Real &amp;assocLegPolyLM2, Real x)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="Gravity__util_8H_1aaa0c1acc52106931e26d6cdc8ee243a2"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_INLINE</span> <span class="pre">void</span> <span class="pre">calcAssocLegPolyLM</span> <span class="pre">(int</span> <span class="pre">l,</span> <span class="pre">int</span> <span class="pre">m,</span> <span class="pre">Real</span> <span class="pre">&amp;assocLegPolyLM,</span> <span class="pre">Real</span> <span class="pre">&amp;assocLegPolyLM1,</span> <span class="pre">Real</span> <span class="pre">&amp;assocLegPolyLM2,</span> <span class="pre">Real</span> <span class="pre">x)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="Gravity__util_8H_1a08fd64fc1a42ed42ada6e828900fbd89"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_INLINE void calcLegPolyL (int l, Real &amp;legPolyL, Real &amp;legPolyL1, Real &amp;legPolyL2, Real x)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="Gravity__util_8H_1a08fd64fc1a42ed42ada6e828900fbd89"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_INLINE</span> <span class="pre">void</span> <span class="pre">calcLegPolyL</span> <span class="pre">(int</span> <span class="pre">l,</span> <span class="pre">Real</span> <span class="pre">&amp;legPolyL,</span> <span class="pre">Real</span> <span class="pre">&amp;legPolyL1,</span> <span class="pre">Real</span> <span class="pre">&amp;legPolyL2,</span> <span class="pre">Real</span> <span class="pre">x)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="Gravity__util_8H_1abc3300c0ccb28f70149f61cc4af9907b"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_INLINE void multipole_add (Real cosTheta, Real phiAngle, Real r, Real rho, Real vol, Array4&lt; Real &gt; const &amp;qL0, Array4&lt; Real &gt; const &amp;qLC, Array4&lt; Real &gt; const &amp;qLS, Array4&lt; Real &gt; const &amp;qU0, Array4&lt; Real &gt; const &amp;qUC, Array4&lt; Real &gt; const &amp;qUS, int npts, int nlo, int index, bool parity=false)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="Gravity__util_8H_1a5e3aa0f0fa781c664680a4d6f3cc3035"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_DEVICE</span> <span class="pre">AMREX_INLINE</span> <span class="pre">void</span> <span class="pre">multipole_add</span> <span class="pre">(Real</span> <span class="pre">cosTheta,</span> <span class="pre">Real</span> <span class="pre">phiAngle,</span> <span class="pre">Real</span> <span class="pre">r,</span> <span class="pre">Real</span> <span class="pre">rho,</span> <span class="pre">Real</span> <span class="pre">vol,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qL0,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qLC,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qLS,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qU0,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qUC,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qUS,</span> <span class="pre">int</span> <span class="pre">npts,</span> <span class="pre">int</span> <span class="pre">nlo,</span> <span class="pre">int</span> <span class="pre">index,</span> <span class="pre">amrex::Gpu::Handler</span> <span class="pre">const</span> <span class="pre">&amp;handler,</span> <span class="pre">bool</span> <span class="pre">parity=false)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="Gravity__util_8H_1a087b52bf05150f2fdbd61eb21de19796"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_INLINE void multipole_symmetric_add (Real x, Real y, Real z, const GpuArray&lt; Real, AMREX_SPACEDIM &gt; &amp;problo, const GpuArray&lt; Real, AMREX_SPACEDIM &gt; &amp;probhi, Real rho, Real vol, Array4&lt; Real &gt; const &amp;qU0, Array4&lt; Real &gt; const &amp;qUC, Array4&lt; Real &gt; const &amp;qUS, Array4&lt; Real &gt; const &amp;qL0, Array4&lt; Real &gt; const &amp;qLC, Array4&lt; Real &gt; const &amp;qLS, int npts, int nlo, int index)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="Gravity__util_8H_1ab5bae3d8e9907be6d0abebb5b7300099"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_DEVICE</span> <span class="pre">AMREX_INLINE</span> <span class="pre">void</span> <span class="pre">multipole_symmetric_add</span> <span class="pre">(Real</span> <span class="pre">x,</span> <span class="pre">Real</span> <span class="pre">y,</span> <span class="pre">Real</span> <span class="pre">z,</span> <span class="pre">const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">Real,</span> <span class="pre">AMREX_SPACEDIM</span> <span class="pre">&gt;</span> <span class="pre">&amp;problo,</span> <span class="pre">const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">Real,</span> <span class="pre">AMREX_SPACEDIM</span> <span class="pre">&gt;</span> <span class="pre">&amp;probhi,</span> <span class="pre">Real</span> <span class="pre">rho,</span> <span class="pre">Real</span> <span class="pre">vol,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qU0,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qUC,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qUS,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qL0,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qLC,</span> <span class="pre">Array4&lt;</span> <span class="pre">Real</span> <span class="pre">&gt;</span> <span class="pre">const</span> <span class="pre">&amp;qLS,</span> <span class="pre">int</span> <span class="pre">npts,</span> <span class="pre">int</span> <span class="pre">nlo,</span> <span class="pre">int</span> <span class="pre">index,</span> <span class="pre">amrex::Gpu::Handler</span> <span class="pre">const</span> <span class="pre">&amp;handler)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="Gravity__util_8H_1ad161779199c19ec5ca905600a4367e2a"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_INLINE Real direct_sum_symmetric_add (const GpuArray&lt; Real, 3 &gt; &amp;loc, const GpuArray&lt; Real, 3 &gt; &amp;locb, const GpuArray&lt; Real, 3 &gt; &amp;problo, const GpuArray&lt; Real, 3 &gt; &amp;probhi, Real rho, Real dV, const GpuArray&lt; bool, 3 &gt; &amp;doSymmetricAddLo, const GpuArray&lt; bool, 3 &gt; &amp;doSymmetricAddHi)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="Gravity__util_8H_1ad161779199c19ec5ca905600a4367e2a"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_INLINE</span> <span class="pre">Real</span> <span class="pre">direct_sum_symmetric_add</span> <span class="pre">(const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">Real,</span> <span class="pre">3</span> <span class="pre">&gt;</span> <span class="pre">&amp;loc,</span> <span class="pre">const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">Real,</span> <span class="pre">3</span> <span class="pre">&gt;</span> <span class="pre">&amp;locb,</span> <span class="pre">const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">Real,</span> <span class="pre">3</span> <span class="pre">&gt;</span> <span class="pre">&amp;problo,</span> <span class="pre">const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">Real,</span> <span class="pre">3</span> <span class="pre">&gt;</span> <span class="pre">&amp;probhi,</span> <span class="pre">Real</span> <span class="pre">rho,</span> <span class="pre">Real</span> <span class="pre">dV,</span> <span class="pre">const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">bool,</span> <span class="pre">3</span> <span class="pre">&gt;</span> <span class="pre">&amp;doSymmetricAddLo,</span> <span class="pre">const</span> <span class="pre">GpuArray&lt;</span> <span class="pre">bool,</span> <span class="pre">3</span> <span class="pre">&gt;</span> <span class="pre">&amp;doSymmetricAddHi)</span></span></dt>
 <dd></dd></dl>
 
 </div>
@@ -272,37 +274,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../hydro_files.html" class="btn btn-neutral float-right" title="Hydro" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="Gravity_8H.html" class="btn btn-neutral float-left" title="File Gravity.H" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="../hydro_files.html" class="btn btn-neutral float-right" title="Hydro" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Gravity_8H.html" class="btn btn-neutral float-left" title="File Gravity.H" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2018-2020, Castro development tem
+        &#169; Copyright 2018-2020, Castro development tem.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

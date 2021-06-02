@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>File mhd_eigen.H &mdash; Castro  documentation</title>
   
@@ -17,7 +17,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -27,12 +30,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -55,7 +56,7 @@
 
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Castro
+            <a href="../index.html" class="icon icon-home"> Castro
           
 
           
@@ -115,7 +116,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../build_system.html">Build System Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../debugging.html">Debugging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../gpu_porting.html">Offloading a routine to GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Hydrodynamics.html">Hydrodynamics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gravity.html">Gravity</a></li>
@@ -202,6 +202,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -217,7 +219,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/file/mhd__eigen_8H.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -234,30 +236,30 @@
   <div class="section" id="file-mhd-eigen-h">
 <h1>File mhd_eigen.H<a class="headerlink" href="#file-mhd-eigen-h" title="Permalink to this headline">¶</a></h1>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Functions</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
 <dl class="cpp function">
-<dt>
-<span class="target" id="mhd__eigen_8H_1aac31da9ef738458240cc95b3a4cb1f7c"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void evals (Array1D&lt; Real, 0, NEIGN-1 &gt; &amp;lam, const Real as_in, Array1D&lt; Real, 0, NQ-1 &gt; &amp;Q, const int dir)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="mhd__eigen_8H_1aac31da9ef738458240cc95b3a4cb1f7c"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_FORCE_INLINE</span> <span class="pre">void</span> <span class="pre">evals</span> <span class="pre">(Array1D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;lam,</span> <span class="pre">const</span> <span class="pre">Real</span> <span class="pre">as_in,</span> <span class="pre">Array1D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NQ-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;Q,</span> <span class="pre">const</span> <span class="pre">int</span> <span class="pre">dir)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="mhd__eigen_8H_1a87fbdf256a2d6a2985b439f2737993d8"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void evecx (Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;leig, Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;reig, const Real as_in, Array1D&lt; Real, 0, NQ-1 &gt; &amp;Q)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="mhd__eigen_8H_1a87fbdf256a2d6a2985b439f2737993d8"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_FORCE_INLINE</span> <span class="pre">void</span> <span class="pre">evecx</span> <span class="pre">(Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;leig,</span> <span class="pre">Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;reig,</span> <span class="pre">const</span> <span class="pre">Real</span> <span class="pre">as_in,</span> <span class="pre">Array1D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NQ-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;Q)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="mhd__eigen_8H_1a38cbeb4f9422afebf57f99a5cb77a906"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void evecy (Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;leig, Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;reig, const Real as_in, Array1D&lt; Real, 0, NQ-1 &gt; &amp;Q)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="mhd__eigen_8H_1a38cbeb4f9422afebf57f99a5cb77a906"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_FORCE_INLINE</span> <span class="pre">void</span> <span class="pre">evecy</span> <span class="pre">(Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;leig,</span> <span class="pre">Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;reig,</span> <span class="pre">const</span> <span class="pre">Real</span> <span class="pre">as_in,</span> <span class="pre">Array1D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NQ-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;Q)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="mhd__eigen_8H_1aa6bf0340a4a038a2cdd0a1f8539f4cf2"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void evecz (Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;leig, Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;reig, const Real as_in, Array1D&lt; Real, 0, NQ-1 &gt; &amp;Q)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="mhd__eigen_8H_1aa6bf0340a4a038a2cdd0a1f8539f4cf2"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_FORCE_INLINE</span> <span class="pre">void</span> <span class="pre">evecz</span> <span class="pre">(Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;leig,</span> <span class="pre">Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;reig,</span> <span class="pre">const</span> <span class="pre">Real</span> <span class="pre">as_in,</span> <span class="pre">Array1D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NQ-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;Q)</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt>
-<span class="target" id="mhd__eigen_8H_1ac070a9063975941f05008050da2b7e02"></span><code class="sig-name descname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void check_evecs (Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;leig, Array2D&lt; Real, 0, NEIGN-1, 0, NEIGN-1 &gt; &amp;reig)</code></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="mhd__eigen_8H_1ac070a9063975941f05008050da2b7e02"></span><span class="sig-name descname"><span class="pre">AMREX_GPU_HOST_DEVICE</span> <span class="pre">AMREX_FORCE_INLINE</span> <span class="pre">void</span> <span class="pre">check_evecs</span> <span class="pre">(Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;leig,</span> <span class="pre">Array2D&lt;</span> <span class="pre">Real,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1,</span> <span class="pre">0,</span> <span class="pre">NEIGN-1</span> <span class="pre">&gt;</span> <span class="pre">&amp;reig)</span></span></dt>
 <dd></dd></dl>
 
 </div>
@@ -268,37 +270,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="mhd__sizes_8H.html" class="btn btn-neutral float-right" title="File mhd_sizes.H" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="Castro__mhd_8H.html" class="btn btn-neutral float-left" title="File Castro_mhd.H" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="mhd__sizes_8H.html" class="btn btn-neutral float-right" title="File mhd_sizes.H" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Castro__mhd_8H.html" class="btn btn-neutral float-left" title="File Castro_mhd.H" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2018-2020, Castro development tem
+        &#169; Copyright 2018-2020, Castro development tem.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
