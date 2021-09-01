@@ -21,6 +21,9 @@ the different code paths.  These fall into two categories:
 
    The MHD solver uses this same driver.
 
+   Some discussion of the Castro implementation of Strang splitting is found
+   in :cite:`strang_rnaas`.
+
 -  SDC: a class of iterative methods that couples the advection and reactions
    such that each process explicitly sees the effect of the other.  We have
    two SDC implementations in Castro.
