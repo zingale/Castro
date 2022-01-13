@@ -62,25 +62,6 @@ class RadSolve {
   void cellCenteredApplyMetrics(int level, amrex::MultiFab& acoefs);
 
 ///
-/// @param geom
-/// @param reg
-/// @param r
-/// @param s
-///
-  static void getCellCenterMetric(const amrex::Geometry& geom, const amrex::Box& reg, amrex::Vector<amrex::Real>& r, amrex::Vector<amrex::Real>& s);
-
-///
-/// @param idim
-/// @param geom
-/// @param edgebox
-/// @param r
-/// @param s
-///
-  static void getEdgeMetric(int idim, const amrex::Geometry& geom, const amrex::Box& edgebox,
-                            amrex::Vector<amrex::Real>& r, amrex::Vector<amrex::Real>& s);
-
-
-///
 /// @param level
 /// @param &a
 ///
