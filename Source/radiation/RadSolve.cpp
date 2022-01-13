@@ -1157,9 +1157,31 @@ void RadSolve::getCellCenterMetric(const Geometry& geom, const Box& reg, Vector<
     else {
         geom.GetCellLoc(r, reg, 0);
         geom.GetCellLoc(s, reg, I);
+
         const Real *dx = geom.CellSize();
-        sphc(r.dataPtr(), s.dataPtr(),
-             ARLIM(reg.loVect()), ARLIM(reg.hiVect()), dx);
+
+        amrex::ParallelFor(reg.length(0),
+        [=] AMREX_GPU_HOST_DEVICE (int i)
+        {
+
+            Real r_tmp;
+            Real s_tmp;
+            cell_center_metric(reg.loVect()[0]+i, 0, 0, geomdata, r_tmp, s_tmp);
+            r[i] = r_tmp;
+        });
+
+
+#if AMREX_SPACEDIM == 2
+        amrex::ParallelFor(reg.length(1),
+        [=] AMREX_GPU_HOST_DEVICE (int j)
+        {
+
+            Real r_tmp;
+            Real s_tmp;
+            cell_center_metric(0, reg.loVect()[1]+j, 0, geomdata, r_tmp, s_tmp);
+            s[j] = s_tmp;
+        });
+#endif
     }
 }
         
