@@ -1,75 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Build System Overview &mdash; Castro  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"Macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}})</script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Debugging" href="debugging.html" />
     <link rel="prev" title="Frequently Asked Questions" href="faq.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
-
-          
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Castro
-          
-
-          
-            
+            <a href="index.html" class="icon icon-home"> Castro
             <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -77,23 +39,12 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
     <div class="branch">
         Branch: <a href="../build_system.html">main</a> | <a href="./build_system.html">development</a>
     </div>
 
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Castro basics</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Castro basics</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Preface.html">Preface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Introduction.html">Introduction to Castro</a></li>
@@ -111,11 +62,12 @@
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Castro reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Castro reference</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Build System Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#make-parameters">Make Parameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#general-build-parameters">General Build Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fortran-support">Fortran Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#parallelization-and-gpus">Parallelization and GPUs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#general-physics-parameters">General Physics Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#radiation-parameters">Radiation Parameters</a></li>
@@ -130,7 +82,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gpu_porting.html">Offloading a routine to GPU</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gravity.html">Gravity</a></li>
@@ -148,82 +99,43 @@
 <li class="toctree-l1"><a class="reference internal" href="Verification.html">Verification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development Best Practices</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API</span></p>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classlist.html">Class list</a></li>
 </ul>
-<p class="caption"><span class="caption-text">References</span></p>
+<p class="caption" role="heading"><span class="caption-text">References</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="zreferences.html">References</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Castro</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Build System Overview</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/build_system.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="build-system-overview">
+             
+  <section id="build-system-overview">
 <span id="ch-buildsystem"></span><h1>Build System Overview<a class="headerlink" href="#build-system-overview" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="make-parameters">
+<section id="make-parameters">
 <h2>Make Parameters<a class="headerlink" href="#make-parameters" title="Permalink to this headline">¶</a></h2>
 <p>These build parameters control the parallelism, included physics,
 etc.  In general they can be set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> or <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>.  The
@@ -231,7 +143,7 @@ Castro-specific ones are interpreted by <code class="docutils literal notranslat
 <p>A lot of optional features are enabled at compile time.  This allows
 Castro to reduce the memory footprint of the state arrays by not allocating
 space for variables that are not used.</p>
-<div class="section" id="general-build-parameters">
+<section id="general-build-parameters">
 <h3>General Build Parameters<a class="headerlink" href="#general-build-parameters" title="Permalink to this headline">¶</a></h3>
 <p id="index-0">These Parameters affect the build (parallelism, performance, etc.)
 Most of these are parameters from AMReX.</p>
@@ -245,35 +157,39 @@ do not need all of the Castro directories compiled.</p></li>
 <code class="docutils literal notranslate"><span class="pre">Base/</span></code>, <code class="docutils literal notranslate"><span class="pre">AmrCore/</span></code>, <code class="docutils literal notranslate"><span class="pre">Amr/</span></code>, and <code class="docutils literal notranslate"><span class="pre">Boundary/</span></code>.  This defaults
 to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> and should be left set for Castro simulations.  The purpose
 of this flag is for unit tests that don’t need all of AMReX.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">USE_SYSTEM_BLAS</span></code>: for the linear algebra routines provided by
-BLAS, should we compile our own versions or should we use a system
-library that provides the BLAS routines?  If we set
-<code class="docutils literal notranslate"><span class="pre">USE_SYSTEM_BLAS</span> <span class="pre">=</span> <span class="pre">TRUE</span></code>, then we need to provide the name on
-the library in the <code class="docutils literal notranslate"><span class="pre">BLAS_LIBRARY</span></code> build parameter.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_MLMG</span></code>: use the AMReX multi-level multigrid solver for gravity
 and diffusion.  This should always be set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_HYPRE</span></code>: compile in the Hypre library.  This will be automatically enabled
 for radiation.  You need to specify the path to the Hypre library via either
 <code class="docutils literal notranslate"><span class="pre">HYPRE_DIR</span></code> or <code class="docutils literal notranslate"><span class="pre">HYPRE_OMP_DIR</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">USE_PROB_PARAMS</span></code>: generate the <code class="docutils literal notranslate"><span class="pre">probdata_module</span></code> at runtime by parsing
-the problem’s <code class="docutils literal notranslate"><span class="pre">_prob_params</span></code> file.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="parallelization-and-gpus">
+</section>
+<section id="fortran-support">
+<h3>Fortran Support<a class="headerlink" href="#fortran-support" title="Permalink to this headline">¶</a></h3>
+<p>Radiation currently needs Fortran support.  All of the other solvers
+and problem set ups do not require Fortran.  Fortran support in AMReX
+is enabled / disabled via:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BL_NO_FORT</span></code>: if set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, then no AMReX Fortran source will be built.
+This cannot currently be used for the radiation solver.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="parallelization-and-gpus">
 <h3>Parallelization and GPUs<a class="headerlink" href="#parallelization-and-gpus" title="Permalink to this headline">¶</a></h3>
 <p id="index-1">The following parameters control how work is divided across nodes, cores, and GPUs.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">USE_CUDA</span></code>: compile with GPU support using CUDA.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">USE_ACC</span></code>: compile with OpenACC. Note: this is a work in
-progress and should not be used presently.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_MPI</span></code>: compile with the MPI library to allow for distributed parallelism.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_OMP</span></code>: compile with OpenMP to allow for shared memory parallelism.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">USE_CUDA</span></code>: compile with NVIDIA GPU support using CUDA.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">USE_HIP</span></code>: compile with AMD GPU support using HIP.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="general-physics-parameters">
+</section>
+<section id="general-physics-parameters">
 <h3>General Physics Parameters<a class="headerlink" href="#general-physics-parameters" title="Permalink to this headline">¶</a></h3>
 <p id="index-2">The following parameters control how the coupling between hydro and reactions
 is handled.</p>
@@ -289,8 +205,8 @@ moment, this works on single level only.  This requires running
 with <code class="docutils literal notranslate"><span class="pre">castro.time_integration_method</span> <span class="pre">=</span> <span class="pre">2</span></code>.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="radiation-parameters">
+</section>
+<section id="radiation-parameters">
 <h3>Radiation Parameters<a class="headerlink" href="#radiation-parameters" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul>
@@ -300,24 +216,22 @@ groups.  This is controlled by the <code class="docutils literal notranslate"><s
 </li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="gravity-parameters">
+</section>
+<section id="gravity-parameters">
 <span id="index-3"></span><h3>Gravity Parameters<a class="headerlink" href="#gravity-parameters" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_GRAV</span></code>: use gravity (this could be constant or self-gravity)</p>
 </li>
-<li id="index-4"><p><code class="docutils literal notranslate"><span class="pre">USE_SELF_GRAV</span></code>: use self-gravity.  At the moment, this is always set
-if <code class="docutils literal notranslate"><span class="pre">USE_GRAV</span></code> is enabled.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">USE_GR</span></code>: use a post-Newtonian approximation for GR gravity for the monopole
+<li id="index-4"><p><code class="docutils literal notranslate"><span class="pre">USE_GR</span></code>: use a post-Newtonian approximation for GR gravity for the monopole
 solver.</p>
 </li>
 <li id="index-5"><p><code class="docutils literal notranslate"><span class="pre">USE_POINTMASS</span></code>: include a pointmass source to the gravitational potential.</p>
 </li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="microphysics-parameters">
+</section>
+<section id="microphysics-parameters">
 <span id="index-6"></span><h3>Microphysics Parameters<a class="headerlink" href="#microphysics-parameters" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul>
@@ -333,8 +247,9 @@ parameters that come into play here are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">NETWORK_DIR</span></code>: the network to use.  This is expected to be a subdirectory
 in the Microphysics repo.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GENERAL_NET_INPUTS</span></code>: this is the text file that we read to define the
-composition if we are using the <code class="docutils literal notranslate"><span class="pre">general_null</span></code> network.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NETWORK_INPUTS</span></code>: this is the text file that we read to define the
+composition if we are using the <code class="docutils literal notranslate"><span class="pre">general_null</span></code> network (e.g., <code class="docutils literal notranslate"><span class="pre">gammalaw.net</span></code>).
+The build system will look for this file in the Microphysics repo.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">INTEGRATOR_DIR</span></code>: this is the ODE integrator to use to integrate the
 reaction system.  This is expected to be a subdirectory in the Microphysics
 repo.</p></li>
@@ -347,8 +262,8 @@ Microphysics repo.</p>
 </li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="hydrodynamics-and-source-term-parameters">
+</section>
+<section id="hydrodynamics-and-source-term-parameters">
 <span id="index-9"></span><h3>Hydrodynamics and Source Term Parameters<a class="headerlink" href="#hydrodynamics-and-source-term-parameters" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul>
@@ -362,8 +277,8 @@ location of a shock.</p>
 </li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="simulation-flow-parameters">
+</section>
+<section id="simulation-flow-parameters">
 <span id="index-12"></span><h3>Simulation Flow Parameters<a class="headerlink" href="#simulation-flow-parameters" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul>
@@ -385,17 +300,17 @@ by Microphysics routines.</p>
 </li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="tracer-particle-parameters">
+</section>
+<section id="tracer-particle-parameters">
 <span id="index-16"></span><h3>Tracer Particle Parameters<a class="headerlink" href="#tracer-particle-parameters" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_PARTICLES</span></code>: compile in support for tracer particles.</p></li>
 </ul>
 </div></blockquote>
-</div>
-</div>
-<div class="section" id="build-process-procedure">
+</section>
+</section>
+<section id="build-process-procedure">
 <h2>Build Process Procedure<a class="headerlink" href="#build-process-procedure" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -410,16 +325,16 @@ number of options (<code class="docutils literal notranslate"><span class="pre">
 <li><p><code class="docutils literal notranslate"><span class="pre">set_variables.py</span></code> is called</p>
 <ul id="index-17">
 <li><p>This processes the Castro <code class="docutils literal notranslate"><span class="pre">_variables</span></code> file and writes
-<code class="docutils literal notranslate"><span class="pre">state_indices_nd.F90</span></code> and <code class="docutils literal notranslate"><span class="pre">state_indices.H</span></code> into the
+<code class="docutils literal notranslate"><span class="pre">state_indices.H</span></code> into the
 <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/castro_sources/</span></code> directory.</p>
 <p>These are used to define the size of the various state arrays and
 the integer keys to index each state variable.</p>
 </li>
-<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.auto_source</span></code> in the build rule for <code class="docutils literal notranslate"><span class="pre">state_indices_nd.F90</span></code></p></li>
+<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.auto_source</span></code> in the build rule for <code class="docutils literal notranslate"><span class="pre">state_indices.H</span></code></p></li>
 <li><p>You can test this portion of the build system by doing <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test_variables</span></code></p></li>
 </ul>
 </li>
-<li><p>(for <code class="docutils literal notranslate"><span class="pre">general_null</span> <span class="pre">networks</span></code>), <code class="docutils literal notranslate"><span class="pre">actual_network.F90</span></code> is created</p>
+<li><p>(for <code class="docutils literal notranslate"><span class="pre">general_null</span> <span class="pre">networks</span></code>), <code class="docutils literal notranslate"><span class="pre">network_properties.H</span></code> is created</p>
 <ul class="simple" id="index-18">
 <li><p>This is done by <code class="docutils literal notranslate"><span class="pre">write_network.py</span></code></p></li>
 <li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">$(CASTRO_HOME)/Microphysics/networks/general_null/Make.package</span></code></p></li>
@@ -427,37 +342,33 @@ the integer keys to index each state variable.</p>
 </li>
 <li><p>Runtime parameter files for the microphysics routines are parsed by <code class="docutils literal notranslate"><span class="pre">write_probin.py</span></code></p>
 <ul class="simple" id="index-19">
-<li><p>This writes the Fortran module that holds the Microphysics runtime
-parameters, <code class="docutils literal notranslate"><span class="pre">extern.F90</span></code>.  This is output in
+<li><p>This writes the routines that manage the Microphysics runtime
+parameters: <code class="docutils literal notranslate"><span class="pre">extern_parameters.cpp</span></code> and  <code class="docutils literal notranslate"><span class="pre">extern_parameters.H</span></code>.  This is output in
 <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/castro_sources/</span></code>.</p></li>
-<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.Castro</span></code> in the rule for <code class="docutils literal notranslate"><span class="pre">extern.F90</span></code></p></li>
+<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.auto_source</span></code> in the rule for <code class="docutils literal notranslate"><span class="pre">extern_parameters.H</span></code></p></li>
 </ul>
 </li>
 <li><p>Castro’s runtime parameters are parsed by <code class="docutils literal notranslate"><span class="pre">parse_castro_params.py</span></code></p>
 <ul class="simple" id="index-20">
-<li><p>This writes the Fortran module <code class="docutils literal notranslate"><span class="pre">meth_params.F90</span></code>, which defines all
-of the runtime parameters available to Fortran, from the template
-<code class="docutils literal notranslate"><span class="pre">meth_params.template</span></code> in <code class="docutils literal notranslate"><span class="pre">Source/driver</span></code>. The file is output in
-<code class="docutils literal notranslate"><span class="pre">tmp_build_dir/castro_sources/</span></code>. It also generates several C++
-headers and snippets of .cpp files that define the variables, and
-read them from the inputs file/command line, respectively, as well
-as the code needed to set the Fortran data correctly once the inputs
-have been read.</p></li>
-<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.Castro</span></code> in the rule for <code class="docutils literal notranslate"><span class="pre">meth_params.F90</span></code></p></li>
+<li><p>This writes the C++ header files that manage and read the runtime
+parameters.  These file are output in
+<code class="docutils literal notranslate"><span class="pre">tmp_build_dir/castro_sources/</span></code>.</p></li>
+<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.auto_source</span></code> in the rule for <code class="docutils literal notranslate"><span class="pre">castro_params.H</span></code></p></li>
 </ul>
 </li>
 <li><p>Problem-specific runtime parameters are parsed by <code class="docutils literal notranslate"><span class="pre">write_probdata.py</span></code></p>
 <ul class="simple">
-<li><p>If <code class="docutils literal notranslate"><span class="pre">USE_PROB_PARAMS</span> <span class="pre">=</span> <span class="pre">TRUE</span></code>, then the <code class="docutils literal notranslate"><span class="pre">_prob_param</span></code> file in
-the problem directory is parsed and used to define the Fortran
-<code class="docutils literal notranslate"><span class="pre">&amp;fortin</span></code> namelist that controls the runtime parameters for
-problem initialization.</p></li>
+<li><p>If the problem directory defines a <code class="docutils literal notranslate"><span class="pre">_prob_params</span></code> then it is parsed
+and used to C++ header and source files <code class="docutils literal notranslate"><span class="pre">prob_parameters.H</span></code> and <code class="docutils literal notranslate"><span class="pre">prob_parameters.cpp</span></code>.
+These handle reading the <code class="docutils literal notranslate"><span class="pre">problem.*</span></code> parameters from the inputs file.
+Even without a problem-specific <code class="docutils literal notranslate"><span class="pre">_prob_params</span></code>, all of the
+variables in <code class="docutils literal notranslate"><span class="pre">Castro/Source/problems/_default_prob_params</span></code> will be included.</p></li>
 <li><p>The script <code class="docutils literal notranslate"><span class="pre">Castro/Util/scripts/write_probdata.py</span></code> is used</p></li>
-<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.Castro</span></code> in the <code class="docutils literal notranslate"><span class="pre">prob_params_auto.F90</span></code> rule.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">prob_params_auto.F90</span></code> file is output into <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/castro_sources/</span></code>.</p></li>
+<li><p>The hook for this is in <code class="docutils literal notranslate"><span class="pre">Make.auto_source</span></code> in the <code class="docutils literal notranslate"><span class="pre">prob_parameters.H</span></code> rule.</p></li>
+<li><p>These headers are output into <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/castro_sources/</span></code>.</p></li>
 </ul>
 </li>
-<li><p>The Fortran dependencies file is created</p>
+<li><p>(if Fortran support is enabled) The Fortran dependencies file is created</p>
 <ul class="simple">
 <li><p>This creates the <code class="docutils literal notranslate"><span class="pre">f90.depends</span></code> file in the <code class="docutils literal notranslate"><span class="pre">tmp_build_dir</span></code></p></li>
 <li><p>The script <code class="docutils literal notranslate"><span class="pre">amrex/Tools/F_scripts/dep.py</span></code> is used</p></li>
@@ -473,104 +384,43 @@ description of what each line does in the comments of the make
 file</p></li>
 </ul>
 </li>
-<li><p>(when <code class="docutils literal notranslate"><span class="pre">USE_CUDA=TRUE</span></code>) Interpret the <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">gpu</span></code></p>
-<ul class="simple">
-<li><p>The script <code class="docutils literal notranslate"><span class="pre">write_cuda_headers.py</span></code> (in <code class="docutils literal notranslate"><span class="pre">amrex/Tools/F_scripts/</span></code>) is tasked with
-understanding our custom pragma.  Its flow is:</p>
-<ul>
-<li><p>Loop over all C++ files, looking for routines that are marked
-with the pragma and return a dict keyed by the name of the
-function with values being a list of the arguments</p></li>
-<li><p>Parse the headers</p>
-<ul>
-<li><p>preprocess all of the <code class="docutils literal notranslate"><span class="pre">.H</span></code> files to the <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/s/</span></code>
-directory, giving them the prefix <code class="docutils literal notranslate"><span class="pre">CPP-</span></code>.</p></li>
-<li><p>now parse the preprocessed headers, grab the function
-signatures there, modify them with the CUDA launch, and insert
-them into a copy of the original, unpreprocessed
-header.  These new copies are also put in <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/s/</span></code>.</p></li>
-<li><p>loop through the C++ files that had the pragma, and add the
-needed launch macro.  These new <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> files are put in the same
-<code class="docutils literal notranslate"><span class="pre">tmp_build_dir/s/</span></code> directory.</p></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
 <li><p>Output to stdout the git version of the sources, via
 <code class="docutils literal notranslate"><span class="pre">describe_sources.py</span></code>.  This doesn’t affect the build process</p></li>
-<li><p>(when <code class="docutils literal notranslate"><span class="pre">USE+CUDA=TRUE</span></code>) Create device and host versions of each needed Fortran file. This
-is done as each <code class="docutils literal notranslate"><span class="pre">.F90</span></code> file is compiled with a rule in <code class="docutils literal notranslate"><span class="pre">Make.rules</span></code> that
-invokes <code class="docutils literal notranslate"><span class="pre">gpu_fortran.py</span></code> and then directs the compilation to build
-that version.</p>
-<ul class="simple">
-<li><p>We look for a <code class="docutils literal notranslate"><span class="pre">!$gpu</span></code> comment in routines, and use that as an
-indication to mark it up with a host and device version of the
-routine</p></li>
-<li><p>The modified <code class="docutils literal notranslate"><span class="pre">.F90</span></code> files are placed in <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/s/</span></code></p></li>
-</ul>
-</li>
 </ul>
 <p>For all of this to work, we need the <code class="docutils literal notranslate"><span class="pre">tmp_build_dir/s</span></code> directory to
 be first in the vpath, so our modified sources are found and used.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="debugging.html" class="btn btn-neutral float-right" title="Debugging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="faq.html" class="btn btn-neutral float-left" title="Frequently Asked Questions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="faq.html" class="btn btn-neutral float-left" title="Frequently Asked Questions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="debugging.html" class="btn btn-neutral float-right" title="Debugging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2018-2020, Castro development tem
-
-    </p>
+    <p>&#169; Copyright 2018-2022, Castro development team.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-    
+  </script>  
 
 
 </body>
