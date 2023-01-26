@@ -486,6 +486,13 @@ Castro::react_state(Real time, Real dt)
             }
 #endif
 
+            // for NSE, we'll pass in the I_q so we can do a
+            // predictor-corrector update
+            burn_state.Iq_e = I(i,j,k,QREINT);
+            for (int n = 0; n < NumAux; ++n) {
+                burn_state.Iq_aux[n] = I(i,j,k,QFX+n);
+            }
+
             // Convert the current state to primitive data.
             // This state is U* = U_old + dt A where A = -div U + S_hydro.
 
