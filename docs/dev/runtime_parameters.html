@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>namespace: castro &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script>window.MathJax = {"tex": {"macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}}</script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -31,12 +35,16 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-            <a href="index.html" class="icon icon-home"> Castro
-            <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Castro
+              <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -81,14 +89,16 @@
 <li class="toctree-l1"><a class="reference internal" href="build_system.html">Build System Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hse.html">Hydrostatic Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EOS.html">Equation of State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reactions.html">Reactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gravity.html">Gravity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Thermal Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rotation.html">Rotation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sponge.html">Sponge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="radiation.html">Radiation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Particles.html">Tracer particles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="EOSNetwork.html">Microphysics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sdc.html">Spectral Deferred Corrections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AMR.html">Adaptive Mesh Refinement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ConvertCheckpoint.html">Checkpoint Embiggener</a></li>
@@ -120,9 +130,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="rp_intro.html">Runtime Parameters</a> &raquo;</li>
-      <li>namespace: <code class="docutils literal notranslate"><span class="pre">castro</span></code></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="rp_intro.html">Runtime Parameters</a></li>
+      <li class="breadcrumb-item active">namespace: <code class="docutils literal notranslate"><span class="pre">castro</span></code></li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/runtime_parameters.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -133,14 +143,9 @@
            <div itemprop="articleBody">
              
   <section id="namespace-castro">
-<h1>namespace: <code class="docutils literal notranslate"><span class="pre">castro</span></code><a class="headerlink" href="#namespace-castro" title="Permalink to this headline">¶</a></h1>
+<h1>namespace: <code class="docutils literal notranslate"><span class="pre">castro</span></code><a class="headerlink" href="#namespace-castro" title="Link to this heading"></a></h1>
 <p><strong>AMR</strong></p>
 <table class="docutils align-default" id="index-0">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -155,34 +160,30 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lin_limit_state_interp</span></code></p></td>
 <td><p>how to do limiting of the state data when interpolating 0:
 only prevent new extrema 1: preserve linear combinations of
-state variables</p></td>
+state variables 2: preserve linear combinations and prevent
+new extrema</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">state_nghost</span></code></p></td>
-<td><p>Number of ghost zones for state data to have. Note that if
-you are using radiation, choosing this to be zero will be
-overridden since radiation needs at least one ghost zone.</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">do_reflux</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">do_reflux</span></code></p></td>
 <td><p>do we do the hyperbolic reflux at coarse-fine interfaces?</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">update_sources_after_reflux</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">update_sources_after_reflux</span></code></p></td>
 <td><p>whether to re-compute new-time source terms after a reflux
 Note: this only works for the CTU and simple-SDC
 time_integration_method drivers</p></td>
 <td><p>1</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">allow_non_unit_aspect_zones</span></code></p></td>
+<td><p>Castro was originally written assuming dx = dy = dz.  This
+assumption is enforced at runtime.  Setting
+allow_non_unit_aspect_zones = 1 opts out.</p></td>
+<td><p>0</p></td>
+</tr>
 </tbody>
 </table>
 <p><strong>hydrodynamics</strong></p>
 <table class="docutils align-default" id="index-1">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -348,7 +349,7 @@ Below this, UEINT remains unchanged.</p></td>
 <td><p>for the piecewise linear reconstruction, do we subtract off
 <span class="math notranslate nohighlight">\((\rho g)\)</span> from the pressure before limiting?  This
 is a well-balanced method that does well with HSE</p></td>
-<td><p>1</p></td>
+<td><p>0</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pslope_cutoff_density</span></code></p></td>
 <td><p>if we are using pslope, below what density to we turn off
@@ -360,213 +361,226 @@ the well-balanced reconstruction?</p></td>
 small densities?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">limit_fluxes_on_large_vel</span></code></p></td>
-<td><p>Should we limit the momentum fluxes so that we do not
-create large velocities?</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">speed_limit</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">speed_limit</span></code></p></td>
 <td><p>Enforce the magnitude of the velocity to be no larger than
 this number (and optionally limit the fluxes as well). Only
 applies if it is greater than 0.</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">do_sponge</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">do_sponge</span></code></p></td>
 <td><p>permits sponge to be turned on and off</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sponge_implicit</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sponge_implicit</span></code></p></td>
 <td><p>if we are using the sponge, whether to use the implicit
 solve for it</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ext_src_implicit</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ext_src_implicit</span></code></p></td>
 <td><p>if we are using user-defined source terms, are these solved
 implicitly?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">source_term_predictor</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">source_term_predictor</span></code></p></td>
 <td><p>extrapolate the source terms (gravity and rotation) to
 <span class="math notranslate nohighlight">\(n+1/2\)</span> timelevel for use in the interface state
 prediction</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">first_order_hydro</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">first_order_hydro</span></code></p></td>
 <td><p>set the flattening parameter to zero to force the
 reconstructed profiles to be flat, resulting in a first-
 order method</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">xl_ext_bc_type</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">xl_ext_bc_type</span></code></p></td>
 <td><p>if we are doing an external -x boundary condition, who do
 we interpret it? 1 = HSE</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">xr_ext_bc_type</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">xr_ext_bc_type</span></code></p></td>
 <td><p>if we are doing an external +x boundary condition, who do
 we interpret it? 1 = HSE</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">yl_ext_bc_type</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">yl_ext_bc_type</span></code></p></td>
 <td><p>if we are doing an external -y boundary condition, who do
 we interpret it? 1 = HSE</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">yr_ext_bc_type</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">yr_ext_bc_type</span></code></p></td>
 <td><p>if we are doing an external +y boundary condition, who do
 we interpret it? 1 = HSE</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">zl_ext_bc_type</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">zl_ext_bc_type</span></code></p></td>
 <td><p>if we are doing an external -z boundary condition, who do
 we interpret it? 1 = HSE</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">zr_ext_bc_type</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">zr_ext_bc_type</span></code></p></td>
 <td><p>if we are doing an external +z boundary condition, who do
 we interpret it? 1 = HSE</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hse_zero_vels</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hse_zero_vels</span></code></p></td>
 <td><p>if we are doing HSE boundary conditions, do we zero the
 velocity?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hse_interp_temp</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hse_interp_temp</span></code></p></td>
 <td><p>if we are doing HSE boundary conditions, should we get the
 temperature via interpolation (constant gradient) or hold
 it constant?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hse_fixed_temp</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hse_fixed_temp</span></code></p></td>
 <td><p>if we are doing HSE boundary conditions and holding the
 temperature constant, then set it to a fixed value at the
 boundaries (only if positive)</p></td>
 <td><p>-1.e200</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hse_reflect_vels</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hse_reflect_vels</span></code></p></td>
 <td><p>if we are doing HSE boundary conditions, how do we treat
 the velocity? reflect? or outflow?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fill_ambient_bc</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fill_ambient_bc</span></code></p></td>
 <td><p>fills physical domain boundaries with the ambient state</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_fill_dir</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_fill_dir</span></code></p></td>
 <td><p>which direction do we do ambient BCs?  -1 = all, 0 = x, 1 =
 y, 2 = z</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_outflow_vel</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_outflow_vel</span></code></p></td>
 <td><p>in the ambient region, do we do a basic outflow in the
 normal direction of the velocity (with a min/max to ensure
 it is outgoing)</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clamp_ambient_temp</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clamp_ambient_temp</span></code></p></td>
 <td><p>clamps the ambient material to the ambient temperature</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_safety_factor</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_safety_factor</span></code></p></td>
 <td><p>specifies the upper limit, as a multiple of the ambient
 density, for operations that are applied to ambient
 material, such as clamping T.</p></td>
 <td><p>1.1e0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_density</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_density</span></code></p></td>
 <td><p>density of the ambient material (should default to the same
 as small_dens)</p></td>
 <td><p>-1.e200</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_temp</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_temp</span></code></p></td>
 <td><p>temperature of the ambient material (should default to the
 same as small_temp)</p></td>
 <td><p>-1.e200</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_energy</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ambient_energy</span></code></p></td>
 <td><p>energy of the ambient material (should default to the same
 as small_ener)</p></td>
 <td><p>-1.e200</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_order</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_order</span></code></p></td>
 <td><p>integration order for SDC integration valid options are 2
 and 4</p></td>
 <td><p>2</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_quadrature</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_quadrature</span></code></p></td>
 <td><p>which quadrature type to use with SDC?  0 = Gauss-Lobatto,
 1 = Radau</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_extra</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_extra</span></code></p></td>
 <td><p>number of extra SDC iterations to take beyond the order.
 This only applies for true SDC.</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver</span></code></p></td>
 <td><p>which SDC nonlinear solver to use?  1 = Newton, 2 = VODE, 3
 = VODE for first iter</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_tol_dens</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_tol_dens</span></code></p></td>
 <td><p>relative tolerance for the nonlinear solve on rho with SDC</p></td>
 <td><p>1.e-6</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_tol_spec</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_tol_spec</span></code></p></td>
 <td><p>relative tolerance for the nonlinear solve on rho X_k with
 SDC</p></td>
 <td><p>1.e-6</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_tol_ener</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_tol_ener</span></code></p></td>
 <td><p>relative tolerance for the nonlinear solve on (rho e) or
 (rho E) with SDC</p></td>
 <td><p>1.e-6</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_atol</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_atol</span></code></p></td>
 <td><p>absolute tolerance for species with SDC (this will be
 multiplied by the current rho in the zone to define the
 absolute tolerance on (rho X)).</p></td>
 <td><p>1.e-10</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_relax_factor</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solver_relax_factor</span></code></p></td>
 <td><p>factor by which to reduce the SDC solver tol for each
 iteration before the last (e.g., for iteration k out of
 kmax iterations, the tol is
 <span class="math notranslate nohighlight">\(\epsilon/f^{(k_\mathrm{max} - k)}\)</span></p></td>
 <td><p>1.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solve_for_rhoe</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_solve_for_rhoe</span></code></p></td>
 <td><p>do we solve for (rho e) or (rho E) in the SDC nonlinear
 solve?</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_newton_use_analytic_jac</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sdc_newton_use_analytic_jac</span></code></p></td>
 <td><p>do we use the analytic or numerical Jacobian for the
 Newton-Raphson solver? for the VODE solver, we use
 integrator.jacobian instead</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">use_axisymmetric_geom_source</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">use_axisymmetric_geom_source</span></code></p></td>
 <td><p>for 2-d axisymmetry, do we include the geometry source
 terms from Bernand-Champmartin?</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">add_sdc_react_source_to_advection</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">add_sdc_react_source_to_advection</span></code></p></td>
 <td><p>for simplified-SDC, do we add the reactive source
 prediction to the interface states used in the advective
 source construction?</p></td>
 <td><p>1</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hydro_memory_footprint_ratio</span></code></p></td>
+<td><p>In GPU builds, the hydro advance typically results in a
+large amount of extra temporary memory allocated due to the
+large tile sizes that are used for computational
+efficiency. If you want to constrain the code’s GPU memory
+footprint at the expense of throughput, set the following
+parameter to some number greater than 0. This controls the
+ratio of additional extra memory that can be allocated by
+the hydro relative to the size of the base state
+(indirectly, by controlling the hydro tile size and then
+synchronizing each time the amount of currently allocated
+fab memory reaches the target limit). Choosing a value only
+slightly larger than 0 means that you want very little
+additional memory allocated, and you will take a relatively
+large performance hit, while choosing a value much greater
+than 1.0 would result in maximum throughput but also
+maximum memory footprint. You will likely have to
+experimentally find a good ratio for your use case, but a
+ratio around 2.0 - 4.0 is likely to yield a reasonable
+balance between memory footprint and throughput. Note: the
+first timestep will be very slow when using this option.</p></td>
+<td><p>-1.0</p></td>
+</tr>
 </tbody>
 </table>
 <p><strong>timestep control</strong></p>
 <table class="docutils align-default" id="index-2">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -611,6 +625,16 @@ decrease from one step to the next. Must be greater than
 1.0—use max_dt to set a cap on the timestep.</p></td>
 <td><p>1.1</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">check_dt_before_advance</span></code></p></td>
+<td><p>whether to check that we will take a valid timestep before
+the advance</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">check_dt_after_advance</span></code></p></td>
+<td><p>whether to check that we took a valid timestep after the
+advance</p></td>
+<td><p>1</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot_per_is_exact</span></code></p></td>
 <td><p>enforce that the AMR plot interval must be hit exactly</p></td>
 <td><p>0</p></td>
@@ -639,6 +663,16 @@ timestep by when trying again.</p></td>
 density prior to the update was below this threshold.</p></td>
 <td><p>-1.e200</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">abundance_failure_tolerance</span></code></p></td>
+<td><p>Set the threshold for failing the species abundance
+validity check.</p></td>
+<td><p>1.e-2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">abundance_failure_rho_cutoff</span></code></p></td>
+<td><p>Do not abort for invalid species abundances if the zone’s
+density is below this threshold.</p></td>
+<td><p>-1.e200</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">use_post_step_regrid</span></code></p></td>
 <td><p>Regrid after every timestep.</p></td>
 <td><p>0</p></td>
@@ -652,15 +686,19 @@ Set to a negative value to disable this criterion.</p></td>
 <td><p>Number of iterations for the simplified SDC advance.</p></td>
 <td><p>2</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stopping_criterion_field</span></code></p></td>
+<td><p>Field to use for determining whether to stop the
+simulation.</p></td>
+<td><p>“”</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stopping_criterion_value</span></code></p></td>
+<td><p>Threshold value for determining whether to stop.</p></td>
+<td><p>1.e200</p></td>
+</tr>
 </tbody>
 </table>
 <p><strong>reactions</strong></p>
 <table class="docutils align-default" id="index-3">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -682,7 +720,7 @@ to <code class="docutils literal notranslate"><span class="pre">dtnuc</span></co
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dtnuc_X_threshold</span></code></p></td>
 <td><p>If we are using the timestep limiter based on changes in
-$X$, set a threshold on the species abundance below which
+<span class="math notranslate nohighlight">\(X\)</span>, set a threshold on the species abundance below which
 the limiter is not applied. This helps prevent the timestep
 from becoming very small due to changes in trace species.</p></td>
 <td><p>1.e-3</p></td>
@@ -741,11 +779,6 @@ drive_initial_convection</p></td>
 </table>
 <p><strong>diffusion</strong></p>
 <table class="docutils align-default" id="index-4">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -776,11 +809,6 @@ cutoff density. This should be the larger of the two</p></td>
 </table>
 <p><strong>gravity and rotation</strong></p>
 <table class="docutils align-default" id="index-5">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -820,61 +848,50 @@ on and off</p></td>
 and off</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">state_in_rotating_frame</span></code></p></td>
-<td><p>Which reference frame to measure the state variables with
-respect to. The standard in the literature when using a
-rotating reference frame is to measure the state variables
-with respect to an observer fixed in that rotating frame.
-If this option is disabled by setting it to 0, the state
-variables will be measured with respect to an observer
-fixed in the inertial frame (but the frame will still
-rotate).</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rot_source_type</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rot_source_type</span></code></p></td>
 <td><p>determines how the rotation source terms are added to the
 momentum and energy equations</p></td>
 <td><p>4</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">implicit_rotation_update</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">implicit_rotation_update</span></code></p></td>
 <td><p>we can do a implicit solution of the rotation update to
 allow for better coupling of the Coriolis terms</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rot_axis</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rot_axis</span></code></p></td>
 <td><p>the coordinate axis (<span class="math notranslate nohighlight">\(x=1\)</span>, <span class="math notranslate nohighlight">\(y=2\)</span>, <span class="math notranslate nohighlight">\(z=3\)</span>)
 for the rotation vector</p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">use_point_mass</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">use_point_mass</span></code></p></td>
 <td><p>include a central point mass</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass</span></code></p></td>
 <td><p>mass of the point mass</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_fix_solution</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_fix_solution</span></code></p></td>
 <td><p>if we have a central point mass, we can prevent mass from
 building up in the zones adjacent to it by keeping their
 density constant and adding their mass to the point mass
 object</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gw_dist</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gw_dist</span></code></p></td>
 <td><p>Distance (in kpc) used for calculation of the gravitational
-wave amplitude (this wil be calculated along all three
+wave amplitude (this will be calculated along all three
 coordinate axes). Only relevant if castro.sum_interval &gt; 0
 and if set to a positive number. A standard value in the
 literature is 10.0 (kpc).</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_offset_is_true</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_offset_is_true</span></code></p></td>
 <td><p>This integer is used to activate parallel plane 1/r**2
 gravity.</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_location_offset</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_location_offset</span></code></p></td>
 <td></td>
 <td><p>0.0</p></td>
 </tr>
@@ -882,11 +899,6 @@ gravity.</p></td>
 </table>
 <p><strong>sponge</strong></p>
 <table class="docutils align-default" id="index-6">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -948,11 +960,6 @@ fully applied</p></td>
 </table>
 <p><strong>parallelization</strong></p>
 <table class="docutils align-default" id="index-7">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -972,11 +979,6 @@ fully applied</p></td>
 </table>
 <p><strong>embiggening</strong></p>
 <table class="docutils align-default" id="index-8">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -998,11 +1000,6 @@ extend the domain</p></td>
 </table>
 <p><strong>self-consistent field initialization</strong></p>
 <table class="docutils align-default" id="index-9">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1038,11 +1035,6 @@ extend the domain</p></td>
 </table>
 <p><strong>refinement</strong></p>
 <table class="docutils align-default" id="index-10">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1054,19 +1046,16 @@ extend the domain</p></td>
 <td></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">spherical_star</span></code></p></td>
-<td></td>
-<td><p>0</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_tagging_radius</span></code></p></td>
+<td><p>Maximum radius from the center (in units of the domain
+width) where tagging is allowed. The default choice implies
+no restriction.</p></td>
+<td><p>10.0e0</p></td>
 </tr>
 </tbody>
 </table>
 <p><strong>diagnostics, I/O</strong></p>
 <table class="docutils align-default" id="index-11">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1104,20 +1093,16 @@ sums (for runtime diagnostics)</p></td>
 runtime diagnostics)</p></td>
 <td><p>-1.0e0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">show_center_of_mass</span></code></p></td>
-<td><p>display center of mass diagnostics</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">job_name</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">job_name</span></code></p></td>
 <td><p>a string describing the simulation that will be copied into
 the plotfile’s <code class="docutils literal notranslate"><span class="pre">job_info</span></code> file</p></td>
 <td><p>“Castro”</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">output_at_completion</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">output_at_completion</span></code></p></td>
 <td><p>write a final plotfile and checkpoint upon completion</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reset_checkpoint_time</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reset_checkpoint_time</span></code></p></td>
 <td><p>Do we want to reset the time in the checkpoint? This ONLY
 takes effect if amr.regrid_on_restart = 1 and
 amr.checkpoint_on_restart = 1, (which require that max_step
@@ -1125,7 +1110,7 @@ and stop_time be less than the value in the checkpoint) and
 you set it to value greater than this default value.</p></td>
 <td><p>-1.e200</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reset_checkpoint_step</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reset_checkpoint_step</span></code></p></td>
 <td><p>Do we want to reset the number of steps in the checkpoint?
 This ONLY takes effect if amr.regrid_on_restart = 1 and
 amr.checkpoint_on_restart = 1, (which require that max_step
@@ -1133,19 +1118,19 @@ and stop_time be less than the value in the checkpoint) and
 you set it to value greater than this default value.</p></td>
 <td><p>-1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">store_omegadot</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">store_omegadot</span></code></p></td>
 <td><p>Do we store the species creation rates in the plotfile?
 Note, if this option is enabled then more memory will be
 allocated to hold the results of the burn</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">store_burn_weights</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">store_burn_weights</span></code></p></td>
 <td><p>Do we store the burn weights as a diagnostic in the
 plotfile?    Note, if this option is enabled then more
 memory will be allocated to hold the results of the burn</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">abort_on_invalid_params</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">abort_on_invalid_params</span></code></p></td>
 <td><p>Do we abort the run if the inputs file specifies a runtime
 parameter that we don’t know about?  Note: this will only
 take effect for those namespaces where 100% of the runtime
@@ -1156,11 +1141,6 @@ parameters are managed by the python scripts.</p></td>
 </table>
 <p><strong>radiation-hydro</strong></p>
 <table class="docutils align-default" id="index-12">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1176,11 +1156,6 @@ parameters are managed by the python scripts.</p></td>
 </table>
 <p><strong>particles</strong></p>
 <table class="docutils align-default" id="index-13">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1196,13 +1171,8 @@ parameters are managed by the python scripts.</p></td>
 </table>
 </section>
 <section id="namespace-diffusion">
-<h1>namespace: <code class="docutils literal notranslate"><span class="pre">diffusion</span></code><a class="headerlink" href="#namespace-diffusion" title="Permalink to this headline">¶</a></h1>
+<h1>namespace: <code class="docutils literal notranslate"><span class="pre">diffusion</span></code><a class="headerlink" href="#namespace-diffusion" title="Link to this heading"></a></h1>
 <table class="docutils align-default" id="index-14">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1223,13 +1193,8 @@ number means more output)</p></td>
 </table>
 </section>
 <section id="namespace-gravity">
-<h1>namespace: <code class="docutils literal notranslate"><span class="pre">gravity</span></code><a class="headerlink" href="#namespace-gravity" title="Permalink to this headline">¶</a></h1>
+<h1>namespace: <code class="docutils literal notranslate"><span class="pre">gravity</span></code><a class="headerlink" href="#namespace-gravity" title="Link to this heading"></a></h1>
 <table class="docutils align-default" id="index-15">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1270,43 +1235,39 @@ means more output on the status of the solve / multigrid</p></td>
 interfaces?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_composite</span></code></p></td>
-<td><p>do we do a composite solve?</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">do_composite_phi_correction</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">do_composite_phi_correction</span></code></p></td>
 <td><p>should we apply a lagged correction to the potential that
 gets us closer to the composite solution? This makes the
 resulting fine grid calculation slightly more accurate, at
 the cost of an additional Poisson solve per timestep.</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_solve_level</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_solve_level</span></code></p></td>
 <td><p>For all gravity types, we can choose a maximum level for
 explicitly calculating the gravity and associated
 potential. Above that level, we interpolate from coarser
 levels.</p></td>
 <td><p>MAX_LEV-1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_g_from_phi</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_g_from_phi</span></code></p></td>
 <td><p>For non-Poisson gravity, do we want to construct the
 gravitational acceleration by taking the gradient of the
 potential, rather than constructing it directly?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_max_fmg_iter</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_max_fmg_iter</span></code></p></td>
 <td><p>how many FMG cycles?</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_agglomeration</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_agglomeration</span></code></p></td>
 <td><p>Do agglomeration?</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_consolidation</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_consolidation</span></code></p></td>
 <td></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_nsolve</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mlmg_nsolve</span></code></p></td>
 <td><p>Do N-Solve?</p></td>
 <td><p>0</p></td>
 </tr>
@@ -1314,13 +1275,8 @@ potential, rather than constructing it directly?</p></td>
 </table>
 </section>
 <section id="namespace-particles">
-<h1>namespace: <code class="docutils literal notranslate"><span class="pre">particles</span></code><a class="headerlink" href="#namespace-particles" title="Permalink to this headline">¶</a></h1>
+<h1>namespace: <code class="docutils literal notranslate"><span class="pre">particles</span></code><a class="headerlink" href="#namespace-particles" title="Link to this heading"></a></h1>
 <table class="docutils align-default" id="index-16">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1369,13 +1325,8 @@ particles are stored in output files</p></td>
 </table>
 </section>
 <section id="namespace-radiation">
-<h1>namespace: <code class="docutils literal notranslate"><span class="pre">radiation</span></code><a class="headerlink" href="#namespace-radiation" title="Permalink to this headline">¶</a></h1>
+<h1>namespace: <code class="docutils literal notranslate"><span class="pre">radiation</span></code><a class="headerlink" href="#namespace-radiation" title="Link to this heading"></a></h1>
 <table class="docutils align-default" id="index-17">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>
@@ -1391,17 +1342,55 @@ particles are stored in output files</p></td>
 <td></td>
 <td><p>-1.0</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">comoving</span></code></p></td>
+<td><p>are we in a comoving reference frame?</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">closure</span></code></p></td>
+<td><p>which closure relation to use 0: f = lambda 1: f = 1/3 2: f
+= 1 - 2 * lambda 3: f = lambda + (lambda * R)^2 4: f = 1/3
++ 2/3 (lambda * R)^2</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">limiter</span></code></p></td>
+<td><p>which limiter to use 0: no limiter 2: Lev-Pom limiter 12:
+Bruenn 22: square root 32: Minerbo</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fspace_advection_type</span></code></p></td>
+<td><p>frequency space advection type</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plot_lambda</span></code></p></td>
+<td><p>do we plot the flux limiter lambda?</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot_kappa_p</span></code></p></td>
+<td><p>do we plot the Planck mean opacity?</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plot_kappa_r</span></code></p></td>
+<td><p>do we plot the Rosseland mean opacity?</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot_lab_Er</span></code></p></td>
+<td><p>do we plot the lab radiation energy?</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plot_lab_flux</span></code></p></td>
+<td><p>do we plot the lab radiation flux?</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot_com_flux</span></code></p></td>
+<td><p>do we plot the comoving frame radiation flux?</p></td>
+<td><p>0</p></td>
+</tr>
 </tbody>
 </table>
 </section>
 <section id="namespace-radsolve">
-<h1>namespace: <code class="docutils literal notranslate"><span class="pre">radsolve</span></code><a class="headerlink" href="#namespace-radsolve" title="Permalink to this headline">¶</a></h1>
+<h1>namespace: <code class="docutils literal notranslate"><span class="pre">radsolve</span></code><a class="headerlink" href="#namespace-radsolve" title="Link to this heading"></a></h1>
 <table class="docutils align-default" id="index-18">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 51%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>parameter</p></th>
 <th class="head"><p>description</p></th>

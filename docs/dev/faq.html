@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Frequently Asked Questions &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,12 +33,16 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-            <a href="index.html" class="icon icon-home"> Castro
-            <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Castro
+              <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -75,14 +83,16 @@
 <li class="toctree-l1"><a class="reference internal" href="build_system.html">Build System Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hse.html">Hydrostatic Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EOS.html">Equation of State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reactions.html">Reactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gravity.html">Gravity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Thermal Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rotation.html">Rotation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sponge.html">Sponge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="radiation.html">Radiation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Particles.html">Tracer particles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="EOSNetwork.html">Microphysics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sdc.html">Spectral Deferred Corrections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AMR.html">Adaptive Mesh Refinement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ConvertCheckpoint.html">Checkpoint Embiggener</a></li>
@@ -114,8 +124,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Frequently Asked Questions</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Frequently Asked Questions</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/faq.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -126,9 +136,9 @@
            <div itemprop="articleBody">
              
   <section id="frequently-asked-questions">
-<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
+<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Link to this heading"></a></h1>
 <section id="compiling">
-<h2>Compiling<a class="headerlink" href="#compiling" title="Permalink to this headline">¶</a></h2>
+<h2>Compiling<a class="headerlink" href="#compiling" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p><em>Compiling fails giving me a cryptic message about a module not
 being found.</em></p>
@@ -164,7 +174,7 @@ all of the make variables are set to?</em></p>
 </ol>
 </section>
 <section id="debugging">
-<span id="debugging-backtrace"></span><h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
+<span id="debugging-backtrace"></span><h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p><em>Castro crashes with a floating point exception—how can
 I get more information?</em></p>
@@ -196,8 +206,8 @@ example. You know the line <code class="docutils literal notranslate"><span clas
 causing a segfault. You could add a print statement before that.
 But it might print out thousands (or even millions) of line before
 it hits the segfault. Instead, you could</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="w"> </span><span class="n">ss</span><span class="p">;</span><span class="w"></span>
-<span class="n">ss</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;state.box() = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">box</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; cell = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cell</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="w"> </span><span class="n">ss</span><span class="p">;</span>
+<span class="n">ss</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;state.box() = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">box</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; cell = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cell</span><span class="p">;</span>
 <span class="n">BL_BACKTRACE_PUSH</span><span class="p">(</span><span class="n">ss</span><span class="p">.</span><span class="n">str</span><span class="p">());</span><span class="w"> </span><span class="c1">// PUSH takes std::string</span>
 
 <span class="n">Real</span><span class="w"> </span><span class="n">rho</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span><span class="w">  </span><span class="c1">// state is a Fab, and cell is an IntVect.</span>
@@ -232,10 +242,10 @@ are in an MFIter loop, with a MultiFab <code class="docutils literal notranslate
 </ol>
 </section>
 <section id="profiling">
-<h2>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline">¶</a></h2>
+<h2>Profiling<a class="headerlink" href="#profiling" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p><em>How can I get line-by-line profiling information?</em></p>
-<p>With the GNU compliers, you can enabling profiling with gprof
+<p>With the GNU compilers, you can enabling profiling with gprof
 by compiling with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USE_GPROF</span><span class="o">=</span><span class="n">TRUE</span>
 </pre></div>
@@ -253,7 +263,7 @@ argument to gprof.</p>
 </ol>
 </section>
 <section id="managing-runs">
-<h2>Managing Runs<a class="headerlink" href="#managing-runs" title="Permalink to this headline">¶</a></h2>
+<h2>Managing Runs<a class="headerlink" href="#managing-runs" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p><em>How can I force the running code to output, even it the plot or
 checkpoint interval parameters don’t require it?</em></p>
@@ -268,10 +278,10 @@ and halt the code, and <code class="docutils literal notranslate"><span class="p
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The parameter <code class="docutils literal notranslate"><span class="pre">amr.message_int</span></code> controls how often the
-existence of these files is checked; by default it is 10, so the
-check will be done at the end of every timestep that is a
-multiple of 10.  Set that to 1 in your inputs file if you’d like
-it to check every timestep.</p>
+existence of these files is checked; by default it is 1, so the
+check will be done at the end of every timestep, but you can
+set it to some other integer to check only timesteps that are a
+multiple of that number.</p>
 </div>
 </li>
 <li><p><em>How can I output plotfiles in single precision?</em></p>
@@ -292,8 +302,8 @@ is overridden in the checkpoint code in AMReX).</p>
 </ol>
 </section>
 <section id="runtime-errors">
-<span id="ch-faq-vis"></span><h2>Runtime Errors<a class="headerlink" href="#runtime-errors" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic">
+<span id="ch-faq-vis"></span><h2>Runtime Errors<a class="headerlink" href="#runtime-errors" title="Link to this heading"></a></h2>
+<ol class="arabic" id="index-0">
 <li><p><em>When running with retries, Castro requests too many substeps
 and crashes.</em></p>
 <p>This can occur due to CFL violations or negative densities.  If
@@ -301,10 +311,22 @@ there are density resets, try running with
 <code class="docutils literal notranslate"><span class="pre">castro.limit_fluxes_on_small_dens</span> <span class="pre">=</span> <span class="pre">1</span></code>.  This will use a flux
 limiter to prevent the density from going negative.</p>
 </li>
+<li><p><em>There might be a problem when Castro tries to normalize mass fractions
+and encounters: ``Invalid mass fraction in Castro::normalize_species()``.</em></p>
+<p>If the error happens at the beginning of the timestep, it is possible that
+something unexpected happened durng the interpolation from the coarse-level
+to the fine-level. Try to set <code class="docutils literal notranslate"><span class="pre">castro.state_interp_order</span> <span class="pre">=</span> <span class="pre">0</span></code> in the
+input file. This allows piecewise constant refinement, but sacrifices
+some benefit of the refinement.</p>
+<p>If the error continues, try to increase the tolerance of determining
+specie abundance validity check by setting <code class="docutils literal notranslate"><span class="pre">castro.abundance_failure_tolerance</span></code>
+to a higher value, or increasing the density floor below which this is
+ignored by changing <code class="docutils literal notranslate"><span class="pre">castro.abundance_failure_rho_cutoff</span></code>.</p>
+</li>
 </ol>
 </section>
 <section id="visualization">
-<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
+<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p><em>When I try to use Amrvis with the Nvidia driver, all I see is
 black—no data. How do I fix this?</em></p>

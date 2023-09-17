@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Class GradPhiPhysBCFunct &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -29,12 +33,16 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-            <a href="../index.html" class="icon icon-home"> Castro
-            <img src="../_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Castro
+              <img src="../_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,14 +75,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../build_system.html">Build System Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hse.html">Hydrostatic Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../EOS.html">Equation of State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reactions.html">Reactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gravity.html">Gravity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../diffusion.html">Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../diffusion.html">Thermal Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../rotation.html">Rotation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../sponge.html">Sponge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../radiation.html">Radiation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Particles.html">Tracer particles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../EOSNetwork.html">Microphysics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../sdc.html">Spectral Deferred Corrections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../AMR.html">Adaptive Mesh Refinement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ConvertCheckpoint.html">Checkpoint Embiggener</a></li>
@@ -89,7 +99,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../classlist.html">Class list</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="classCastro.html">Class Castro</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classDiffusion.html">Class Diffusion</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Class GradPhiPhysBCFunct</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Class GradPhiPhysBCFunct</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv418GradPhiPhysBCFunct"><code class="docutils literal notranslate"><span class="pre">GradPhiPhysBCFunct</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="classGravity.html">Class Gravity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classHypreABec.html">Class HypreABec</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classHypreExtMultiABec.html">Class HypreExtMultiABec</a></li>
@@ -122,9 +135,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../classlist.html">Class list</a> &raquo;</li>
-      <li>Class GradPhiPhysBCFunct</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../classlist.html">Class list</a></li>
+      <li class="breadcrumb-item active">Class GradPhiPhysBCFunct</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/class/classGradPhiPhysBCFunct.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -135,10 +148,10 @@
            <div itemprop="articleBody">
              
   <section id="class-gradphiphysbcfunct">
-<h1>Class GradPhiPhysBCFunct<a class="headerlink" href="#class-gradphiphysbcfunct" title="Permalink to this headline">¶</a></h1>
+<h1>Class GradPhiPhysBCFunct<a class="headerlink" href="#class-gradphiphysbcfunct" title="Link to this heading"></a></h1>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv418GradPhiPhysBCFunct">
-<span id="_CPPv318GradPhiPhysBCFunct"></span><span id="_CPPv218GradPhiPhysBCFunct"></span><span id="GradPhiPhysBCFunct"></span><span class="target" id="classGradPhiPhysBCFunct"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GradPhiPhysBCFunct</span></span></span><a class="headerlink" href="#_CPPv418GradPhiPhysBCFunct" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv318GradPhiPhysBCFunct"></span><span id="_CPPv218GradPhiPhysBCFunct"></span><span id="GradPhiPhysBCFunct"></span><span class="target" id="classGradPhiPhysBCFunct"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GradPhiPhysBCFunct</span></span></span><a class="headerlink" href="#_CPPv418GradPhiPhysBCFunct" title="Link to this definition"></a><br /></dt>
 <dd><p>A physical boundary condition function for grad phi. </p>
 </dd></dl>
 

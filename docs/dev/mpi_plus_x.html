@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Running Options: CPUs and GPUs &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,12 +33,16 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-            <a href="index.html" class="icon icon-home"> Castro
-            <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Castro
+              <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -76,14 +84,16 @@
 <li class="toctree-l1"><a class="reference internal" href="build_system.html">Build System Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hse.html">Hydrostatic Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EOS.html">Equation of State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reactions.html">Reactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gravity.html">Gravity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Thermal Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rotation.html">Rotation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sponge.html">Sponge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="radiation.html">Radiation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Particles.html">Tracer particles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="EOSNetwork.html">Microphysics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sdc.html">Spectral Deferred Corrections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AMR.html">Adaptive Mesh Refinement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ConvertCheckpoint.html">Checkpoint Embiggener</a></li>
@@ -115,8 +125,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Running Options: CPUs and GPUs</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Running Options: CPUs and GPUs</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/mpi_plus_x.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -127,12 +137,12 @@
            <div itemprop="articleBody">
              
   <section id="running-options-cpus-and-gpus">
-<span id="ch-mpiplusx"></span><h1>Running Options: CPUs and GPUs<a class="headerlink" href="#running-options-cpus-and-gpus" title="Permalink to this headline">¶</a></h1>
-<p>Castro uses MPI for coarse parallelization, distributing boxs across
+<span id="ch-mpiplusx"></span><h1>Running Options: CPUs and GPUs<a class="headerlink" href="#running-options-cpus-and-gpus" title="Link to this heading"></a></h1>
+<p>Castro uses MPI for coarse parallelization, distributing boxes across
 compute nodes.  For fine-grained parallelism, OpenMP is used for
 CPU-based computing and CUDA is used for GPUs.</p>
 <section id="running-on-cpus">
-<h2>Running on CPUs<a class="headerlink" href="#running-on-cpus" title="Permalink to this headline">¶</a></h2>
+<h2>Running on CPUs<a class="headerlink" href="#running-on-cpus" title="Link to this heading"></a></h2>
 <p>The preferred was of running on CPUs is to use MPI+OpenMP, compiling as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USE_MPI</span><span class="o">=</span><span class="n">TRUE</span>
 <span class="n">USE_OMP</span><span class="o">=</span><span class="n">TRUE</span>
@@ -149,10 +159,9 @@ with larger boxes, so increasing <code class="docutils literal notranslate"><spa
 performance.</p>
 </section>
 <section id="running-on-gpus">
-<h2>Running on GPUs<a class="headerlink" href="#running-on-gpus" title="Permalink to this headline">¶</a></h2>
+<h2>Running on GPUs<a class="headerlink" href="#running-on-gpus" title="Link to this heading"></a></h2>
 <p>Castro’s compute kernels can run on GPUs and this is the preferred way
-to run on supercomputers with GPUs.  At the moment, offloading is
-handled using CUDA and managed memory.  The exact same compute kernels
+to run on supercomputers with GPUs.  The exact same compute kernels
 are used on GPUs as on CPUs.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -160,15 +169,41 @@ are used on GPUs as on CPUs.</p>
 the true SDC solver (<code class="docutils literal notranslate"><span class="pre">USE_TRUE_SDC</span> <span class="pre">=</span> <span class="pre">TRUE</span></code>).</p>
 </div>
 <p>When using GPUs, almost all of the computing is done on the GPUs.  In
-the MFIter loops over boxes, the loops put a single zone on each GPU
-thread, to take advantage of the massive parallelism.  The Microphysics
-in StarKiller also takes advantage of GPUs, so entire simulations can
-be run on the GPU.</p>
+the <code class="docutils literal notranslate"><span class="pre">MFIter</span></code> loops over boxes, the loops put a single zone on each
+GPU thread, to take advantage of the massive parallelism.  The
+Microphysics routines (EOS, nuclear reaction networks, etc.) also take
+advantage of GPUs, so entire simulations can be run on the GPU.</p>
 <p>Best performance is obtained with bigger boxes, so setting
 <code class="docutils literal notranslate"><span class="pre">amr.max_grid_size</span> <span class="pre">=</span> <span class="pre">128</span></code> and <code class="docutils literal notranslate"><span class="pre">amr.blocking_factor</span> <span class="pre">=</span> <span class="pre">32</span></code> can give
 good performance.</p>
+<p>Castro / AMReX have an option to use managed memory for the GPU –
+this means that the data will automatically be migrated from host to
+device (and vice versa) as needed, whenever a page fault is
+encountered.  This can be enabled via:
+<code class="docutils literal notranslate"><span class="pre">amrex.the_arena_is_managed=1</span></code>.</p>
+<p>By default, Castro will abort if it runs out of GPU memory.  You can
+disable this via <code class="docutils literal notranslate"><span class="pre">amrex.abort_on_out_of_gpu_memory=0</span></code> – together
+with running with managed memory, this can allow the memory to be
+swapped off of the GPU to make more room available.  This is not
+recommended – oversubscribing the GPU memory will severely impact
+performance.</p>
+<p id="index-0">The CTU hydrodynamics scheme creates a lot of temporary <code class="docutils literal notranslate"><span class="pre">FAB</span></code> ‘s
+when doing the update.  This can lead to the code oversubscribing the
+GPU memory during the hydro advance.  To alleviate this, Castro can
+break a box into tiles and work on one tile at a time (this is the
+approach we use with OpenMP).  In the hydro solver, this is controlled
+by <code class="docutils literal notranslate"><span class="pre">hydro_tile_size</span></code>.  By setting
+<code class="docutils literal notranslate"><span class="pre">castro.hydro_memory_footprint_ratio</span></code> to a number &gt; 0, Castro will
+dynamically estimate a good tile size to use for the hydro during the
+first timestep and then use this subsequently.  This larger the
+number, the more local memory we will allow the hydro solver to use
+(generally this means a larger <code class="docutils literal notranslate"><span class="pre">hydro_tile_size</span></code>).  This can allow
+you to run a problem on a smaller number of GPUs if the hydro
+temporary memory was the cause of oversubscription.  Current
+recommendations are to try <code class="docutils literal notranslate"><span class="pre">castro.hydro_memory_footprint_ratio</span></code>
+between <code class="docutils literal notranslate"><span class="pre">2.0</span></code> and <code class="docutils literal notranslate"><span class="pre">4.0</span></code>.</p>
 <section id="nvidia-gpus">
-<h3>NVIDIA GPUs<a class="headerlink" href="#nvidia-gpus" title="Permalink to this headline">¶</a></h3>
+<h3>NVIDIA GPUs<a class="headerlink" href="#nvidia-gpus" title="Link to this heading"></a></h3>
 <p>With NVIDIA GPUs, we use MPI+CUDA, compiled with GCC and the NVIDIA compilers.
 To enable this, compile with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USE_MPI</span> <span class="o">=</span> <span class="n">TRUE</span>
@@ -178,7 +213,7 @@ To enable this, compile with:</p>
 </div>
 </section>
 <section id="amd-gpus">
-<h3>AMD GPUs<a class="headerlink" href="#amd-gpus" title="Permalink to this headline">¶</a></h3>
+<h3>AMD GPUs<a class="headerlink" href="#amd-gpus" title="Link to this heading"></a></h3>
 <p>For AMD GPUs, we use MPI+HIP, compiled with the ROCm compilers.
 To enable this, compile with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USE_MPI</span> <span class="o">=</span> <span class="n">TRUE</span>
@@ -186,14 +221,10 @@ To enable this, compile with:</p>
 <span class="n">USE_HIP</span> <span class="o">=</span> <span class="n">TRUE</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>AMD + HIP support is new and considered experimental.</p>
-</div>
 </section>
 </section>
 <section id="working-at-supercomputing-centers">
-<h2>Working at Supercomputing Centers<a class="headerlink" href="#working-at-supercomputing-centers" title="Permalink to this headline">¶</a></h2>
+<h2>Working at Supercomputing Centers<a class="headerlink" href="#working-at-supercomputing-centers" title="Link to this heading"></a></h2>
 <p>Our best practices for running any of the AMReX Astrophysics codes
 at different supercomputing centers is produced in our workflow
 documentation: <a class="reference external" href="https://amrex-astro.github.io/workflow/">https://amrex-astro.github.io/workflow/</a></p>

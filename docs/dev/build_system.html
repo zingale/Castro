@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Build System Overview &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,12 +33,16 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-            <a href="index.html" class="icon icon-home"> Castro
-            <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Castro
+              <img src="_static/castro_logo_hot_200.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -83,14 +91,16 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="debugging.html">Debugging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Hydrodynamics.html">Hydrodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hse.html">Hydrostatic Equilibrium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EOS.html">Equation of State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reactions.html">Reactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mhd.html">MHD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gravity.html">Gravity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Diffusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diffusion.html">Thermal Diffusion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rotation.html">Rotation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sponge.html">Sponge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="radiation.html">Radiation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Particles.html">Tracer particles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="EOSNetwork.html">Microphysics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sdc.html">Spectral Deferred Corrections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AMR.html">Adaptive Mesh Refinement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ConvertCheckpoint.html">Checkpoint Embiggener</a></li>
@@ -122,8 +132,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Build System Overview</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Build System Overview</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/build_system.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -134,9 +144,9 @@
            <div itemprop="articleBody">
              
   <section id="build-system-overview">
-<span id="ch-buildsystem"></span><h1>Build System Overview<a class="headerlink" href="#build-system-overview" title="Permalink to this headline">¶</a></h1>
+<span id="ch-buildsystem"></span><h1>Build System Overview<a class="headerlink" href="#build-system-overview" title="Link to this heading"></a></h1>
 <section id="make-parameters">
-<h2>Make Parameters<a class="headerlink" href="#make-parameters" title="Permalink to this headline">¶</a></h2>
+<h2>Make Parameters<a class="headerlink" href="#make-parameters" title="Link to this heading"></a></h2>
 <p>These build parameters control the parallelism, included physics,
 etc.  In general they can be set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> or <code class="docutils literal notranslate"><span class="pre">FALSE</span></code>.  The
 Castro-specific ones are interpreted by <code class="docutils literal notranslate"><span class="pre">Make.Castro</span></code>.</p>
@@ -144,13 +154,13 @@ Castro-specific ones are interpreted by <code class="docutils literal notranslat
 Castro to reduce the memory footprint of the state arrays by not allocating
 space for variables that are not used.</p>
 <section id="general-build-parameters">
-<h3>General Build Parameters<a class="headerlink" href="#general-build-parameters" title="Permalink to this headline">¶</a></h3>
+<h3>General Build Parameters<a class="headerlink" href="#general-build-parameters" title="Link to this heading"></a></h3>
 <p id="index-0">These Parameters affect the build (parallelism, performance, etc.)
 Most of these are parameters from AMReX.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_ALL_CASTRO</span></code>: compile all of the core Castro directories.
-This is the defailt (<code class="docutils literal notranslate"><span class="pre">TRUE</span></code>), and should not be changed for
+This is the default (<code class="docutils literal notranslate"><span class="pre">TRUE</span></code>), and should not be changed for
 general simulations.  The purpose of this flag is for unit tests, which
 do not need all of the Castro directories compiled.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_AMR_CORE</span></code>: compile all of the core AMReX directories, including
@@ -166,7 +176,7 @@ for radiation.  You need to specify the path to the Hypre library via either
 </div></blockquote>
 </section>
 <section id="fortran-support">
-<h3>Fortran Support<a class="headerlink" href="#fortran-support" title="Permalink to this headline">¶</a></h3>
+<h3>Fortran Support<a class="headerlink" href="#fortran-support" title="Link to this heading"></a></h3>
 <p>Radiation currently needs Fortran support.  All of the other solvers
 and problem set ups do not require Fortran.  Fortran support in AMReX
 is enabled / disabled via:</p>
@@ -178,7 +188,7 @@ This cannot currently be used for the radiation solver.</p></li>
 </div></blockquote>
 </section>
 <section id="parallelization-and-gpus">
-<h3>Parallelization and GPUs<a class="headerlink" href="#parallelization-and-gpus" title="Permalink to this headline">¶</a></h3>
+<h3>Parallelization and GPUs<a class="headerlink" href="#parallelization-and-gpus" title="Link to this heading"></a></h3>
 <p id="index-1">The following parameters control how work is divided across nodes, cores, and GPUs.</p>
 <blockquote>
 <div><ul class="simple">
@@ -190,7 +200,7 @@ This cannot currently be used for the radiation solver.</p></li>
 </div></blockquote>
 </section>
 <section id="general-physics-parameters">
-<h3>General Physics Parameters<a class="headerlink" href="#general-physics-parameters" title="Permalink to this headline">¶</a></h3>
+<h3>General Physics Parameters<a class="headerlink" href="#general-physics-parameters" title="Link to this heading"></a></h3>
 <p id="index-2">The following parameters control how the coupling between hydro and reactions
 is handled.</p>
 <blockquote>
@@ -207,7 +217,7 @@ with <code class="docutils literal notranslate"><span class="pre">castro.time_in
 </div></blockquote>
 </section>
 <section id="radiation-parameters">
-<h3>Radiation Parameters<a class="headerlink" href="#radiation-parameters" title="Permalink to this headline">¶</a></h3>
+<h3>Radiation Parameters<a class="headerlink" href="#radiation-parameters" title="Link to this heading"></a></h3>
 <blockquote>
 <div><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_RAD</span></code>: use photon radiation diffusion.  Note, For
@@ -218,7 +228,7 @@ groups.  This is controlled by the <code class="docutils literal notranslate"><s
 </div></blockquote>
 </section>
 <section id="gravity-parameters">
-<span id="index-3"></span><h3>Gravity Parameters<a class="headerlink" href="#gravity-parameters" title="Permalink to this headline">¶</a></h3>
+<span id="index-3"></span><h3>Gravity Parameters<a class="headerlink" href="#gravity-parameters" title="Link to this heading"></a></h3>
 <blockquote>
 <div><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_GRAV</span></code>: use gravity (this could be constant or self-gravity)</p>
@@ -232,7 +242,7 @@ solver.</p>
 </div></blockquote>
 </section>
 <section id="microphysics-parameters">
-<span id="index-6"></span><h3>Microphysics Parameters<a class="headerlink" href="#microphysics-parameters" title="Permalink to this headline">¶</a></h3>
+<span id="index-6"></span><h3>Microphysics Parameters<a class="headerlink" href="#microphysics-parameters" title="Link to this heading"></a></h3>
 <blockquote>
 <div><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_DIFFUSION</span></code>: enable thermal diffusion.  The conductivity is
@@ -264,7 +274,7 @@ Microphysics repo.</p>
 </div></blockquote>
 </section>
 <section id="hydrodynamics-and-source-term-parameters">
-<span id="index-9"></span><h3>Hydrodynamics and Source Term Parameters<a class="headerlink" href="#hydrodynamics-and-source-term-parameters" title="Permalink to this headline">¶</a></h3>
+<span id="index-9"></span><h3>Hydrodynamics and Source Term Parameters<a class="headerlink" href="#hydrodynamics-and-source-term-parameters" title="Link to this heading"></a></h3>
 <blockquote>
 <div><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_ROTATION</span></code>: include rotation sources</p>
@@ -279,13 +289,13 @@ location of a shock.</p>
 </div></blockquote>
 </section>
 <section id="simulation-flow-parameters">
-<span id="index-12"></span><h3>Simulation Flow Parameters<a class="headerlink" href="#simulation-flow-parameters" title="Permalink to this headline">¶</a></h3>
+<span id="index-12"></span><h3>Simulation Flow Parameters<a class="headerlink" href="#simulation-flow-parameters" title="Link to this heading"></a></h3>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">USE_AUX_UPDATE</span></code>: some networks define auxillary quantities, which in general
+<li><p><code class="docutils literal notranslate"><span class="pre">USE_AUX_UPDATE</span></code>: some networks define auxiliary quantities, which in general
 Castro will advect, but not otherwise change.  If we set <code class="docutils literal notranslate"><span class="pre">USE_AUX_UPDATE=TRUE</span></code>
 then Castro will call a user-supplied routine <code class="docutils literal notranslate"><span class="pre">advance_aux()</span></code> that can
-change the auxillary quantities.</p>
+change the auxiliary quantities.</p>
 </li>
 <li id="index-13"><p><code class="docutils literal notranslate"><span class="pre">USE_POST_SIM</span></code>: if this is defined, then Castro will call the user-defined
 routine <code class="docutils literal notranslate"><span class="pre">problem_post_simulation()</span></code> after the full evolution of the problem
@@ -302,7 +312,7 @@ by Microphysics routines.</p>
 </div></blockquote>
 </section>
 <section id="tracer-particle-parameters">
-<span id="index-16"></span><h3>Tracer Particle Parameters<a class="headerlink" href="#tracer-particle-parameters" title="Permalink to this headline">¶</a></h3>
+<span id="index-16"></span><h3>Tracer Particle Parameters<a class="headerlink" href="#tracer-particle-parameters" title="Link to this heading"></a></h3>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">USE_PARTICLES</span></code>: compile in support for tracer particles.</p></li>
@@ -311,7 +321,7 @@ by Microphysics routines.</p>
 </section>
 </section>
 <section id="build-process-procedure">
-<h2>Build Process Procedure<a class="headerlink" href="#build-process-procedure" title="Permalink to this headline">¶</a></h2>
+<h2>Build Process Procedure<a class="headerlink" href="#build-process-procedure" title="Link to this heading"></a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>At build time, there are a number of source files that are autogenerated based
