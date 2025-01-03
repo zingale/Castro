@@ -1,31 +1,31 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Software Design &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=2e394b92" />
+
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="_static/copybutton.js?v=f281be69"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Distributed Problem Setups" href="problem_setups.html" />
+    <link rel="next" title="GPU Programming Model" href="gpu.html" />
     <link rel="prev" title="Flowchart" href="FlowChart.html" /> 
 </head>
 
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#gravity-class"><code class="docutils literal notranslate"><span class="pre">Gravity</span></code> class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="gpu.html">GPU Programming Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="creating_a_problem.html">Setting Up Your Own Problem</a></li>
@@ -292,7 +293,8 @@ which is defined as part of the <code class="docutils literal notranslate"><span
 inherits. <code class="docutils literal notranslate"><span class="pre">grids</span></code> is used when building new <code class="docutils literal notranslate"><span class="pre">MultiFabs</span></code> to give
 the layout of the boxes at the current level.</p>
 <figure class="align-default" id="id5">
-<span id="fig-soft-indexspace"></span><a class="reference internal image-reference" href="_images/index_grid2.png"><img alt="_images/index_grid2.png" src="_images/index_grid2.png" style="width: 4in;" /></a>
+<span id="fig-soft-indexspace"></span><a class="reference internal image-reference" href="_images/index_grid2.png"><img alt="_images/index_grid2.png" src="_images/index_grid2.png" style="width: 4in;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 1 </span><span class="caption-text">Three boxes that comprise a single level. At this
 resolution, the domain is 20 <span class="math notranslate nohighlight">\(\times\)</span> 18 zones. Note that the
@@ -635,32 +637,10 @@ AMReX that can get around this, but we do not use them in Castro.</p>
 <span id="soft-phys-bcs"></span><h3>Physical Boundaries<a class="headerlink" href="#physical-boundaries" title="Link to this heading"></a></h3>
 <p id="index-1">Physical boundary conditions are specified by an integer index <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> in
 the <code class="docutils literal notranslate"><span class="pre">inputs</span></code> file, using the <code class="docutils literal notranslate"><span class="pre">castro.lo_bc</span></code> and <code class="docutils literal notranslate"><span class="pre">castro.hi_bc</span></code> runtime
-parameters. The generally supported boundary conditions are, their
-corresponding integer key, and the action they take for the normal
-velocity, transverse velocity, and generic scalar are shown in
-<a class="reference internal" href="#table-castro-bcs"><span class="std std-numref">Table 5</span></a>.</p>
-<p>The definition of the specific actions are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">INT_DIR</span></code>: data taken from other grids or interpolated</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EXT_DIR</span></code>: data specified on EDGE (FACE) of bndry</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">HOEXTRAP</span></code>: higher order extrapolation to EDGE of bndry</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FOEXTRAP</span></code>: first order extrapolation from last cell in interior</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">REFLECT_EVEN</span></code>: <span class="math notranslate nohighlight">\(F(-n) = F(n)\)</span> true reflection from interior cells</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">REFLECT_ODD</span></code>: <span class="math notranslate nohighlight">\(F(-n) = -F(n)\)</span> true reflection from interior cells</p></li>
-</ul>
-<p>The actual registration of a boundary condition action to a particular
-variable is done in <code class="docutils literal notranslate"><span class="pre">Castro_setup.cpp</span></code>. At the top we define arrays
-such as <code class="docutils literal notranslate"><span class="pre">scalar_bc</span></code>, <code class="docutils literal notranslate"><span class="pre">norm_vel_bc</span></code>, etc, which say which kind of
-bc to use on which kind of physical boundary.  Boundary conditions are
-set in functions like <code class="docutils literal notranslate"><span class="pre">set_scalar_bc</span></code>, which uses the <code class="docutils literal notranslate"><span class="pre">scalar_bc</span></code>
-pre-defined arrays. We also specify the name of the routine
-that is responsible for filling the data there (e.g., <code class="docutils literal notranslate"><span class="pre">hypfill</span></code>).  These
-routines are discussed more below.</p>
-<p>If you want to specify a value at a function (like at an inflow
-boundary), then you choose an <em>inflow</em> boundary at that face of
-the domain. You then need to write the implementation code for this.
-There is a centralized hydrostatic boundary condition that is implemented
-this way—see <a class="reference internal" href="creating_a_problem.html#create-bcs"><span class="std std-ref">Boundary Conditions</span></a>.</p>
+parameters.  Table <a class="reference internal" href="#table-castro-bcs"><span class="std std-numref">Table 5</span></a> shows the correspondence
+between the integer key and the physical assumption, as well
+as the action each takes for the normal
+velocity, transverse velocity, and generic scalar.</p>
 <span id="table-castro-bcs"></span><table class="docutils align-default" id="id6">
 <caption><span class="caption-number">Table 5 </span><span class="caption-text">Physical boundary conditions supported in Castro.</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
 <thead>
@@ -676,42 +656,64 @@ velocity</strong></p></th>
 <tbody>
 <tr class="row-even"><td><p>interior</p></td>
 <td><p>0</p></td>
-<td><p>INT_DIR</p></td>
-<td><p>INT_DIR</p></td>
-<td><p>INT_DIR</p></td>
+<td><p>BCType::int_dir</p></td>
+<td><p>BCType::int_dir</p></td>
+<td><p>BCType::int_dir</p></td>
 </tr>
 <tr class="row-odd"><td><p>inflow</p></td>
 <td><p>1</p></td>
-<td><p>EXT_DIR</p></td>
-<td><p>EXT_DIR</p></td>
-<td><p>EXT_DIR</p></td>
+<td><p>BCType::ext_dir</p></td>
+<td><p>BCType::ext_dir</p></td>
+<td><p>BCType::ext_dir</p></td>
 </tr>
 <tr class="row-even"><td><p>outflow</p></td>
 <td><p>2</p></td>
-<td><p>FOEXTRAP</p></td>
-<td><p>FOEXTRAP</p></td>
-<td><p>FOEXTRAP</p></td>
+<td><p>BCType::foextrap</p></td>
+<td><p>BCType::foextrap</p></td>
+<td><p>BCType::foextrap</p></td>
 </tr>
 <tr class="row-odd"><td><p>symmetry</p></td>
 <td><p>3</p></td>
-<td><p>REFLECT_ODD</p></td>
-<td><p>REFLECT_EVEN</p></td>
-<td><p>REFLECT_EVEN</p></td>
+<td><p>BCType::reflect_odd</p></td>
+<td><p>BCType::reflect_even</p></td>
+<td><p>BCType::reflect_even</p></td>
 </tr>
 <tr class="row-even"><td><p>slipwall</p></td>
 <td><p>4</p></td>
-<td><p>REFLECT_ODD</p></td>
-<td><p>REFLECT_EVEN</p></td>
-<td><p>REFLECT_EVEN</p></td>
+<td><p>BCType::reflect_odd</p></td>
+<td><p>BCType::reflect_even</p></td>
+<td><p>BCType::reflect_even</p></td>
 </tr>
 <tr class="row-odd"><td><p>noslipwall</p></td>
 <td><p>5</p></td>
-<td><p>REFLECT_ODD</p></td>
-<td><p>REFLECT_EVEN</p></td>
-<td><p>REFLECT_EVEN</p></td>
+<td><p>BCType::reflect_odd</p></td>
+<td><p>BCType::reflect_even</p></td>
+<td><p>BCType::reflect_even</p></td>
 </tr>
 </tbody>
 </table>
+<p>The definition of the specific actions are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BCType::int_dir</span></code>: data taken from other grids or interpolated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BCType::ext_dir</span></code>: data specified on EDGE (FACE) of boundary</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BCType::hoextrap</span></code>: higher order extrapolation to EDGE of boundary</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BCType::foextrap</span></code>: first order extrapolation from last cell in interior</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BCType::reflect_even</span></code>: <span class="math notranslate nohighlight">\(F(-n) = F(n)\)</span> true reflection from interior cells</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BCType::reflect_odd</span></code>: <span class="math notranslate nohighlight">\(F(-n) = -F(n)\)</span> true reflection from interior cells</p></li>
+</ul>
+<p>The actual registration of a boundary condition action to a particular
+variable is done in <code class="docutils literal notranslate"><span class="pre">Castro_setup.cpp</span></code>. At the top we define arrays
+such as <code class="docutils literal notranslate"><span class="pre">scalar_bc</span></code>, <code class="docutils literal notranslate"><span class="pre">norm_vel_bc</span></code>, etc, which say which kind of
+bc to use on which kind of physical boundary.  Boundary conditions are
+set in functions like <code class="docutils literal notranslate"><span class="pre">set_scalar_bc</span></code>, which uses the <code class="docutils literal notranslate"><span class="pre">scalar_bc</span></code>
+pre-defined arrays. We also specify the name of the routine
+that is responsible for filling the data there (e.g., <code class="docutils literal notranslate"><span class="pre">hypfill</span></code>).  These
+routines are discussed more below.</p>
+<p>If you want to specify a value at a function (like at an inflow
+boundary), then you choose an <em>inflow</em> boundary at that face of
+the domain. You then need to write the implementation code for this.
+There is a centralized hydrostatic boundary condition that is implemented
+this way—see <a class="reference internal" href="creating_a_problem.html#create-bcs"><span class="std std-ref">Boundary Conditions</span></a>.</p>
 </section>
 <section id="fluxregister">
 <h3><code class="docutils literal notranslate"><span class="pre">FluxRegister</span></code><a class="headerlink" href="#fluxregister" title="Link to this heading"></a></h3>
@@ -730,7 +732,7 @@ get a sense of these is to look at the <code class="docutils literal notranslate
 <section id="geometry-class">
 <h3><code class="docutils literal notranslate"><span class="pre">Geometry</span></code> class<a class="headerlink" href="#geometry-class" title="Link to this heading"></a></h3>
 <p>There is a <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> object, <code class="docutils literal notranslate"><span class="pre">geom</span></code> for each level as part of
-the <code class="docutils literal notranslate"><span class="pre">Castro</span></code> object (this is inhereted through <code class="docutils literal notranslate"><span class="pre">AmrLevel</span></code>).</p>
+the <code class="docutils literal notranslate"><span class="pre">Castro</span></code> object (this is inherited through <code class="docutils literal notranslate"><span class="pre">AmrLevel</span></code>).</p>
 </section>
 <section id="parmparse-class">
 <h3><code class="docutils literal notranslate"><span class="pre">ParmParse</span></code> class<a class="headerlink" href="#parmparse-class" title="Link to this heading"></a></h3>
@@ -753,13 +755,13 @@ and gravitation acceleration for use in the hydrodynamic sources.
 Depending on the approximation used for gravity, this could mean
 calling the AMReX multigrid solvers to solve the Poisson equation.</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id3" role="note">
+<aside class="footnote brackets" id="id3" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>for clarity and continuity in this
 documentation, some of the variable names have been changed
 compared to the actual code</p>
 </aside>
-<aside class="footnote brackets" id="id4" role="note">
+<aside class="footnote brackets" id="id4" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>the integer values are defined in <code class="docutils literal notranslate"><span class="pre">BC_TYPES.H</span></code></p>
 </aside>
@@ -772,13 +774,13 @@ compared to the actual code</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="FlowChart.html" class="btn btn-neutral float-left" title="Flowchart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="problem_setups.html" class="btn btn-neutral float-right" title="Distributed Problem Setups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gpu.html" class="btn btn-neutral float-right" title="GPU Programming Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2022, Castro development team.</p>
+    <p>&#169; Copyright 2018-2024, Castro development team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

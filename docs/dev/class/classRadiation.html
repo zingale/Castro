@@ -1,25 +1,25 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Class Radiation &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=2e394b92" />
+
   
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../mpi_plus_x.html">Running Options: CPUs and GPUs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../FlowChart.html">Flowchart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../software.html">Software Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gpu.html">GPU Programming Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../creating_a_problem.html">Setting Up Your Own Problem</a></li>
@@ -114,7 +115,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv49Radiation"><code class="docutils literal notranslate"><span class="pre">Radiation</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation11Solver_TypeE"><code class="docutils literal notranslate"><span class="pre">Radiation::Solver_Type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation9RadiationEPN5amrex3AmrEP6Castroi"><code class="docutils literal notranslate"><span class="pre">Radiation::Radiation()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9RadiationD0Ev"><code class="docutils literal notranslate"><span class="pre">Radiation::~Radiation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation6regridEiRKN5amrex8BoxArrayERKN5amrex19DistributionMappingE"><code class="docutils literal notranslate"><span class="pre">Radiation::regrid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation5closeEi"><code class="docutils literal notranslate"><span class="pre">Radiation::close()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation7restartEiRKN5amrex8BoxArrayERKN5amrex19DistributionMappingERKNSt6stringERNSt7istreamE"><code class="docutils literal notranslate"><span class="pre">Radiation::restart()</span></code></a></li>
@@ -124,8 +124,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation12group_weightEi"><code class="docutils literal notranslate"><span class="pre">Radiation::group_weight()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation17deltaEnergyRatMaxEi"><code class="docutils literal notranslate"><span class="pre">Radiation::deltaEnergyRatMax()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation12deltaTRatMaxEi"><code class="docutils literal notranslate"><span class="pre">Radiation::deltaTRatMax()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation14deltaEnergyTolEv"><code class="docutils literal notranslate"><span class="pre">Radiation::deltaEnergyTol()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation9deltaTTolEv"><code class="docutils literal notranslate"><span class="pre">Radiation::deltaTTol()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation12consRegisterEi"><code class="docutils literal notranslate"><span class="pre">Radiation::consRegister()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation9post_initEi"><code class="docutils literal notranslate"><span class="pre">Radiation::post_init()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation12pre_timestepEi"><code class="docutils literal notranslate"><span class="pre">Radiation::pre_timestep()</span></code></a></li>
@@ -212,6 +210,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation3xnuE"><code class="docutils literal notranslate"><span class="pre">Radiation::xnu</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation7nugroupE"><code class="docutils literal notranslate"><span class="pre">Radiation::nugroup</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation8dnugroupE"><code class="docutils literal notranslate"><span class="pre">Radiation::dnugroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation10lognugroupE"><code class="docutils literal notranslate"><span class="pre">Radiation::lognugroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation11dlognugroupE"><code class="docutils literal notranslate"><span class="pre">Radiation::dlognugroup</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation18read_static_paramsEv"><code class="docutils literal notranslate"><span class="pre">Radiation::read_static_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation10SolverTypeE"><code class="docutils literal notranslate"><span class="pre">Radiation::SolverType</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9Radiation6radtoEE"><code class="docutils literal notranslate"><span class="pre">Radiation::radtoE</span></code></a></li>
@@ -348,11 +348,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N9RadiationD0Ev">
-<span id="_CPPv3N9RadiationD0Ev"></span><span id="_CPPv2N9RadiationD0Ev"></span><span id="Radiation::~Radiation"></span><span class="target" id="classRadiation_1ab612392d4d1557339c9975ca73b34d10"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Radiation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9RadiationD0Ev" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N9Radiation6regridEiRKN5amrex8BoxArrayERKN5amrex19DistributionMappingE">
 <span id="_CPPv3N9Radiation6regridEiRKN5amrex8BoxArrayERKN5amrex19DistributionMappingE"></span><span id="_CPPv2N9Radiation6regridEiRKN5amrex8BoxArrayERKN5amrex19DistributionMappingE"></span><span id="Radiation::regrid__i.amrex::BoxArrayCR.amrex::DistributionMappingCR"></span><span class="target" id="classRadiation_1a9ce6253c4f94d4648a7204f6f898d866"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">regrid</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">BoxArray</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grids</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DistributionMapping</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dmap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Radiation6regridEiRKN5amrex8BoxArrayERKN5amrex19DistributionMappingE" title="Link to this definition"></a><br /></dt>
 <dd><dl class="field-list simple">
@@ -460,18 +455,18 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N9Radiation14deltaEnergyTolEv">
-<span id="_CPPv3N9Radiation14deltaEnergyTolEv"></span><span id="_CPPv2N9Radiation14deltaEnergyTolEv"></span><span id="Radiation::deltaEnergyTol"></span><span class="target" id="classRadiation_1a66ac6dbb8d8bdd732f19358b987aa10c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deltaEnergyTol</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Radiation14deltaEnergyTolEv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="classRadiation_1a1be2fbe57e7f6f7b319dac32fb6e944e"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">nodiscard</span> <span class="pre">amrex::Real</span> <span class="pre">deltaEnergyTol</span> <span class="pre">()</span> <span class="pre">const</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N9Radiation9deltaTTolEv">
-<span id="_CPPv3N9Radiation9deltaTTolEv"></span><span id="_CPPv2N9Radiation9deltaTTolEv"></span><span id="Radiation::deltaTTol"></span><span class="target" id="classRadiation_1ac2bd0b6293c5b97a6864d8ef1273dae6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deltaTTol</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Radiation9deltaTTolEv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="classRadiation_1adbabe2c16fdbf6a27d0197f6c224fd87"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">nodiscard</span> <span class="pre">amrex::Real</span> <span class="pre">deltaTTol</span> <span class="pre">()</span> <span class="pre">const</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N9Radiation12consRegisterEi">
-<span id="_CPPv3N9Radiation12consRegisterEi"></span><span id="_CPPv2N9Radiation12consRegisterEi"></span><span id="Radiation::consRegister__i"></span><span class="target" id="classRadiation_1a7b45ae8eba8f7ffc9d7373e3e474ae91"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FluxRegister</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">consRegister</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Radiation12consRegisterEi" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9Radiation12consRegisterEi"></span><span id="_CPPv2N9Radiation12consRegisterEi"></span><span id="Radiation::consRegister__i"></span><span class="target" id="classRadiation_1a4e5b8b8a81afa0c389d9570027f8a7a1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FluxRegister</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">consRegister</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Radiation12consRegisterEi" title="Link to this definition"></a><br /></dt>
 <dd><p>access to conservation flux register for energy diagnostics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -827,14 +822,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>R</strong> – </p></li>
-<li><p><strong>kappa_r</strong> – </p></li>
-<li><p><strong>kcomp</strong> – </p></li>
-<li><p><strong>Er</strong> – </p></li>
-<li><p><strong>igroup</strong> – </p></li>
-<li><p><strong>nGrow_Er</strong> – </p></li>
-<li><p><strong>Rcomp</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -848,9 +836,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>lambda</strong> – </p></li>
-<li><p><strong>lamcomp</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -1301,8 +1287,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>lambda</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -1332,12 +1317,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
 <li><p><strong>Snew</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>lambda</strong> – </p></li>
-<li><p><strong>Er</strong> – </p></li>
-<li><p><strong>F</strong> – </p></li>
-<li><p><strong>iflx</strong> – </p></li>
-<li><p><strong>lab_factor</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -1351,11 +1331,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
 <li><p><strong>Snew</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>lambda</strong> – </p></li>
-<li><p><strong>Er</strong> – </p></li>
-<li><p><strong>F</strong> – </p></li>
-<li><p><strong>iflx</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -1394,7 +1370,7 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N9Radiation8absInTolE">
 <span id="_CPPv3N9Radiation8absInTolE"></span><span id="_CPPv2N9Radiation8absInTolE"></span><span id="Radiation::absInTol__amrex::Real"></span><span class="target" id="classRadiation_1a1d88cd454da980c3d1ffd6f721e20e3c"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">absInTol</span></span></span><a class="headerlink" href="#_CPPv4N9Radiation8absInTolE" title="Link to this definition"></a><br /></dt>
-<dd><p>tolerance for inner iternation of J equation </p>
+<dd><p>tolerance for inner iteration of J equation </p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -1536,6 +1512,16 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N9Radiation8dnugroupE">
 <span id="_CPPv3N9Radiation8dnugroupE"></span><span id="_CPPv2N9Radiation8dnugroupE"></span><span id="Radiation::dnugroup__amrex::Vector:amrex::Real:"></span><span class="target" id="classRadiation_1ac630cc8791f80d604bf4cd14226f5fc5"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dnugroup</span></span></span><a class="headerlink" href="#_CPPv4N9Radiation8dnugroupE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9Radiation10lognugroupE">
+<span id="_CPPv3N9Radiation10lognugroupE"></span><span id="_CPPv2N9Radiation10lognugroupE"></span><span id="Radiation::lognugroup__amrex::Vector:amrex::Real:"></span><span class="target" id="classRadiation_1a665fa322a7ba4bd44ad5cd115b4318d5"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lognugroup</span></span></span><a class="headerlink" href="#_CPPv4N9Radiation10lognugroupE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9Radiation11dlognugroupE">
+<span id="_CPPv3N9Radiation11dlognugroupE"></span><span id="_CPPv2N9Radiation11dlognugroupE"></span><span id="Radiation::dlognugroup__amrex::Vector:amrex::Real:"></span><span class="target" id="classRadiation_1ab28db95d213cda3fb0c9f71fdc9b420f"></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../file/Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dlognugroup</span></span></span><a class="headerlink" href="#_CPPv4N9Radiation11dlognugroupE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -1811,7 +1797,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2022, Castro development team.</p>
+    <p>&#169; Copyright 2018-2024, Castro development team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

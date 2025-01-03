@@ -1,25 +1,25 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Class RadSolve &mdash; Castro  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=2e394b92" />
+
   
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../mpi_plus_x.html">Running Options: CPUs and GPUs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../FlowChart.html">Flowchart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../software.html">Software Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gpu.html">GPU Programming Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../problem_setups.html">Distributed Problem Setups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timestepping.html">Timestepping and Retries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../creating_a_problem.html">Setting Up Your Own Problem</a></li>
@@ -112,7 +113,6 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Class RadSolve</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv48RadSolve"><code class="docutils literal notranslate"><span class="pre">RadSolve</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8RadSolve8RadSolveEPN5amrex3AmrEiRKN5amrex8BoxArrayERKN5amrex19DistributionMappingE"><code class="docutils literal notranslate"><span class="pre">RadSolve::RadSolve()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8RadSolveD0Ev"><code class="docutils literal notranslate"><span class="pre">RadSolve::~RadSolve()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8RadSolve9levelInitEi"><code class="docutils literal notranslate"><span class="pre">RadSolve::levelInit()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8RadSolve10levelBndryER8RadBndry"><code class="docutils literal notranslate"><span class="pre">RadSolve::levelBndry()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8RadSolve10levelBndryER10MGRadBndryKi"><code class="docutils literal notranslate"><span class="pre">RadSolve::levelBndry()</span></code></a></li>
@@ -198,11 +198,6 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8RadSolveD0Ev">
-<span id="_CPPv3N8RadSolveD0Ev"></span><span id="_CPPv2N8RadSolveD0Ev"></span><span id="RadSolve::~RadSolve"></span><span class="target" id="classRadSolve_1af83de61b88a231f9ff7d8962f456e445"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~RadSolve</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8RadSolveD0Ev" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8RadSolve9levelInitEi">
@@ -317,12 +312,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>lambda</strong> – </p></li>
-<li><p><strong>kappa_r</strong> – </p></li>
-<li><p><strong>kcomp</strong> – </p></li>
-<li><p><strong>c</strong> – </p></li>
-<li><p><strong>lamcomp</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -382,10 +372,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>Flux</strong> – </p></li>
-<li><p><strong>Er</strong> – </p></li>
-<li><p><strong>igroup</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -400,9 +387,7 @@
 <li><p><strong>level</strong> – </p></li>
 <li><p><strong>flux_in</strong> – </p></li>
 <li><p><strong>flux_out</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>Flux</strong> – </p></li>
-<li><p><strong>igroup</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -415,10 +400,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>Flux</strong> – </p></li>
-<li><p><strong>flx</strong> – </p></li>
-<li><p><strong>iflx</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -520,10 +502,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>level</strong> – </p></li>
-<li><p><strong>amrex::Array&lt;amrex::MultiFab</strong> – </p></li>
-<li><p><strong>lambda</strong> – </p></li>
-<li><p><strong>vel</strong> – </p></li>
-<li><p><strong>dcf</strong> – </p></li>
+<li><p><strong>amrex::Array</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -631,7 +610,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2022, Castro development team.</p>
+    <p>&#169; Copyright 2018-2024, Castro development team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
