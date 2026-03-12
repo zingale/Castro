@@ -7,19 +7,20 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File Castro.H &mdash; Castro  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=2e394b92" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=e375baa2" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/copybutton.js?v=eaa7b67c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -70,6 +71,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../regridding.html">Regridding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Performance Tips</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Castro reference</span></p>
 <ul>
@@ -99,146 +101,141 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">File Castro.H</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv49StateType"><code class="docutils literal notranslate"><span class="pre">StateType</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10State_TypeE"><code class="docutils literal notranslate"><span class="pre">StateType::State_Type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType8Rad_TypeE"><code class="docutils literal notranslate"><span class="pre">StateType::Rad_Type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType12PhiGrav_TypeE"><code class="docutils literal notranslate"><span class="pre">StateType::PhiGrav_Type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType12Gravity_TypeE"><code class="docutils literal notranslate"><span class="pre">StateType::Gravity_Type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType11Source_TypeE"><code class="docutils literal notranslate"><span class="pre">StateType::Source_Type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType14Reactions_TypeE"><code class="docutils literal notranslate"><span class="pre">StateType::Reactions_Type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10Mag_Type_xE"><code class="docutils literal notranslate"><span class="pre">StateType::Mag_Type_x</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10Mag_Type_yE"><code class="docutils literal notranslate"><span class="pre">StateType::Mag_Type_y</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10Mag_Type_zE"><code class="docutils literal notranslate"><span class="pre">StateType::Mag_Type_z</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType25Simplified_SDC_React_TypeE"><code class="docutils literal notranslate"><span class="pre">StateType::Simplified_SDC_React_Type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10State_TypeE"><code class="docutils literal notranslate"><span class="pre">State_Type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType8Rad_TypeE"><code class="docutils literal notranslate"><span class="pre">Rad_Type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType12PhiGrav_TypeE"><code class="docutils literal notranslate"><span class="pre">PhiGrav_Type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType12Gravity_TypeE"><code class="docutils literal notranslate"><span class="pre">Gravity_Type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType11Source_TypeE"><code class="docutils literal notranslate"><span class="pre">Source_Type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType14Reactions_TypeE"><code class="docutils literal notranslate"><span class="pre">Reactions_Type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10Mag_Type_xE"><code class="docutils literal notranslate"><span class="pre">Mag_Type_x</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10Mag_Type_yE"><code class="docutils literal notranslate"><span class="pre">Mag_Type_y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType10Mag_Type_zE"><code class="docutils literal notranslate"><span class="pre">Mag_Type_z</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N9StateType25Simplified_SDC_React_TypeE"><code class="docutils literal notranslate"><span class="pre">Simplified_SDC_React_Type</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv47sources"><code class="docutils literal notranslate"><span class="pre">sources</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources10thermo_srcE"><code class="docutils literal notranslate"><span class="pre">sources::thermo_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources8diff_srcE"><code class="docutils literal notranslate"><span class="pre">sources::diff_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources10hybrid_srcE"><code class="docutils literal notranslate"><span class="pre">sources::hybrid_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources8grav_srcE"><code class="docutils literal notranslate"><span class="pre">sources::grav_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources7rot_srcE"><code class="docutils literal notranslate"><span class="pre">sources::rot_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources10sponge_srcE"><code class="docutils literal notranslate"><span class="pre">sources::sponge_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources7ext_srcE"><code class="docutils literal notranslate"><span class="pre">sources::ext_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources8geom_srcE"><code class="docutils literal notranslate"><span class="pre">sources::geom_src</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources7num_srcE"><code class="docutils literal notranslate"><span class="pre">sources::num_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources10thermo_srcE"><code class="docutils literal notranslate"><span class="pre">thermo_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources8diff_srcE"><code class="docutils literal notranslate"><span class="pre">diff_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources10hybrid_srcE"><code class="docutils literal notranslate"><span class="pre">hybrid_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources8grav_srcE"><code class="docutils literal notranslate"><span class="pre">grav_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources7rot_srcE"><code class="docutils literal notranslate"><span class="pre">rot_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources10sponge_srcE"><code class="docutils literal notranslate"><span class="pre">sponge_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources7ext_srcE"><code class="docutils literal notranslate"><span class="pre">ext_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources8geom_srcE"><code class="docutils literal notranslate"><span class="pre">geom_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7sources7num_srcE"><code class="docutils literal notranslate"><span class="pre">num_src</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv410int_method"><code class="docutils literal notranslate"><span class="pre">int_method</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method21CornerTransportUpwindE"><code class="docutils literal notranslate"><span class="pre">int_method::CornerTransportUpwind</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method21UnusedTimeIntegrationE"><code class="docutils literal notranslate"><span class="pre">int_method::UnusedTimeIntegration</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method27SpectralDeferredCorrectionsE"><code class="docutils literal notranslate"><span class="pre">int_method::SpectralDeferredCorrections</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method37SimplifiedSpectralDeferredCorrectionsE"><code class="docutils literal notranslate"><span class="pre">int_method::SimplifiedSpectralDeferredCorrections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method21CornerTransportUpwindE"><code class="docutils literal notranslate"><span class="pre">CornerTransportUpwind</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method21UnusedTimeIntegrationE"><code class="docutils literal notranslate"><span class="pre">UnusedTimeIntegration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method27SpectralDeferredCorrectionsE"><code class="docutils literal notranslate"><span class="pre">SpectralDeferredCorrections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N10int_method37SimplifiedSpectralDeferredCorrectionsE"><code class="docutils literal notranslate"><span class="pre">SimplifiedSpectralDeferredCorrections</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv414advance_status"><code class="docutils literal notranslate"><span class="pre">advance_status</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status14advance_statusEv"><code class="docutils literal notranslate"><span class="pre">advance_status::advance_status()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status7successE"><code class="docutils literal notranslate"><span class="pre">advance_status::success</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status12suggested_dtE"><code class="docutils literal notranslate"><span class="pre">advance_status::suggested_dt</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status6reasonE"><code class="docutils literal notranslate"><span class="pre">advance_status::reason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status14advance_statusEv"><code class="docutils literal notranslate"><span class="pre">advance_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status7successE"><code class="docutils literal notranslate"><span class="pre">success</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status12suggested_dtE"><code class="docutils literal notranslate"><span class="pre">suggested_dt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N14advance_status6reasonE"><code class="docutils literal notranslate"><span class="pre">reason</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv46Castro"><code class="docutils literal notranslate"><span class="pre">Castro</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroEv"><code class="docutils literal notranslate"><span class="pre">Castro::Castro()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroERN5amrex3AmrEiRKN5amrex8GeometryERKN5amrex8BoxArrayERKN5amrex19DistributionMappingEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::Castro()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6CastroD0Ev"><code class="docutils literal notranslate"><span class="pre">Castro::~Castro()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroERK6Castro"><code class="docutils literal notranslate"><span class="pre">Castro::Castro()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroERR6Castro"><code class="docutils literal notranslate"><span class="pre">Castro::Castro()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6CastroaSERK6Castro"><code class="docutils literal notranslate"><span class="pre">Castro::operator=()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6CastroaSERR6Castro"><code class="docutils literal notranslate"><span class="pre">Castro::operator=()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro7restartERN5amrex3AmrER7istreamb"><code class="docutils literal notranslate"><span class="pre">Castro::restart()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro23set_state_in_checkpointERN5amrex6VectorIiEE"><code class="docutils literal notranslate"><span class="pre">Castro::set_state_in_checkpoint()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro10checkPointERKNSt6stringERNSt7ostreamEN5amrex5VisMF3HowEb"><code class="docutils literal notranslate"><span class="pre">Castro::checkPoint()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4NK6Castro15thePlotFileTypeEv"><code class="docutils literal notranslate"><span class="pre">Castro::thePlotFileType()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16setPlotVariablesEv"><code class="docutils literal notranslate"><span class="pre">Castro::setPlotVariables()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13writePlotFileERKNSt6stringER7ostreamN5amrex5VisMF3HowE"><code class="docutils literal notranslate"><span class="pre">Castro::writePlotFile()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18writeSmallPlotFileERKNSt6stringER7ostreamN5amrex5VisMF3HowE"><code class="docutils literal notranslate"><span class="pre">Castro::writeSmallPlotFile()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14plotFileOutputERKNSt6stringER7ostreamN5amrex5VisMF3HowEKi"><code class="docutils literal notranslate"><span class="pre">Castro::plotFileOutput()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12writeJobInfoERKNSt6stringEKN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::writeJobInfo()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8initDataEv"><code class="docutils literal notranslate"><span class="pre">Castro::initData()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14init_particlesEv"><code class="docutils literal notranslate"><span class="pre">Castro::init_particles()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18ParticleCheckPointERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Castro::ParticleCheckPoint()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16ParticlePlotFileERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Castro::ParticlePlotFile()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro19ParticlePostRestartERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Castro::ParticlePostRestart()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14ParticleDeriveERKNSt6stringEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">Castro::ParticleDerive()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18TimestampParticlesEi"><code class="docutils literal notranslate"><span class="pre">Castro::TimestampParticles()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro17advance_particlesEiN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::advance_particles()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12MAESTRO_initEv"><code class="docutils literal notranslate"><span class="pre">Castro::MAESTRO_init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4AreaEv"><code class="docutils literal notranslate"><span class="pre">Castro::Area()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4AreaEi"><code class="docutils literal notranslate"><span class="pre">Castro::Area()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6VolumeEv"><code class="docutils literal notranslate"><span class="pre">Castro::Volume()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6FluxesEi"><code class="docutils literal notranslate"><span class="pre">Castro::Fluxes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12setTimeLevelEN5amrex4RealEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::setTimeLevel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4initERN5amrex8AmrLevelE"><code class="docutils literal notranslate"><span class="pre">Castro::init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4initEv"><code class="docutils literal notranslate"><span class="pre">Castro::init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12okToContinueEv"><code class="docutils literal notranslate"><span class="pre">Castro::okToContinue()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro7advanceEN5amrex4RealEN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">Castro::advance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14do_advance_ctuEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::do_advance_ctu()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14do_advance_sdcEN5amrex4RealEN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">Castro::do_advance_sdc()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro19save_data_for_retryEv"><code class="docutils literal notranslate"><span class="pre">Castro::save_data_for_retry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro17retry_advance_ctuEN5amrex4RealERK14advance_status"><code class="docutils literal notranslate"><span class="pre">Castro::retry_advance_ctu()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro20subcycle_advance_ctuEN5amrex4RealEN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">Castro::subcycle_advance_ctu()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18initialize_advanceEN5amrex4RealEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">Castro::initialize_advance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16finalize_advanceEv"><code class="docutils literal notranslate"><span class="pre">Castro::finalize_advance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21initialize_do_advanceEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::initialize_do_advance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro19finalize_do_advanceEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::finalize_do_advance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11estTimeStepEi"><code class="docutils literal notranslate"><span class="pre">Castro::estTimeStep()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9estdt_cflEi"><code class="docutils literal notranslate"><span class="pre">Castro::estdt_cfl()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9estdt_mhdEi"><code class="docutils literal notranslate"><span class="pre">Castro::estdt_mhd()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro20estdt_temp_diffusionEi"><code class="docutils literal notranslate"><span class="pre">Castro::estdt_temp_diffusion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13estdt_burningEi"><code class="docutils literal notranslate"><span class="pre">Castro::estdt_burning()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9estdt_radEi"><code class="docutils literal notranslate"><span class="pre">Castro::estdt_rad()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro15initialTimeStepEv"><code class="docutils literal notranslate"><span class="pre">Castro::initialTimeStep()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::computeInitialDt()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">Castro::computeNewDt()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12allocOldDataEv"><code class="docutils literal notranslate"><span class="pre">Castro::allocOldData()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13removeOldDataEv"><code class="docutils literal notranslate"><span class="pre">Castro::removeOldData()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21do_energy_diagnosticsEv"><code class="docutils literal notranslate"><span class="pre">Castro::do_energy_diagnostics()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13post_timestepEi"><code class="docutils literal notranslate"><span class="pre">Castro::post_timestep()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18postCoarseTimeStepEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::postCoarseTimeStep()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11post_regridEii"><code class="docutils literal notranslate"><span class="pre">Castro::post_regrid()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12post_restartEv"><code class="docutils literal notranslate"><span class="pre">Castro::post_restart()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9post_initEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::post_init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14scf_relaxationEv"><code class="docutils literal notranslate"><span class="pre">Castro::scf_relaxation()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13do_hscf_solveEv"><code class="docutils literal notranslate"><span class="pre">Castro::do_hscf_solve()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18post_grown_restartEv"><code class="docutils literal notranslate"><span class="pre">Castro::post_grown_restart()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8errorEstERN5amrex11TagBoxArrayEiiN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">Castro::errorEst()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18apply_problem_tagsERN5amrex11TagBoxArrayEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::apply_problem_tags()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro26apply_tagging_restrictionsERN5amrex11TagBoxArrayEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::apply_tagging_restrictions()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6deriveERKNSt6stringEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">Castro::derive()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6deriveERKNSt6stringEN5amrex4RealERN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">Castro::derive()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro20final_radiation_callERN5amrex8MultiFabEii"><code class="docutils literal notranslate"><span class="pre">Castro::final_radiation_call()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21reset_internal_energyERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">Castro::reset_internal_energy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11check_div_BERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"><code class="docutils literal notranslate"><span class="pre">Castro::check_div_B()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11computeTempERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">Castro::computeTemp()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro23create_source_correctorEv"><code class="docutils literal notranslate"><span class="pre">Castro::create_source_corrector()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro22swap_state_time_levelsEKN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro::swap_state_time_levels()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9volWgtSumERK8MultiFabibb"><code class="docutils literal notranslate"><span class="pre">Castro::volWgtSum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9volWgtSumERKNSt6stringEN5amrex4RealEbb"><code class="docutils literal notranslate"><span class="pre">Castro::volWgtSum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9locWgtSumERK8MultiFabiib"><code class="docutils literal notranslate"><span class="pre">Castro::locWgtSum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9locWgtSumERKNSt6stringEN5amrex4RealEib"><code class="docutils literal notranslate"><span class="pre">Castro::locWgtSum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13volProductSumERK8MultiFabRK8MultiFabiib"><code class="docutils literal notranslate"><span class="pre">Castro::volProductSum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13volProductSumERKNSt6stringERKNSt6stringEN5amrex4RealEb"><code class="docutils literal notranslate"><span class="pre">Castro::volProductSum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13locSquaredSumERKNSt6stringEN5amrex4RealEib"><code class="docutils literal notranslate"><span class="pre">Castro::locSquaredSum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8gwstrainE4RealR4RealR4RealR4RealR4RealR4RealR4Realb"><code class="docutils literal notranslate"><span class="pre">Castro::gwstrain()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12expand_stateERN5amrex8MultiFabEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">Castro::expand_state()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8getLevelEi"><code class="docutils literal notranslate"><span class="pre">Castro::getLevel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro15FluxRegCrseInitEv"><code class="docutils literal notranslate"><span class="pre">Castro::FluxRegCrseInit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14FluxRegFineAddEv"><code class="docutils literal notranslate"><span class="pre">Castro::FluxRegFineAdd()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6refluxEiib"><code class="docutils literal notranslate"><span class="pre">Castro::reflux()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14writeBuildInfoEv"><code class="docutils literal notranslate"><span class="pre">Castro::writeBuildInfo()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13variableSetUpEv"><code class="docutils literal notranslate"><span class="pre">Castro::variableSetUp()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro10ErrorSetUpEv"><code class="docutils literal notranslate"><span class="pre">Castro::ErrorSetUp()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro15variableCleanUpEv"><code class="docutils literal notranslate"><span class="pre">Castro::variableCleanUp()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro20read_particle_paramsEv"><code class="docutils literal notranslate"><span class="pre">Castro::read_particle_params()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13check_for_nanERKN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">Castro::check_for_nan()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro23problem_post_simulationERN5amrex6VectorINSt10unique_ptrI8AmrLevelEEEE"><code class="docutils literal notranslate"><span class="pre">Castro::problem_post_simulation()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21reset_internal_energyERKN5amrex3BoxEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEE"><code class="docutils literal notranslate"><span class="pre">Castro::reset_internal_energy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14add_magnetic_eERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"><code class="docutils literal notranslate"><span class="pre">Castro::add_magnetic_e()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16using_point_massEv"><code class="docutils literal notranslate"><span class="pre">Castro::using_point_mass()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14get_point_massEv"><code class="docutils literal notranslate"><span class="pre">Castro::get_point_mass()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11extern_initEv"><code class="docutils literal notranslate"><span class="pre">Castro::extern_init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11read_paramsEv"><code class="docutils literal notranslate"><span class="pre">Castro::read_params()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro17normalize_speciesERN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">Castro::normalize_species()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroEv"><code class="docutils literal notranslate"><span class="pre">Castro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroERN5amrex3AmrEiRKN5amrex8GeometryERKN5amrex8BoxArrayERKN5amrex19DistributionMappingEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">Castro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6CastroD0Ev"><code class="docutils literal notranslate"><span class="pre">~Castro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroERK6Castro"><code class="docutils literal notranslate"><span class="pre">Castro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6CastroERR6Castro"><code class="docutils literal notranslate"><span class="pre">Castro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6CastroaSERK6Castro"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6CastroaSERR6Castro"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro7restartERN5amrex3AmrER7istreamb"><code class="docutils literal notranslate"><span class="pre">restart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro23set_state_in_checkpointERN5amrex6VectorIiEE"><code class="docutils literal notranslate"><span class="pre">set_state_in_checkpoint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro10checkPointERKNSt6stringERNSt7ostreamEN5amrex5VisMF3HowEb"><code class="docutils literal notranslate"><span class="pre">checkPoint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4NK6Castro15thePlotFileTypeEv"><code class="docutils literal notranslate"><span class="pre">thePlotFileType()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16setPlotVariablesEv"><code class="docutils literal notranslate"><span class="pre">setPlotVariables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13writePlotFileERKNSt6stringER7ostreamN5amrex5VisMF3HowE"><code class="docutils literal notranslate"><span class="pre">writePlotFile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18writeSmallPlotFileERKNSt6stringER7ostreamN5amrex5VisMF3HowE"><code class="docutils literal notranslate"><span class="pre">writeSmallPlotFile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14plotFileOutputERKNSt6stringER7ostreamN5amrex5VisMF3HowEKi"><code class="docutils literal notranslate"><span class="pre">plotFileOutput()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12writeJobInfoERKNSt6stringEKN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">writeJobInfo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8initDataEv"><code class="docutils literal notranslate"><span class="pre">initData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14init_particlesEv"><code class="docutils literal notranslate"><span class="pre">init_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18ParticleCheckPointERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">ParticleCheckPoint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16ParticlePlotFileERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">ParticlePlotFile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro19ParticlePostRestartERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">ParticlePostRestart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14ParticleDeriveERKNSt6stringEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">ParticleDerive()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18TimestampParticlesEi"><code class="docutils literal notranslate"><span class="pre">TimestampParticles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro17advance_particlesEiN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">advance_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12MAESTRO_initEv"><code class="docutils literal notranslate"><span class="pre">MAESTRO_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4AreaEv"><code class="docutils literal notranslate"><span class="pre">Area()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4AreaEi"><code class="docutils literal notranslate"><span class="pre">Area()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6VolumeEv"><code class="docutils literal notranslate"><span class="pre">Volume()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6FluxesEi"><code class="docutils literal notranslate"><span class="pre">Fluxes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12setTimeLevelEN5amrex4RealEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">setTimeLevel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4initERN5amrex8AmrLevelE"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro4initEv"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12okToContinueEv"><code class="docutils literal notranslate"><span class="pre">okToContinue()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro7advanceEN5amrex4RealEN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">advance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14do_advance_ctuEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">do_advance_ctu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14do_advance_sdcEN5amrex4RealEN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">do_advance_sdc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro19save_data_for_retryEv"><code class="docutils literal notranslate"><span class="pre">save_data_for_retry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro17retry_advance_ctuEN5amrex4RealERK14advance_status"><code class="docutils literal notranslate"><span class="pre">retry_advance_ctu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro20subcycle_advance_ctuEN5amrex4RealEN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">subcycle_advance_ctu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18initialize_advanceEN5amrex4RealEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">initialize_advance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16finalize_advanceEv"><code class="docutils literal notranslate"><span class="pre">finalize_advance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21initialize_do_advanceEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">initialize_do_advance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro19finalize_do_advanceEN5amrex4RealEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">finalize_do_advance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11estTimeStepEi"><code class="docutils literal notranslate"><span class="pre">estTimeStep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro15initialTimeStepEv"><code class="docutils literal notranslate"><span class="pre">initialTimeStep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16computeInitialDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">computeInitialDt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12computeNewDtEiiRN5amrex6VectorIiEERKN5amrex6VectorIN5amrex7IntVectEEERN5amrex6VectorIN5amrex4RealEEERN5amrex6VectorIN5amrex4RealEEEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">computeNewDt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12allocOldDataEv"><code class="docutils literal notranslate"><span class="pre">allocOldData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13removeOldDataEv"><code class="docutils literal notranslate"><span class="pre">removeOldData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21do_energy_diagnosticsEv"><code class="docutils literal notranslate"><span class="pre">do_energy_diagnostics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13post_timestepEi"><code class="docutils literal notranslate"><span class="pre">post_timestep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18postCoarseTimeStepEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">postCoarseTimeStep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11post_regridEii"><code class="docutils literal notranslate"><span class="pre">post_regrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12post_restartEv"><code class="docutils literal notranslate"><span class="pre">post_restart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9post_initEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">post_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14scf_relaxationEv"><code class="docutils literal notranslate"><span class="pre">scf_relaxation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13do_hscf_solveEv"><code class="docutils literal notranslate"><span class="pre">do_hscf_solve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18post_grown_restartEv"><code class="docutils literal notranslate"><span class="pre">post_grown_restart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8errorEstERN5amrex11TagBoxArrayEiiN5amrex4RealEii"><code class="docutils literal notranslate"><span class="pre">errorEst()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro18apply_problem_tagsERN5amrex11TagBoxArrayEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">apply_problem_tags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro26apply_tagging_restrictionsERN5amrex11TagBoxArrayEN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">apply_tagging_restrictions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6deriveERKNSt6stringEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">derive()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6deriveERKNSt6stringEN5amrex4RealERN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">derive()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro20final_radiation_callERN5amrex8MultiFabEii"><code class="docutils literal notranslate"><span class="pre">final_radiation_call()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21reset_internal_energyERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">reset_internal_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11check_div_BERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"><code class="docutils literal notranslate"><span class="pre">check_div_B()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11computeTempERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">computeTemp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro23create_source_correctorEv"><code class="docutils literal notranslate"><span class="pre">create_source_corrector()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro22swap_state_time_levelsEKN5amrex4RealE"><code class="docutils literal notranslate"><span class="pre">swap_state_time_levels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9volWgtSumERK8MultiFabibb"><code class="docutils literal notranslate"><span class="pre">volWgtSum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9volWgtSumERKNSt6stringEN5amrex4RealEbb"><code class="docutils literal notranslate"><span class="pre">volWgtSum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9locWgtSumERK8MultiFabiib"><code class="docutils literal notranslate"><span class="pre">locWgtSum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro9locWgtSumERKNSt6stringEN5amrex4RealEib"><code class="docutils literal notranslate"><span class="pre">locWgtSum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13volProductSumERK8MultiFabRK8MultiFabiib"><code class="docutils literal notranslate"><span class="pre">volProductSum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13volProductSumERKNSt6stringERKNSt6stringEN5amrex4RealEb"><code class="docutils literal notranslate"><span class="pre">volProductSum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13locSquaredSumERKNSt6stringEN5amrex4RealEib"><code class="docutils literal notranslate"><span class="pre">locSquaredSum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8gwstrainE4RealR4RealR4RealR4RealR4RealR4RealR4Realb"><code class="docutils literal notranslate"><span class="pre">gwstrain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro12expand_stateERN5amrex8MultiFabEN5amrex4RealEi"><code class="docutils literal notranslate"><span class="pre">expand_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro8getLevelEi"><code class="docutils literal notranslate"><span class="pre">getLevel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro15FluxRegCrseInitEv"><code class="docutils literal notranslate"><span class="pre">FluxRegCrseInit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14FluxRegFineAddEv"><code class="docutils literal notranslate"><span class="pre">FluxRegFineAdd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro6refluxEiib"><code class="docutils literal notranslate"><span class="pre">reflux()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14writeBuildInfoEv"><code class="docutils literal notranslate"><span class="pre">writeBuildInfo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13variableSetUpEv"><code class="docutils literal notranslate"><span class="pre">variableSetUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro10ErrorSetUpEv"><code class="docutils literal notranslate"><span class="pre">ErrorSetUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro15variableCleanUpEv"><code class="docutils literal notranslate"><span class="pre">variableCleanUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro20read_particle_paramsEv"><code class="docutils literal notranslate"><span class="pre">read_particle_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro13check_for_nanERKN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">check_for_nan()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro23problem_post_simulationERN5amrex6VectorINSt10unique_ptrI8AmrLevelEEEE"><code class="docutils literal notranslate"><span class="pre">problem_post_simulation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro21reset_internal_energyERKN5amrex3BoxERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE"><code class="docutils literal notranslate"><span class="pre">reset_internal_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14add_magnetic_eERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabERN5amrex8MultiFabE"><code class="docutils literal notranslate"><span class="pre">add_magnetic_e()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro16using_point_massEv"><code class="docutils literal notranslate"><span class="pre">using_point_mass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro14get_point_massEv"><code class="docutils literal notranslate"><span class="pre">get_point_mass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11extern_initEv"><code class="docutils literal notranslate"><span class="pre">extern_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro11read_paramsEv"><code class="docutils literal notranslate"><span class="pre">read_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N6Castro17normalize_speciesERN5amrex8MultiFabEi"><code class="docutils literal notranslate"><span class="pre">normalize_species()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv46castro"><code class="docutils literal notranslate"><span class="pre">castro</span></code></a></li>
@@ -250,6 +247,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Castro__gravity_8H.html">File Castro_gravity.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Castro__hydro_8H.html">File Castro_hydro.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Castro__io_8H.html">File Castro_io.H</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Castro__math_8H.html">File Castro_math.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Castro__mhd_8H.html">File Castro_mhd.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Castro__react_8H.html">File Castro_react.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Castro__react__util_8H.html">File Castro_react_util.H</a></li>
@@ -293,7 +291,6 @@
 <li class="toctree-l2"><a class="reference internal" href="fourth__center__average_8H.html">File fourth_center_average.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="global_8H.html">File global.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hybrid_8H.html">File hybrid.H</a></li>
-<li class="toctree-l2"><a class="reference internal" href="math_8H.html">File math.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mhd__eigen_8H.html">File mhd_eigen.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mhd__sizes_8H.html">File mhd_sizes.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mhd__util_8H.html">File mhd_util.H</a></li>
@@ -321,6 +318,7 @@
 <li class="toctree-l2"><a class="reference internal" href="sdc__newton__solve_8H.html">File sdc_newton_solve.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sdc__react__util_8H.html">File sdc_react_util.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slope_8H.html">File slope.H</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timestep_8H.html">File timestep.H</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vode__rhs__true__sdc_8H.html">File vode_rhs_true_sdc.H</a></li>
 </ul>
 </li>
@@ -362,133 +360,133 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-enums">Enums</p>
 <dl class="cpp enum">
 <dt class="sig sig-object cpp" id="_CPPv49StateType">
-<span id="_CPPv39StateType"></span><span id="_CPPv29StateType"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StateType</span></span></span><a class="headerlink" href="#_CPPv49StateType" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv39StateType"></span><span id="_CPPv29StateType"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StateType</span></span></span><a class="headerlink" href="#_CPPv49StateType" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType10State_TypeE">
-<span id="_CPPv3N9StateType10State_TypeE"></span><span id="_CPPv2N9StateType10State_TypeE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5cadd98d635e41dd186b57fdfc14ca25ad6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">State_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10State_TypeE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType10State_TypeE"></span><span id="_CPPv2N9StateType10State_TypeE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885add98d635e41dd186b57fdfc14ca25ad6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">State_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10State_TypeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType8Rad_TypeE">
-<span id="_CPPv3N9StateType8Rad_TypeE"></span><span id="_CPPv2N9StateType8Rad_TypeE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5ca3cbbca246ae6b48eac659e40831ede34"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rad_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType8Rad_TypeE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType8Rad_TypeE"></span><span id="_CPPv2N9StateType8Rad_TypeE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885a3cbbca246ae6b48eac659e40831ede34"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rad_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType8Rad_TypeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType12PhiGrav_TypeE">
-<span id="_CPPv3N9StateType12PhiGrav_TypeE"></span><span id="_CPPv2N9StateType12PhiGrav_TypeE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5ca71b3671e0d118c8ea3e259fa4867de41"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PhiGrav_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType12PhiGrav_TypeE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType12PhiGrav_TypeE"></span><span id="_CPPv2N9StateType12PhiGrav_TypeE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885a71b3671e0d118c8ea3e259fa4867de41"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PhiGrav_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType12PhiGrav_TypeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType12Gravity_TypeE">
-<span id="_CPPv3N9StateType12Gravity_TypeE"></span><span id="_CPPv2N9StateType12Gravity_TypeE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5ca03f715536b435ff65017492ec0cd2394"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Gravity_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType12Gravity_TypeE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType12Gravity_TypeE"></span><span id="_CPPv2N9StateType12Gravity_TypeE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885a03f715536b435ff65017492ec0cd2394"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Gravity_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType12Gravity_TypeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType11Source_TypeE">
-<span id="_CPPv3N9StateType11Source_TypeE"></span><span id="_CPPv2N9StateType11Source_TypeE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5ca7929206ff911237e1a5b6a721c075726"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Source_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType11Source_TypeE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType11Source_TypeE"></span><span id="_CPPv2N9StateType11Source_TypeE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885a7929206ff911237e1a5b6a721c075726"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Source_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType11Source_TypeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType14Reactions_TypeE">
-<span id="_CPPv3N9StateType14Reactions_TypeE"></span><span id="_CPPv2N9StateType14Reactions_TypeE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5cae82f4c9a5f8fbc18a387a0c1efda60d4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reactions_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType14Reactions_TypeE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType14Reactions_TypeE"></span><span id="_CPPv2N9StateType14Reactions_TypeE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885ae82f4c9a5f8fbc18a387a0c1efda60d4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reactions_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType14Reactions_TypeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType10Mag_Type_xE">
-<span id="_CPPv3N9StateType10Mag_Type_xE"></span><span id="_CPPv2N9StateType10Mag_Type_xE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5ca52b30aea5919a1623f810476a8a038d7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Mag_Type_x</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10Mag_Type_xE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType10Mag_Type_xE"></span><span id="_CPPv2N9StateType10Mag_Type_xE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885a52b30aea5919a1623f810476a8a038d7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Mag_Type_x</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10Mag_Type_xE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType10Mag_Type_yE">
-<span id="_CPPv3N9StateType10Mag_Type_yE"></span><span id="_CPPv2N9StateType10Mag_Type_yE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5cad09b590151861296b08a8da5ab8f08b4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Mag_Type_y</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10Mag_Type_yE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType10Mag_Type_yE"></span><span id="_CPPv2N9StateType10Mag_Type_yE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885ad09b590151861296b08a8da5ab8f08b4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Mag_Type_y</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10Mag_Type_yE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType10Mag_Type_zE">
-<span id="_CPPv3N9StateType10Mag_Type_zE"></span><span id="_CPPv2N9StateType10Mag_Type_zE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5cac3a05300d97ea7e0075fe7f076dc5fed"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Mag_Type_z</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10Mag_Type_zE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType10Mag_Type_zE"></span><span id="_CPPv2N9StateType10Mag_Type_zE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885ac3a05300d97ea7e0075fe7f076dc5fed"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Mag_Type_z</span></span></span><a class="headerlink" href="#_CPPv4N9StateType10Mag_Type_zE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N9StateType25Simplified_SDC_React_TypeE">
-<span id="_CPPv3N9StateType25Simplified_SDC_React_TypeE"></span><span id="_CPPv2N9StateType25Simplified_SDC_React_TypeE"></span><span class="target" id="Castro_8H_1a1615968a92950438f6e67a28e9d56e5caa90b3a70e3ed32985808e95f56a2d4c9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Simplified_SDC_React_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType25Simplified_SDC_React_TypeE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N9StateType25Simplified_SDC_React_TypeE"></span><span id="_CPPv2N9StateType25Simplified_SDC_React_TypeE"></span><span class="target" id="Castro_8H_1a55ab2a1d75a9f6b56d8963422ad14885aa90b3a70e3ed32985808e95f56a2d4c9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Simplified_SDC_React_Type</span></span></span><a class="headerlink" href="#_CPPv4N9StateType25Simplified_SDC_React_TypeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="cpp enum">
 <dt class="sig sig-object cpp" id="_CPPv47sources">
-<span id="_CPPv37sources"></span><span id="_CPPv27sources"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sources</span></span></span><a class="headerlink" href="#_CPPv47sources" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv37sources"></span><span id="_CPPv27sources"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4a"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sources</span></span></span><a class="headerlink" href="#_CPPv47sources" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources10thermo_srcE">
-<span id="_CPPv3N7sources10thermo_srcE"></span><span id="_CPPv2N7sources10thermo_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867aa059a198e825ec1271245a56ac79095b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thermo_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources10thermo_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources10thermo_srcE"></span><span id="_CPPv2N7sources10thermo_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aaa059a198e825ec1271245a56ac79095b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">thermo_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources10thermo_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources8diff_srcE">
-<span id="_CPPv3N7sources8diff_srcE"></span><span id="_CPPv2N7sources8diff_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867a6c659eef4b1e7e955568e410bd50304b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">diff_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources8diff_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources8diff_srcE"></span><span id="_CPPv2N7sources8diff_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aa6c659eef4b1e7e955568e410bd50304b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">diff_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources8diff_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources10hybrid_srcE">
-<span id="_CPPv3N7sources10hybrid_srcE"></span><span id="_CPPv2N7sources10hybrid_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867a6795e02be9a48c5a4c9c616a01db9bb1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hybrid_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources10hybrid_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources10hybrid_srcE"></span><span id="_CPPv2N7sources10hybrid_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aa6795e02be9a48c5a4c9c616a01db9bb1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hybrid_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources10hybrid_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources8grav_srcE">
-<span id="_CPPv3N7sources8grav_srcE"></span><span id="_CPPv2N7sources8grav_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867a77bf370f7aa754b6cf73c53805ab2943"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">grav_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources8grav_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources8grav_srcE"></span><span id="_CPPv2N7sources8grav_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aa77bf370f7aa754b6cf73c53805ab2943"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">grav_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources8grav_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources7rot_srcE">
-<span id="_CPPv3N7sources7rot_srcE"></span><span id="_CPPv2N7sources7rot_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867a7115565a31712e0ad762fa9abf932070"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rot_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources7rot_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources7rot_srcE"></span><span id="_CPPv2N7sources7rot_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aa7115565a31712e0ad762fa9abf932070"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rot_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources7rot_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources10sponge_srcE">
-<span id="_CPPv3N7sources10sponge_srcE"></span><span id="_CPPv2N7sources10sponge_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867a56ff55bab0ccde0bf169081f398cfb72"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sponge_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources10sponge_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources10sponge_srcE"></span><span id="_CPPv2N7sources10sponge_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aa56ff55bab0ccde0bf169081f398cfb72"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sponge_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources10sponge_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources7ext_srcE">
-<span id="_CPPv3N7sources7ext_srcE"></span><span id="_CPPv2N7sources7ext_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867ae997b85d6862ee533dbf2447296587c3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ext_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources7ext_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources7ext_srcE"></span><span id="_CPPv2N7sources7ext_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aae997b85d6862ee533dbf2447296587c3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ext_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources7ext_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources8geom_srcE">
-<span id="_CPPv3N7sources8geom_srcE"></span><span id="_CPPv2N7sources8geom_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867a2138e3577e2eb72fe829470ca2e3a940"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">geom_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources8geom_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources8geom_srcE"></span><span id="_CPPv2N7sources8geom_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aa2138e3577e2eb72fe829470ca2e3a940"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">geom_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources8geom_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N7sources7num_srcE">
-<span id="_CPPv3N7sources7num_srcE"></span><span id="_CPPv2N7sources7num_srcE"></span><span class="target" id="Castro_8H_1a9d704146f0e129f9cb3ac9d1edfdd867a5c4f676351b5e9bb8a3b34725d65afdc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources7num_srcE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N7sources7num_srcE"></span><span id="_CPPv2N7sources7num_srcE"></span><span class="target" id="Castro_8H_1a17954e1a890c56836e76f52a03f9cd4aa5c4f676351b5e9bb8a3b34725d65afdc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_src</span></span></span><a class="headerlink" href="#_CPPv4N7sources7num_srcE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="cpp enum">
 <dt class="sig sig-object cpp" id="_CPPv410int_method">
-<span id="_CPPv310int_method"></span><span id="_CPPv210int_method"></span><span class="target" id="Castro_8H_1a9a3f0e66d2357c50b79e738320ea754a"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int_method</span></span></span><a class="headerlink" href="#_CPPv410int_method" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv310int_method"></span><span id="_CPPv210int_method"></span><span class="target" id="Castro_8H_1a681e4ce7cad79028ce71036a05f87cf3"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int_method</span></span></span><a class="headerlink" href="#_CPPv410int_method" title="Link to this definition"></a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N10int_method21CornerTransportUpwindE">
-<span id="_CPPv3N10int_method21CornerTransportUpwindE"></span><span id="_CPPv2N10int_method21CornerTransportUpwindE"></span><span class="target" id="Castro_8H_1a9a3f0e66d2357c50b79e738320ea754aa47afef02d6340c0362d3a73a60d1263d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CornerTransportUpwind</span></span></span><a class="headerlink" href="#_CPPv4N10int_method21CornerTransportUpwindE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N10int_method21CornerTransportUpwindE"></span><span id="_CPPv2N10int_method21CornerTransportUpwindE"></span><span class="target" id="Castro_8H_1a681e4ce7cad79028ce71036a05f87cf3a47afef02d6340c0362d3a73a60d1263d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CornerTransportUpwind</span></span></span><a class="headerlink" href="#_CPPv4N10int_method21CornerTransportUpwindE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N10int_method21UnusedTimeIntegrationE">
-<span id="_CPPv3N10int_method21UnusedTimeIntegrationE"></span><span id="_CPPv2N10int_method21UnusedTimeIntegrationE"></span><span class="target" id="Castro_8H_1a9a3f0e66d2357c50b79e738320ea754aa276643c5b91597b25e59a34585122339"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnusedTimeIntegration</span></span></span><a class="headerlink" href="#_CPPv4N10int_method21UnusedTimeIntegrationE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N10int_method21UnusedTimeIntegrationE"></span><span id="_CPPv2N10int_method21UnusedTimeIntegrationE"></span><span class="target" id="Castro_8H_1a681e4ce7cad79028ce71036a05f87cf3a276643c5b91597b25e59a34585122339"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnusedTimeIntegration</span></span></span><a class="headerlink" href="#_CPPv4N10int_method21UnusedTimeIntegrationE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N10int_method27SpectralDeferredCorrectionsE">
-<span id="_CPPv3N10int_method27SpectralDeferredCorrectionsE"></span><span id="_CPPv2N10int_method27SpectralDeferredCorrectionsE"></span><span class="target" id="Castro_8H_1a9a3f0e66d2357c50b79e738320ea754aa169a727b3260f9fee2840ff6c5163312"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SpectralDeferredCorrections</span></span></span><a class="headerlink" href="#_CPPv4N10int_method27SpectralDeferredCorrectionsE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N10int_method27SpectralDeferredCorrectionsE"></span><span id="_CPPv2N10int_method27SpectralDeferredCorrectionsE"></span><span class="target" id="Castro_8H_1a681e4ce7cad79028ce71036a05f87cf3a169a727b3260f9fee2840ff6c5163312"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SpectralDeferredCorrections</span></span></span><a class="headerlink" href="#_CPPv4N10int_method27SpectralDeferredCorrectionsE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N10int_method37SimplifiedSpectralDeferredCorrectionsE">
-<span id="_CPPv3N10int_method37SimplifiedSpectralDeferredCorrectionsE"></span><span id="_CPPv2N10int_method37SimplifiedSpectralDeferredCorrectionsE"></span><span class="target" id="Castro_8H_1a9a3f0e66d2357c50b79e738320ea754aa17fe4e5e8ac948ee0b7ab06520e17eb4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SimplifiedSpectralDeferredCorrections</span></span></span><a class="headerlink" href="#_CPPv4N10int_method37SimplifiedSpectralDeferredCorrectionsE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N10int_method37SimplifiedSpectralDeferredCorrectionsE"></span><span id="_CPPv2N10int_method37SimplifiedSpectralDeferredCorrectionsE"></span><span class="target" id="Castro_8H_1a681e4ce7cad79028ce71036a05f87cf3a17fe4e5e8ac948ee0b7ab06520e17eb4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SimplifiedSpectralDeferredCorrections</span></span></span><a class="headerlink" href="#_CPPv4N10int_method37SimplifiedSpectralDeferredCorrectionsE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -984,36 +982,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6Castro11estTimeStepEi">
 <span id="_CPPv3N6Castro11estTimeStepEi"></span><span id="_CPPv2N6Castro11estTimeStepEi"></span><span id="Castro::estTimeStep__i"></span><span class="target" id="classCastro_1a508a9e48dca962b5b06652afd2a1cfcc"></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estTimeStep</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_new</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Estimate time step. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6Castro9estdt_cflEi">
-<span id="_CPPv3N6Castro9estdt_cflEi"></span><span id="_CPPv2N6Castro9estdt_cflEi"></span><span id="Castro::estdt_cfl__i"></span><span class="target" id="classCastro_1a6e12e8ca0c8249e7044a55cefeccb5ae"></span><span class="n"><span class="pre">ValLocPair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">IntVect</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estdt_cfl</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_new</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Compute the CFL timestep </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6Castro9estdt_mhdEi">
-<span id="_CPPv3N6Castro9estdt_mhdEi"></span><span id="_CPPv2N6Castro9estdt_mhdEi"></span><span id="Castro::estdt_mhd__i"></span><span class="target" id="classCastro_1ab0708457800eff509d772bff557d4a2d"></span><span class="n"><span class="pre">ValLocPair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">IntVect</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estdt_mhd</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_new</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Compute the CFL timestep </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6Castro20estdt_temp_diffusionEi">
-<span id="_CPPv3N6Castro20estdt_temp_diffusionEi"></span><span id="_CPPv2N6Castro20estdt_temp_diffusionEi"></span><span id="Castro::estdt_temp_diffusion__i"></span><span class="target" id="classCastro_1a8cad5d35eb29138651ca2c32e17ff313"></span><span class="n"><span class="pre">ValLocPair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">IntVect</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estdt_temp_diffusion</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_new</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Diffusion-limited timestep </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6Castro13estdt_burningEi">
-<span id="_CPPv3N6Castro13estdt_burningEi"></span><span id="_CPPv2N6Castro13estdt_burningEi"></span><span id="Castro::estdt_burning__i"></span><span class="target" id="classCastro_1ac84c0108988b24bca0978a02e10836fe"></span><span class="n"><span class="pre">ValLocPair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">IntVect</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estdt_burning</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_new</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Reactions-limited timestep </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6Castro9estdt_radEi">
-<span id="_CPPv3N6Castro9estdt_radEi"></span><span id="_CPPv2N6Castro9estdt_radEi"></span><span id="Castro::estdt_rad__i"></span><span class="target" id="classCastro_1ae315edb91d084e20a8d86fd1b196d4df"></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">estdt_rad</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_new</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p><a class="reference internal" href="Radiation_8H.html#classRadiation"><span class="std std-ref">Radiation</span></a> hydro timestep </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1546,8 +1514,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6Castro21reset_internal_energyERKN5amrex3BoxEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEE">
-<span id="_CPPv3N6Castro21reset_internal_energyERKN5amrex3BoxEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEE"></span><span id="_CPPv2N6Castro21reset_internal_energyERKN5amrex3BoxEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEEKN5amrex6Array4IN5amrex4RealEEE"></span><span id="Castro::reset_internal_energy__amrex::BoxCR.amrex::Array4:amrex::Real:C.amrex::Array4:amrex::Real:C.amrex::Array4:amrex::Real:C.amrex::Array4:amrex::Real:C"></span><span class="target" id="classCastro_1aeb76b97915246f0670a9a56869263df4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset_internal_energy</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Box</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bx</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Bx</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">By</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Bz</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u</span></span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6Castro21reset_internal_energyERKN5amrex3BoxERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE">
+<span id="_CPPv3N6Castro21reset_internal_energyERKN5amrex3BoxERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE"></span><span id="_CPPv2N6Castro21reset_internal_energyERKN5amrex3BoxERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEERKN5amrex6Array4IN5amrex4RealEEE"></span><span id="Castro::reset_internal_energy__amrex::BoxCR.amrex::Array4:amrex::Real:CR.amrex::Array4:amrex::Real:CR.amrex::Array4:amrex::Real:CR.amrex::Array4:amrex::Real:CR"></span><span class="target" id="classCastro_1a861d39260b4d9d3c52f884c2643ddd20"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset_internal_energy</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Box</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bx</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">Bx</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">By</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">Bz</span></span>, <a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array4</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="Castro__util_8H.html#_CPPv45amrex" title="amrex"><span class="n"><span class="pre">amrex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Real</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">u</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Reset the internal energy</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

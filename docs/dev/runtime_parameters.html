@@ -7,21 +7,22 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>namespace: castro &mdash; Castro  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=2e394b92" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=e375baa2" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/copybutton.js?v=eaa7b67c"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -84,6 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="regridding.html">Regridding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance Tips</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Castro reference</span></p>
 <ul>
@@ -350,14 +352,15 @@ Below this, UEINT remains unchanged.</p></td>
 <td><p>1.0e-4</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">use_pslope</span></code></p></td>
-<td><p>for the piecewise linear reconstruction, do we subtract off
-<span class="math notranslate nohighlight">\((\rho g)\)</span> from the pressure before limiting?  This
-is a well-balanced method that does well with HSE</p></td>
+<td><p>for the piecewise linear or piecewise parabolic
+reconstruction, do we subtract off <span class="math notranslate nohighlight">\((\rho g)\)</span> from
+the pressure before limiting? This is a well-balanced
+method that does well with HSE.</p></td>
 <td><p>0</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ppm_well_balanced</span></code></p></td>
 <td><p>for PPM, do we only use the perturbational pressure in the
-characteristic tracing?  This is more indepth than the
+characteristic tracing?  This is more in-depth than the
 simple <cite>use_pslope</cite> approach.</p></td>
 <td><p>0</p></td>
 </tr>
@@ -789,6 +792,11 @@ cutoff density. This should be the larger of the two</p></td>
 <td><p>scaling factor for conductivity</p></td>
 <td><p>1.0</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">diffuse_use_amrex_mlmg</span></code></p></td>
+<td><p>evaluate diffusion source term using amrex built-in solver
+or evaluate within castro</p></td>
+<td><p>1</p></td>
+</tr>
 </tbody>
 </table>
 <p><strong>gravity and rotation</strong></p>
@@ -876,12 +884,18 @@ literature is 10.0 (kpc).</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_offset_is_true</span></code></p></td>
-<td><p>This integer is used to activate parallel plane 1/r**2
-gravity.</p></td>
+<td><p>If enabled, shift the point mass away from the coordinate
+origin by point_mass_location_offset. Note that the shift
+is along the negative vertical direction. This is mainly
+used to model parallel-plane 1/r**2 gravity The shift is
+applied along the vertical direction:   1D: x-direction
+2D: y-direction   3D: z-direction</p></td>
 <td><p>0</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">point_mass_location_offset</span></code></p></td>
-<td></td>
+<td><p>Distance of the point mass shifted from the problem center.
+This is to use in conjunction with
+point_mass_offset_is_true.</p></td>
 <td><p>0.0</p></td>
 </tr>
 </tbody>

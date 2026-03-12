@@ -136,12 +136,13 @@ namespace: ``castro``
 |                                            | update the internal energy variable UEINT to match E - K.   |                             |
 |                                            | Below this, UEINT remains unchanged.                        |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
-| ``use_pslope``                             | for the piecewise linear reconstruction, do we subtract off | 0                           |
-|                                            | :math:`(\rho g)` from the pressure before limiting?  This   |                             |
-|                                            | is a well-balanced method that does well with HSE           |                             |
+| ``use_pslope``                             | for the piecewise linear or piecewise parabolic             | 0                           |
+|                                            | reconstruction, do we subtract off :math:`(\rho g)` from    |                             |
+|                                            | the pressure before limiting? This is a well-balanced       |                             |
+|                                            | method that does well with HSE.                             |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
 | ``ppm_well_balanced``                      | for PPM, do we only use the perturbational pressure in the  | 0                           |
-|                                            | characteristic tracing?  This is more indepth than the      |                             |
+|                                            | characteristic tracing?  This is more in-depth than the     |                             |
 |                                            | simple `use_pslope` approach.                               |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
 | ``pslope_cutoff_density``                  | if we are using pslope, below what density to we turn off   | -1.e20                      |
@@ -409,7 +410,7 @@ namespace: ``castro``
 
 **diffusion**
 
-.. index:: castro.diffuse_temp, castro.diffuse_cutoff_density, castro.diffuse_cutoff_density_hi, castro.diffuse_cond_scale_fac
+.. index:: castro.diffuse_temp, castro.diffuse_cutoff_density, castro.diffuse_cutoff_density_hi, castro.diffuse_cond_scale_fac, castro.diffuse_use_amrex_mlmg
 
 
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
@@ -425,6 +426,9 @@ namespace: ``castro``
 |                                            | cutoff density. This should be the larger of the two        |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
 | ``diffuse_cond_scale_fac``                 | scaling factor for conductivity                             | 1.0                         |
++--------------------------------------------+-------------------------------------------------------------+-----------------------------+
+| ``diffuse_use_amrex_mlmg``                 | evaluate diffusion source term using amrex built-in solver  | 1                           |
+|                                            | or evaluate within castro                                   |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
 
 
@@ -484,10 +488,16 @@ namespace: ``castro``
 |                                            | and if set to a positive number. A standard value in the    |                             |
 |                                            | literature is 10.0 (kpc).                                   |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
-| ``point_mass_offset_is_true``              | This integer is used to activate parallel plane 1/r**2      | 0                           |
-|                                            | gravity.                                                    |                             |
+| ``point_mass_offset_is_true``              | If enabled, shift the point mass away from the coordinate   | 0                           |
+|                                            | origin by point_mass_location_offset. Note that the shift   |                             |
+|                                            | is along the negative vertical direction. This is mainly    |                             |
+|                                            | used to model parallel-plane 1/r**2 gravity The shift is    |                             |
+|                                            | applied along the vertical direction:   1D: x-direction     |                             |
+|                                            | 2D: y-direction   3D: z-direction                           |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
-| ``point_mass_location_offset``             |                                                             | 0.0                         |
+| ``point_mass_location_offset``             | Distance of the point mass shifted from the problem center. | 0.0                         |
+|                                            | This is to use in conjunction with                          |                             |
+|                                            | point_mass_offset_is_true.                                  |                             |
 +--------------------------------------------+-------------------------------------------------------------+-----------------------------+
 
 

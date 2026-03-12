@@ -7,21 +7,22 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gravity &mdash; Castro  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=2e394b92" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=e375baa2" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/copybutton.js?v=eaa7b67c"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "macros": {"kth": "{{k_\\mathrm{th}}}", "gcc": "{\\mathrm{g~cm^{-3}}}", "cms": "{\\mathrm{cm~s^{-1}}}", "presunit": "{\\mathrm{dyn~cm^{-2}}}", "accelunit": "{\\mathrm{cm~s^{-2}}}", "ergg": "{\\mathrm{erg~g^{-1}}}", "Ab": "{{\\bf A}}", "eb": "{{\\bf e}}", "Fb": "{{\\bf F}}", "gb": "{{\\bf g}}", "Hb": "{{\\bf H}}", "ib": "{{\\bf i}}", "Ib": "{{\\bf I}}", "Kb": "{{\\bf K}}", "lb": "{{\\bf l}}", "Lb": "{{\\bf L}}", "nb": "{{\\bf n}}", "Pb": "{{\\bf P}}", "Qb": "{{\\bf Q}}", "rb": "{{\\bf r}}", "Rb": "{{\\bf R}}", "Sb": "{{\\bf S}}", "ub": "{{\\bf u}}", "Ub": "{{\\bf U}}", "xb": "{{\\bf x}}", "dt": "{\\Delta t}", "omegadot": "{\\dot\\omega}", "inp": "{{\\rm in}}", "outp": "{{\\rm out}}", "sync": "{{\\rm sync}}", "half": "{\\frac{1}{2}}", "myhalf": "{\\half}", "nph": "{{n+\\myhalf}}", "kpp": "{\\ensuremath{\\kappa_{\\mathrm{P}}}}", "kpr": "{\\ensuremath{\\kappa_{\\mathrm{R}}}}", "kpf": "{\\ensuremath{\\kappa_{\\mathrm{F}}}}", "vb": "{\\boldsymbol{v}}", "vbt": "{\\widetilde{\\vb}}", "rbt": "{\\widetilde{\\rb}}", "ob": "{\\boldsymbol{\\omega}}", "nablab": "{\\boldsymbol{\\nabla}}", "avg": ["{{\\left \\langle #1 \\right \\rangle}}", 1]}}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -72,6 +73,7 @@
 <li class="toctree-l1"><a class="reference internal" href="regridding.html">Regridding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance Tips</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Castro reference</span></p>
 <ul class="current">
@@ -163,12 +165,7 @@ or a full Poisson solve. To enable gravity in the code, set:</p>
 </pre></div>
 </div>
 <p>in the <code class="docutils literal notranslate"><span class="pre">GNUmakefile</span></code>, and then turn it on in the inputs file
-via <code class="docutils literal notranslate"><span class="pre">castro.do_grav</span></code> = 1. If you want to incorporate a point mass
-(through <code class="docutils literal notranslate"><span class="pre">castro.point_mass</span></code>), you must have:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USE_POINTMASS</span> <span class="o">=</span> <span class="n">TRUE</span>
-</pre></div>
-</div>
-<p>in the <code class="docutils literal notranslate"><span class="pre">GNUmakefile</span></code>.</p>
+via <code class="docutils literal notranslate"><span class="pre">castro.do_grav</span></code> = 1.</p>
 <p>There are currently three options for how gravity is calculated,
 controlled by setting <code class="docutils literal notranslate"><span class="pre">gravity.gravity_type</span></code>. The options are
 <code class="docutils literal notranslate"><span class="pre">ConstantGrav</span></code>, <code class="docutils literal notranslate"><span class="pre">PoissonGrav</span></code>, or <code class="docutils literal notranslate"><span class="pre">MonopoleGrav</span></code>.
@@ -203,7 +200,7 @@ interfaces, the data from the coarse levels acts as Dirichlet
 boundary conditions for the current-level-solve.</p></li>
 </ul>
 <p>The overall integration strategy is as follows, and is similar to
-the discussion in <span id="id1">[<a class="reference internal" href="zreferences.html#id4" title="A. S. Almgren, V. E. Beckner, J. B. Bell, M. S. Day, L. H. Howell, C. C. Joggerst, M. J. Lijewski, A. Nonaka, M. Singer, and M. Zingale. CASTRO: A New Compressible Astrophysical Solver. I. Hydrodynamics and Self-gravity. ApJ, 715:1221-1238, June 2010. doi:10.1088/0004-637X/715/2/1221.">19</a>]</span>. Briefly:</p>
+the discussion in <span id="id1">[<a class="reference internal" href="zreferences.html#id4" title="A. S. Almgren, V. E. Beckner, J. B. Bell, M. S. Day, L. H. Howell, C. C. Joggerst, M. J. Lijewski, A. Nonaka, M. Singer, and M. Zingale. CASTRO: A New Compressible Astrophysical Solver. I. Hydrodynamics and Self-gravity. ApJ, 715:1221-1238, June 2010. doi:10.1088/0004-637X/715/2/1221.">20</a>]</span>. Briefly:</p>
 <ul>
 <li><p>At the beginning of a simulation, we do a multilevel composite
 solve.</p>
@@ -294,8 +291,19 @@ binning to grid resolution</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">castro.do_grav</span></code> : turn on/off gravity</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">castro.moving_center</span></code> : do we recompute the center
 used for the multipole gravity solver each step?</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">castro.use_point_mass</span></code> : whether to include a central point mass</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">castro.point_mass</span></code> : point mass at the center of the star
 (must be <span class="math notranslate nohighlight">\(\geq 0\)</span>; default: 0.0)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">castro.point_mass_fix_solution</span></code> : whether to keep density in
+zones adjacent to the point mass constant by adding their mass
+change to the point mass object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">castro.gw_dist</span></code> : distance (in kpc) used for calculation of
+the gravitational wave amplitude.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">castro.point_mass_offset_is_true</span></code> : whether to shift the point
+mass away from the coordinate origin. This is useful to include
+a parallel-plane gravity with 1/r**2 scaling.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">castro.point_mass_location_offset</span></code> : distance of the point mass
+shifted from the problem center along the vertical direction.</p></li>
 </ul>
 <p>Note that in the following, <code class="docutils literal notranslate"><span class="pre">MAX_LEV</span></code> is a hard-coded parameter
 in <code class="docutils literal notranslate"><span class="pre">Source/Gravity.cpp</span></code> which is currently set to 15. It
@@ -413,7 +421,7 @@ outwards from the center to get <span class="math notranslate nohighlight">\(\ph
 <span id="sec-poisson-3d-bcs"></span><h4>Poisson Boundary Conditions: 3D<a class="headerlink" href="#poisson-boundary-conditions-3d" title="Link to this heading"></a></h4>
 <p>The following describes methods for doing isolated boundary
 conditions. The best reference for Castro’s implementation of this
-is <span id="id2">[<a class="reference internal" href="zreferences.html#id18" title="M. P. Katz, M. Zingale, A. C. Calder, F. D. Swesty, A. S. Almgren, and W. Zhang. White Dwarf Mergers on Adaptive Meshes. I. Methodology and Code Verification. APJ, 819:94, March 2016. arXiv:1512.06099, doi:10.3847/0004-637X/819/2/94.">50</a>]</span>.</p>
+is <span id="id2">[<a class="reference internal" href="zreferences.html#id18" title="M. P. Katz, M. Zingale, A. C. Calder, F. D. Swesty, A. S. Almgren, and W. Zhang. White Dwarf Mergers on Adaptive Meshes. I. Methodology and Code Verification. APJ, 819:94, March 2016. arXiv:1512.06099, doi:10.3847/0004-637X/819/2/94.">51</a>]</span>.</p>
 <ul>
 <li><p><strong>Multipole Expansion</strong></p>
 <p>In 3D, by default, we use a multipole expansion to estimate the value
@@ -510,7 +518,8 @@ setting <code class="docutils literal notranslate"><span class="pre">gravity.dir
 </section>
 <section id="point-mass">
 <h3>Point Mass<a class="headerlink" href="#point-mass" title="Link to this heading"></a></h3>
-<p>Pointmass gravity works with all other forms of gravity, it is not a
+<p>Point mass can be enabled via the runtime parameter, <code class="docutils literal notranslate"><span class="pre">castro.use_point_mass=1</span></code>.
+Pointmass gravity works with all other forms of gravity, it is not a
 separate option. Since the Poisson equation is linear in potential
 (and its derivative, the acceleration, is also linear), the point mass
 option works by adding the gravitational acceleration of the point
@@ -528,6 +537,26 @@ deleted is added to the pointmass. (If there is expansion, and the
 density lowers, then the point mass is reduced and the mass is added
 back to the grid). This calculation is done in
 <code class="docutils literal notranslate"><span class="pre">pointmass_update()</span></code> in <code class="docutils literal notranslate"><span class="pre">Castro_pointmass.cpp</span></code>.</p>
+<p>Another useful option is <code class="docutils literal notranslate"><span class="pre">point_mass_offset_is_true</span></code>. If set to 1,
+then the location of the point mass is shifted away from the problem center
+by an amount given by <code class="docutils literal notranslate"><span class="pre">point_mass_location_offset</span></code>.
+The offset is applied along the vertical direction:</p>
+<ul class="simple">
+<li><p>1D: x-direction</p></li>
+<li><p>2D: y-direction</p></li>
+<li><p>3D: z-direction</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">point_mass_location_offset</span></code> shifts the point mass in the
+<em>negative</em> vertical direction.</p>
+</div>
+<p>This option is useful for modelling parallel-plane gravity with an
+inverse-square law. For a parallel-plane problem, the problem center is
+typically chosen to be at the stellar surface. To represent the
+gravity of the underlying star, the point mass can be placed
+one stellar radius below the surface. In this case,
+<code class="docutils literal notranslate"><span class="pre">point_mass_location_offset</span></code> corresponds to the stellar radius.</p>
 </section>
 </section>
 <section id="gr-correction">
@@ -539,8 +568,8 @@ GR-correction term for Newtonian gravity.  The correction term is
 applied to the monopole approximation only when <code class="docutils literal notranslate"><span class="pre">USE_GR</span> <span class="pre">=</span> <span class="pre">TRUE</span></code> is
 set in the <code class="docutils literal notranslate"><span class="pre">GNUmakefile</span></code>.</p>
 <p>The formulae of GR-correction here are based on
-<span id="id4">[<a class="reference internal" href="zreferences.html#id47" title="R. Kippenhahn and A. Weigert. Stellar Structure and Evolution. Springer, 1990.">52</a>]</span>. For detailed physics, please refer to
-<span id="id5">[<a class="reference internal" href="zreferences.html#id48" title="Y. B. Zeldovich and D. Novikov. Relativistic astrophysics. Vol.1: Stars and relativity. University of Chicago Press, 1971.">71</a>]</span>. For describing very strong gravitational
+<span id="id4">[<a class="reference internal" href="zreferences.html#id47" title="R. Kippenhahn and A. Weigert. Stellar Structure and Evolution. Springer, 1990.">53</a>]</span>. For detailed physics, please refer to
+<span id="id5">[<a class="reference internal" href="zreferences.html#id48" title="Y. B. Zeldovich and D. Novikov. Relativistic astrophysics. Vol.1: Stars and relativity. University of Chicago Press, 1971.">72</a>]</span>. For describing very strong gravitational
 field, we need to use Einstein field equations</p>
 <div class="math notranslate nohighlight" id="equation-field">
 <span class="eqno">(6)<a class="headerlink" href="#equation-field" title="Link to this equation"></a></span>\[R_{ik}-\frac{1}{2}g_{ik}R=\frac{\kappa}{c^{2}}T_{ik} \quad , \quad
@@ -659,7 +688,7 @@ of the source term at the cell center, but this method evaluates the
 change in energy at cell edges, using the hydrodynamical mass
 fluxes, permitting total energy to be conserved (excluding possible
 losses at open domain boundaries). See
-<span id="id6">[<a class="reference internal" href="zreferences.html#id19" title="M. P. Katz. White Dwarf Mergers on Adaptive Meshes. PhD thesis, State University of New York at Stony Brook, 2016.">49</a>]</span> for some more details.</p></li>
+<span id="id6">[<a class="reference internal" href="zreferences.html#id19" title="M. P. Katz. White Dwarf Mergers on Adaptive Meshes. PhD thesis, State University of New York at Stony Brook, 2016.">50</a>]</span> for some more details.</p></li>
 </ul>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id7" role="doc-footnote">
